@@ -11,3 +11,5 @@ Crowdsourced measurement of TLS-interception in ISP networks
   Android app demoing the client-side capabilities based on the bouncycastle TLS
   implementation. Used as a starting point for further development.
 
+* **/docs**
+  project documentation: charts, ideas, etc.
