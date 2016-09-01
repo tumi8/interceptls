@@ -11,7 +11,7 @@ Crowdsourced measurement of TLS-interception in ISP networks
 * **/docs**
   source files for project documentation (charts, ideas, etc.) as used in the wiki
 
-* **relay-server**
+* **/relay-server**
   Python-based relay server
 
 * **/traces**
