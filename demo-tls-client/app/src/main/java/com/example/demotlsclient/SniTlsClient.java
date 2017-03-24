@@ -28,6 +28,7 @@ public abstract class SniTlsClient
         this.serverName = serverName;
     }
 
+    @Override
     public Hashtable getClientExtensions()
             throws IOException
     {
