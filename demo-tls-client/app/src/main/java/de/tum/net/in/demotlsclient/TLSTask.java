@@ -1,12 +1,7 @@
-package com.example.demotlsclient;
+package de.tum.net.in.demotlsclient;
 
 import android.os.AsyncTask;
 import android.util.JsonWriter;
-import android.widget.Button;
-import android.widget.TextView;
-
-import com.example.demotlsclient.StreamDissector.Dissector;
-import com.example.demotlsclient.StreamDissector.TLSStream;
 
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.crypto.tls.ServerOnlyTlsAuthentication;
@@ -29,6 +24,8 @@ import java.net.Socket;
 import java.security.SecureRandom;
 
 import de.tum.in.net.SniTlsClient;
+import de.tum.net.in.demotlsclient.StreamDissector.Dissector;
+import de.tum.net.in.demotlsclient.StreamDissector.TLSStream;
 
 /**
  * Created by johannes on 22.03.17.

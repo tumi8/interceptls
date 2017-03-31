@@ -1,4 +1,4 @@
-package com.example.demotlsclient;
+package de.tum.net.in.demotlsclient;
 
 /**
  * Created by johannes on 22.03.17.

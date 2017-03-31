@@ -1,11 +1,11 @@
-package com.example.demotlsclient.scenario;
+package de.tum.net.in.demotlsclient.scenario;
 
 import android.os.AsyncTask;
 
-import com.example.demotlsclient.AsyncResult;
 
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.Tap;
+import de.tum.net.in.demotlsclient.AsyncResult;
 
 import org.bouncycastle.crypto.tls.TlsClient;
 import org.bouncycastle.crypto.tls.TlsClientProtocol;

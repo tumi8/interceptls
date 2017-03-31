@@ -1,6 +1,7 @@
-package com.example.demotlsclient;
+package de.tum.net.in.demotlsclient;
 
-import com.example.demotlsclient.scenario.ScenarioDirectConnection;
+import de.tum.net.in.demotlsclient.AsyncResult;
+import de.tum.net.in.demotlsclient.scenario.ScenarioDirectConnection;
 import de.tum.in.net.scenario.ScenarioResult;
 
 import static org.junit.Assert.*;

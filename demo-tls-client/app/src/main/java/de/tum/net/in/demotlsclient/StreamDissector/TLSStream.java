@@ -1,8 +1,7 @@
-package com.example.demotlsclient.StreamDissector;
+package de.tum.net.in.demotlsclient.StreamDissector;
 
 import android.util.JsonWriter;
 
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;

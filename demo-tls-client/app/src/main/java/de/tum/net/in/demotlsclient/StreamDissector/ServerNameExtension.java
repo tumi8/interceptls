@@ -1,4 +1,4 @@
-package com.example.demotlsclient.StreamDissector;
+package de.tum.net.in.demotlsclient.StreamDissector;
 
 import android.util.JsonWriter;
 
