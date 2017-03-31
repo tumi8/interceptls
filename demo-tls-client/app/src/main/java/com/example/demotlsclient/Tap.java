@@ -1,7 +1,7 @@
 package com.example.demotlsclient;
 
-import org.spongycastle.util.io.TeeInputStream;
-import org.spongycastle.util.io.TeeOutputStream;
+import org.bouncycastle.util.io.TeeInputStream;
+import org.bouncycastle.util.io.TeeOutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

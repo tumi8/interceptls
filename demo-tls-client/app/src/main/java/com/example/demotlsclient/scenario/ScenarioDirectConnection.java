@@ -6,11 +6,11 @@ import com.example.demotlsclient.AsyncResult;
 import com.example.demotlsclient.SniTlsClient;
 import com.example.demotlsclient.Tap;
 
-import org.spongycastle.crypto.tls.Certificate;
-import org.spongycastle.crypto.tls.ServerOnlyTlsAuthentication;
-import org.spongycastle.crypto.tls.TlsAuthentication;
-import org.spongycastle.crypto.tls.TlsClient;
-import org.spongycastle.crypto.tls.TlsClientProtocol;
+import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.crypto.tls.ServerOnlyTlsAuthentication;
+import org.bouncycastle.crypto.tls.TlsAuthentication;
+import org.bouncycastle.crypto.tls.TlsClient;
+import org.bouncycastle.crypto.tls.TlsClientProtocol;
 
 import java.io.IOException;
 import java.net.Socket;

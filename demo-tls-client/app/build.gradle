@@ -23,5 +23,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.madgag.spongycastle:prov:1.54.0.0'
+    compile 'org.bouncycastle:bcprov-jdk15on:1.56' //safe to use, see https://github.com/rtyley/spongycastle/issues/34
 }

@@ -13,16 +13,16 @@ import com.example.demotlsclient.StreamDissector.Dissector;
 import com.example.demotlsclient.StreamDissector.TLSRecord;
 import com.example.demotlsclient.StreamDissector.TLSStream;
 
-import org.spongycastle.crypto.tls.Certificate;
-import org.spongycastle.crypto.tls.DefaultTlsClient;
-import org.spongycastle.crypto.tls.ServerOnlyTlsAuthentication;
-import org.spongycastle.crypto.tls.TlsAuthentication;
-import org.spongycastle.crypto.tls.TlsClient;
-import org.spongycastle.crypto.tls.TlsClientProtocol;
-import org.spongycastle.crypto.tls.TlsExtensionsUtils;
-import org.spongycastle.util.encoders.Hex;
-import org.spongycastle.util.io.TeeInputStream;
-import org.spongycastle.util.io.TeeOutputStream;
+import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.crypto.tls.DefaultTlsClient;
+import org.bouncycastle.crypto.tls.ServerOnlyTlsAuthentication;
+import org.bouncycastle.crypto.tls.TlsAuthentication;
+import org.bouncycastle.crypto.tls.TlsClient;
+import org.bouncycastle.crypto.tls.TlsClientProtocol;
+import org.bouncycastle.crypto.tls.TlsExtensionsUtils;
+import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.util.io.TeeInputStream;
+import org.bouncycastle.util.io.TeeOutputStream;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

@@ -1,11 +1,11 @@
 package com.example.demotlsclient;
 
-import org.spongycastle.crypto.tls.DefaultTlsClient;
-import org.spongycastle.crypto.tls.NameType;
-import org.spongycastle.crypto.tls.ServerName;
-import org.spongycastle.crypto.tls.ServerNameList;
-import org.spongycastle.crypto.tls.TlsCipherFactory;
-import org.spongycastle.crypto.tls.TlsExtensionsUtils;
+import org.bouncycastle.crypto.tls.DefaultTlsClient;
+import org.bouncycastle.crypto.tls.NameType;
+import org.bouncycastle.crypto.tls.ServerName;
+import org.bouncycastle.crypto.tls.ServerNameList;
+import org.bouncycastle.crypto.tls.TlsCipherFactory;
+import org.bouncycastle.crypto.tls.TlsExtensionsUtils;
 
 import java.io.IOException;
 import java.util.Hashtable;
