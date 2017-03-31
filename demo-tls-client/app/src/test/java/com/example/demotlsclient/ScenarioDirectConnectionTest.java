@@ -1,16 +1,15 @@
-import com.example.demotlsclient.AsyncResult;
-import com.example.demotlsclient.SniTlsClient;
+package com.example.demotlsclient;
+
 import com.example.demotlsclient.scenario.ScenarioDirectConnection;
-import com.example.demotlsclient.scenario.ScenarioResult;
+import de.tum.in.net.scenario.ScenarioResult;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.spongycastle.crypto.tls.Certificate;
-import org.spongycastle.crypto.tls.DefaultTlsClient;
-import org.spongycastle.crypto.tls.ServerOnlyTlsAuthentication;
-import org.spongycastle.crypto.tls.TlsAuthentication;
-import org.spongycastle.crypto.tls.TlsClient;
+import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.crypto.tls.DefaultTlsClient;
+import org.bouncycastle.crypto.tls.ServerOnlyTlsAuthentication;
+import org.bouncycastle.crypto.tls.TlsAuthentication;
+import org.bouncycastle.crypto.tls.TlsClient;
 
 import java.io.IOException;
 

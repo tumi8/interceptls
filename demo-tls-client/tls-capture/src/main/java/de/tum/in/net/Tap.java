@@ -1,9 +1,8 @@
-package com.example.demotlsclient;
+package de.tum.in.net;
 
 import org.bouncycastle.util.io.TeeInputStream;
 import org.bouncycastle.util.io.TeeOutputStream;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,24 +19,24 @@ public class Tap {
     private final InputStream in;
     private final OutputStream out;
 
-    public Tap(InputStream input, OutputStream output){
+    public Tap(InputStream input, OutputStream output) {
         this.in = new TeeInputStream(input, tapIn);
         this.out = new TeeOutputStream(output, tapOut);
     }
 
-    public InputStream getIn(){
+    public InputStream getIn() {
         return in;
     }
 
-    public OutputStream getOut(){
+    public OutputStream getOut() {
         return out;
     }
 
-    public byte[] getInputBytes(){
+    public byte[] getInputBytes() {
         return tapIn.toByteArray();
     }
 
-    public byte[] getOutputytes(){
+    public byte[] getOutputytes() {
         return tapOut.toByteArray();
     }
 }

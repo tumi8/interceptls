@@ -1,4 +1,4 @@
-package com.example.demotlsclient;
+package de.tum.in.net;
 
 import org.bouncycastle.crypto.tls.DefaultTlsClient;
 import org.bouncycastle.crypto.tls.NameType;
@@ -14,8 +14,7 @@ import java.util.Vector;
 /**
  * Created by wohlfart on 11.08.16.
  */
-public abstract class SniTlsClient
-        extends DefaultTlsClient {
+public abstract class SniTlsClient extends DefaultTlsClient {
     String serverName;
 
     public SniTlsClient(String serverName) {
@@ -30,13 +29,12 @@ public abstract class SniTlsClient
 
     @Override
     public Hashtable getClientExtensions()
-            throws IOException
-    {
+            throws IOException {
         Hashtable clientExtensions = super.getClientExtensions();
 
         // create ServerNameList
         ServerName sn = new ServerName(NameType.host_name, serverName);
-        Vector<ServerName> vlist = new Vector<ServerName>();
+        Vector<ServerName> vlist = new Vector<>();
         vlist.add(sn);
         ServerNameList list = new ServerNameList(vlist);
 

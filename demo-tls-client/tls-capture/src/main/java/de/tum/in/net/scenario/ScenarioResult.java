@@ -1,4 +1,4 @@
-package com.example.demotlsclient.scenario;
+package de.tum.in.net.scenario;
 
 import java.util.Objects;
 
@@ -20,10 +20,11 @@ public class ScenarioResult {
 
     /**
      * Scenario was successful.
+     *
      * @param receivedBytes
      * @param sentBytes
      */
-    public ScenarioResult(byte[] receivedBytes, byte[] sentBytes){
+    public ScenarioResult(byte[] receivedBytes, byte[] sentBytes) {
         this.success = true;
         this.receivedBytes = Objects.requireNonNull(receivedBytes, "received bytes must not be null");
         this.sentBytes = Objects.requireNonNull(sentBytes, "sentBytes must not be null");
@@ -31,17 +32,25 @@ public class ScenarioResult {
 
     /**
      * An error occurred during the scenario.
+     *
      * @param msg
      * @param cause
      */
-    public ScenarioResult(String msg, Throwable cause){
+    public ScenarioResult(String msg, Throwable cause) {
         this.success = false;
         this.msg = Objects.requireNonNull(msg, "msg must not be null");
         this.cause = Objects.requireNonNull(cause, "cause must not be null");
     }
 
-    public boolean isSuccess(){
+    public boolean isSuccess() {
         return success;
     }
 
+    public byte[] getSentBytes() {
+        return sentBytes;
+    }
+
+    public byte[] getReceivedBytes() {
+        return receivedBytes;
+    }
 }

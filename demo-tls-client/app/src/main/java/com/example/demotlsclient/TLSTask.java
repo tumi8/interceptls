@@ -28,6 +28,8 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.security.SecureRandom;
 
+import de.tum.in.net.SniTlsClient;
+
 /**
  * Created by johannes on 22.03.17.
  */
