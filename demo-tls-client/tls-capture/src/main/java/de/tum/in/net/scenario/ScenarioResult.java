@@ -53,4 +53,5 @@ public class ScenarioResult {
     public byte[] getReceivedBytes() {
         return receivedBytes;
     }
+
 }

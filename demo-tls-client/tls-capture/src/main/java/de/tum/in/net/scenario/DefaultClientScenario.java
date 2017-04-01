@@ -18,15 +18,15 @@ import de.tum.in.net.Tap;
  * Created by johannes on 31.03.17.
  */
 
-public class DefaultScenario implements Scenario {
+public class DefaultClientScenario implements Scenario {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultScenario.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultClientScenario.class);
     private String destination;
     private int port;
     private byte[] transmit;
     private ScenarioResult result;
 
-    public DefaultScenario(String destination, int port, byte[] transmit) {
+    public DefaultClientScenario(String destination, int port, byte[] transmit) {
         this.destination = destination;
         this.port = port;
         this.transmit = transmit;
@@ -60,12 +60,13 @@ public class DefaultScenario implements Scenario {
                 }
             });
 
+            // we are now connected, therefore we can publish the captured bytes
+            this.result = new ScenarioResult(tap.getInputBytes(), tap.getOutputytes());
+
+            // then we can send additional bytes
             if (transmit != null) {
                 tlsClientProtocol.getOutputStream().write(transmit);
             }
-
-            //we are now connected, therefore we can publish the captured bytes
-            this.result = new ScenarioResult(tap.getInputBytes(), tap.getOutputytes());
 
         } catch (IOException e) {
             log.warn("Error in DefaultScenario", e);
