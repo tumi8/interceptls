@@ -2,6 +2,11 @@ package de.tum.in.net;
 
 import org.junit.Test;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 import de.tum.in.net.scenario.server.DefaultServerScenario;
 import de.tum.in.net.scenario.ScenarioResult;
@@ -21,15 +26,15 @@ public class DefaultClientScenarioTest {
         String transmit = "hello";
 
         DefaultServerScenario serverScenario = new DefaultServerScenario(port, transmit.length());
-        Thread serverThread = new Thread(serverScenario, "Server");
-        serverThread.start();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<ScenarioResult> serverResult = executor.submit(serverScenario);
+
 
         DefaultClientScenario scenario = new DefaultClientScenario("127.0.0.1", port, transmit.getBytes());
-        scenario.run();
 
-        ScenarioResult result = scenario.getResult();
-        assertTrue(result.isSuccess());
-        while (serverThread.isAlive()) {
+        ScenarioResult clientResult = scenario.call();
+
+        while (!serverResult.isDone()) {
             Thread.sleep(20);
         }
         assertEquals(transmit, new String(serverScenario.getReceivedBytes()));

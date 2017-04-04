@@ -41,8 +41,8 @@ public class DefaultServer extends DefaultTlsServer {
             KeyPair pair = gen.generateKeyPair();
             this.privateKey = PrivateKeyFactory.createKey(pair.getPrivate().getEncoded());
 
-            X500Name issuer = new X500Name("CN=Sample Cert, OU=R&D, O=Company Ltd., L=Dublin 4, C=IE");
-            X500Name subject = new X500Name("CN=Sample Cert, OU=R&D, O=Company Ltd., L=Dublin 4, C=IE");
+            X500Name issuer = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
+            X500Name subject = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
 
             Date notBefore = DateTime.now().minusDays(7).toDate();
             Date notAfter = DateTime.now().plusDays(7).toDate();
