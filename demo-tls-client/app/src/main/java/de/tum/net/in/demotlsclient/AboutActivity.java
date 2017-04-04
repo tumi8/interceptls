@@ -1,8 +1,7 @@
 package de.tum.net.in.demotlsclient;
 
-import android.preference.PreferenceScreen;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import de.tum.in.net.demotlsclient.R;
 

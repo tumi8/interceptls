@@ -2,9 +2,9 @@ package de.tum.net.in.demotlsclient;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             public void publishResult(ScenarioResult result) {
                 results.add(result);
                 view.setText("");
-                for(ScenarioResult r : results){
+                for (ScenarioResult r : results) {
                     view.append(r.getDestination() + " " + r.isSuccess() + "\n");
                 }
             }
@@ -59,11 +58,11 @@ public class MainActivity extends AppCompatActivity {
         Set<String> targets = prefs.getStringSet(getString(R.string.hosts_default), null);
 
         List<Scenario> scenarios = new ArrayList<>(targets.size());
-        for ( String target : targets ) {
+        for (String target : targets) {
             scenarios.add(new DefaultClientScenario(target, 443));
         }
 
-        for (Scenario scenario : scenarios ){
+        for (Scenario scenario : scenarios) {
             AsyncScenarioTask task = new AsyncScenarioTask(scenario, asyncResult);
             task.executeOnExecutor(executor);
         }

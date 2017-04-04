@@ -25,7 +25,8 @@ public class TLSRecord implements Dissector {
             DataInputStream distream = new DataInputStream(new ByteArrayInputStream(payload));
 
             switch (contentType) {
-                case 22: data = new TLSHandshake(distream);
+                case 22:
+                    data = new TLSHandshake(distream);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,18 +35,24 @@ public class TLSRecord implements Dissector {
 
     public String contentTypeToString() {
         switch (contentType) {
-            case 20: return "Change Cipher Spec";
-            case 21: return "Alert";
-            case 22: return "Handshake";
-            case 23: return "Data";
+            case 20:
+                return "Change Cipher Spec";
+            case 21:
+                return "Alert";
+            case 22:
+                return "Handshake";
+            case 23:
+                return "Data";
         }
         return Byte.toString(contentType);
     }
 
     public String versionToString() {
         switch (version) {
-            case 771: return "TLS1.2";
-            default: return Integer.toString(version);
+            case 771:
+                return "TLS1.2";
+            default:
+                return Integer.toString(version);
         }
     }
 
@@ -54,8 +61,11 @@ public class TLSRecord implements Dissector {
         out.name("type").value("record");
         out.name("version").value(versionToString());
         out.name("data");
-        if (data != null) { data.toJson(out); }
-        else { out.nullValue(); }
+        if (data != null) {
+            data.toJson(out);
+        } else {
+            out.nullValue();
+        }
         out.endObject();
         return out;
     }

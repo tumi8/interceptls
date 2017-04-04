@@ -24,7 +24,8 @@ public class TLSHandshake implements Dissector {
             DataInputStream distream = new DataInputStream(new ByteArrayInputStream(payload));
 
             switch (handshakeType) {
-                case 1: message = new ClientHello(distream);
+                case 1:
+                    message = new ClientHello(distream);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -33,13 +34,20 @@ public class TLSHandshake implements Dissector {
 
     public String handshakeTypeToString() {
         switch (handshakeType) {
-            case 0: return "Hello Request";
-            case 1: return "Client Hello";
-            case 2: return "Server Hello";
-            case 11: return "Certificate";
-            case 12: return "Server Key Exchange";
-            case 14: return "Server Hello Done";
-            case 16: return "Client Key Exchange";
+            case 0:
+                return "Hello Request";
+            case 1:
+                return "Client Hello";
+            case 2:
+                return "Server Hello";
+            case 11:
+                return "Certificate";
+            case 12:
+                return "Server Key Exchange";
+            case 14:
+                return "Server Hello Done";
+            case 16:
+                return "Client Key Exchange";
         }
         return Byte.toString(handshakeType);
     }
@@ -48,8 +56,11 @@ public class TLSHandshake implements Dissector {
         out.beginObject();
         out.name("type").value("handshake");
         out.name("message");
-        if (message != null) { message.toJson(out); }
-        else { out.nullValue(); }
+        if (message != null) {
+            message.toJson(out);
+        } else {
+            out.nullValue();
+        }
         out.endObject();
         return out;
     }

@@ -26,7 +26,7 @@ public class TLSStream implements Dissector {
 
     public String toString() {
         String res = "";
-        for (Dissector d: TlsRecordList) {
+        for (Dissector d : TlsRecordList) {
             res += d.toString();
             res += "\n";
         }
@@ -35,7 +35,7 @@ public class TLSStream implements Dissector {
 
     public JsonWriter toJson(JsonWriter out) throws IOException {
         out.beginArray();
-        for (Dissector d: TlsRecordList) {
+        for (Dissector d : TlsRecordList) {
             d.toJson(out);
         }
         out.endArray();
