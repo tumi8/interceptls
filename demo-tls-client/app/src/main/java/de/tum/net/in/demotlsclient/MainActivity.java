@@ -27,7 +27,7 @@ import de.tum.in.net.scenario.client.DefaultClientScenario;
  */
 public class MainActivity extends AppCompatActivity {
 
-    // we could executie the scenarios in parallel later
+    // we could execute the scenarios in parallel later
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final List<ScenarioResult> results = new ArrayList<>();
 
