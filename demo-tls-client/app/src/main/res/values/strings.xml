@@ -1,3 +1,11 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">DemoTLSClient</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="hosts_default">
+        <xliff:g>hosts_default</xliff:g>
+    </string>
+    <string name="hosts_additional">
+        <xliff:g>hosts_additional</xliff:g>
+    </string>
 </resources>
