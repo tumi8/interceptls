@@ -26,9 +26,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 /**
+ * Server which creates a RSA KeyPair and a corresponding X509Certificate which is served to the clients.
  * Created by johannes on 31.03.17.
  */
-
 public class DefaultServer extends DefaultTlsServer {
 
     private Certificate certificate;

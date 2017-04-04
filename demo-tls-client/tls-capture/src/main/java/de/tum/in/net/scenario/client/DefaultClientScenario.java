@@ -1,4 +1,4 @@
-package de.tum.in.net.scenario;
+package de.tum.in.net.scenario.client;
 
 import org.bouncycastle.crypto.tls.Certificate;
 import org.bouncycastle.crypto.tls.DefaultTlsClient;
@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.security.SecureRandom;
 
 import de.tum.in.net.Tap;
+import de.tum.in.net.scenario.Scenario;
+import de.tum.in.net.scenario.ScenarioResult;
 
 /**
  * Created by johannes on 31.03.17.
@@ -69,7 +71,7 @@ public class DefaultClientScenario implements Scenario {
             }
 
         } catch (IOException e) {
-            log.warn("Error in DefaultScenario", e);
+            log.warn("Error in DefaultClientScenario", e);
             this.result = new ScenarioResult("Error in connection to " + destination, e);
         }
 
