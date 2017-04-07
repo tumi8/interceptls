@@ -9,4 +9,8 @@
         <xliff:g>hosts_additional</xliff:g>
     </string>
     <string name="result">Results</string>
+    <string name="hosts_default_title">Default hosts</string>
+    <string name="hosts_default_description">Which hosts do we probe?</string>
+    <string name="hosts_additional_title">Additional hosts</string>
+    <string name="hosts_additional_description">Additional hosts for probing can be specified here. Each host must be specified in a new line.</string>
 </resources>

@@ -3,16 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
 
     >
-    <MultiSelectListPreference android:title="Target hosts"
-        android:summary="Which hosts do we probe?"
+    <MultiSelectListPreference android:title="@string/hosts_default_title"
+        android:summary="@string/hosts_default_description"
         android:key="@string/hosts_default"
         android:entries="@array/hosts_default"
         android:entryValues="@array/hosts_default"
         android:defaultValue="@array/hosts_default"
         />
     <EditTextPreference
-        android:title="Additional hosts"
+        android:title="@string/hosts_additional_title"
         android:key="@string/hosts_additional"
-        android:summary="If you want to test additional hosts you can provide them here. Please seperate each host with a new line."
+        android:summary="@string/hosts_additional_description"
         />
 </PreferenceScreen>
