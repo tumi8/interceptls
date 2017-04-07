@@ -16,7 +16,6 @@ import java.util.Objects;
 import de.tum.in.net.Tap;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
-import de.tum.in.net.scenario.server.DefaultServerScenario;
 
 /**
  * Created by johannes on 31.03.17.
@@ -40,7 +39,7 @@ public class DefaultClientScenario implements Scenario {
     }
 
     @Override
-    public ScenarioResult call(){
+    public ScenarioResult call() {
         ScenarioResult result;
         Tap tap = null;
         try (Socket s = new Socket(destination, port)) {
@@ -69,8 +68,8 @@ public class DefaultClientScenario implements Scenario {
             }
 
         } catch (IOException e) {
-            log.warn("Error in " +  toString(), e);
-            result =  new ScenarioResult("", e, tap);
+            log.warn("Error in " + toString(), e);
+            result = new ScenarioResult("", e, tap);
         }
 
         return result;
@@ -78,7 +77,7 @@ public class DefaultClientScenario implements Scenario {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return DefaultClientScenario.class.getName();
     }
 }

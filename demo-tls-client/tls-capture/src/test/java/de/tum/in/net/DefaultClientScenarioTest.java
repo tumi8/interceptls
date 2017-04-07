@@ -6,13 +6,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.tum.in.net.scenario.Scenario;
+import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 import de.tum.in.net.scenario.server.DefaultServerScenario;
-import de.tum.in.net.scenario.ScenarioResult;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by johannes on 31.03.17.

@@ -34,7 +34,7 @@ public class DefaultServerScenario implements Scenario {
     }
 
     @Override
-    public ScenarioResult call(){
+    public ScenarioResult call() {
         ScenarioResult result;
         Tap tap = null;
         try (ServerSocket server = new ServerSocket(port)) {
@@ -51,14 +51,14 @@ public class DefaultServerScenario implements Scenario {
             tlsServerProtocol.getInputStream().read(buffer);
 
             return result;
-        } catch (IOException e){
+        } catch (IOException e) {
             result = new ScenarioResult("Error in " + toString(), e, tap);
         }
         return result;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return DefaultServerScenario.class.getName();
     }
 }

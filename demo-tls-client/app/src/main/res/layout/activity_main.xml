@@ -7,54 +7,53 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="de.tum.in.net.demotlsclient.de.tum.in.net.demotlsclient.MainActivity"
-    android:scrollIndicators="right">
+    android:scrollIndicators="right"
+    tools:context="de.tum.in.net.demotlsclient.de.tum.in.net.demotlsclient.MainActivity">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView" >
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
 
             <Button
+                android:id="@+id/button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start"
-                android:id="@+id/button"
-                android:onClick="startTestScenarios"
-                android:nestedScrollingEnabled="false"
                 android:layout_alignParentTop="true"
-                android:layout_gravity="right" />
-            
+                android:layout_gravity="right"
+                android:nestedScrollingEnabled="false"
+                android:onClick="startTestScenarios"
+                android:text="Start" />
+
             <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:visibility="gone"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:id="@+id/progressBar1"
-                />
-            
+                android:visibility="gone" />
+
             <TextView
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/result"
-                android:id="@+id/textView"
                 android:textSize="@dimen/abc_text_size_headline_material"
                 android:textStyle="bold"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <TextView
+                android:id="@+id/tview_tls_handshake"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tview_tls_handshake"
                 android:visibility="gone" />
 
         </LinearLayout>

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 results.add(result);
                 progressBar.setProgress(results.size());
 
-                if (results.size() == targets.size() ){
+                if (results.size() == targets.size()) {
                     final TextView titleView = (TextView) findViewById(R.id.textView);
                     final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
                     view.setText("");
@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //TODO read ca-certs from /system/etc/security/cacerts/...
-
 
 
     }

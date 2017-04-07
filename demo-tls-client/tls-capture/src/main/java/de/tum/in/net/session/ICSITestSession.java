@@ -1,7 +1,6 @@
 package de.tum.in.net.session;
 
 import java.util.Collection;
-import java.util.List;
 
 import de.tum.in.net.scenario.ScenarioResult;
 
@@ -13,7 +12,7 @@ public class ICSITestSession implements TestSession {
 
     private final String id;
 
-    private ICSITestSession(String id){
+    private ICSITestSession(String id) {
         this.id = id;
     }
 

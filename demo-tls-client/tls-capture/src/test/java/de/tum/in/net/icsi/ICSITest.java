@@ -8,15 +8,13 @@ import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.session.ICSITestSession;
 import de.tum.in.net.session.TestSession;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by johannes on 04.04.17.
  */
-public class ICSITest{
+public class ICSITest {
 
     @Test
-    public void uploadTests() throws Exception{
+    public void uploadTests() throws Exception {
         ScenarioResult result = null;
 
         TestSession session = ICSITestSession.newTestSession();

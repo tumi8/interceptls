@@ -19,7 +19,7 @@ public class TestSessionLogger implements TestSession {
     @Override
     public void uploadResults(Collection<ScenarioResult> results) throws IOException {
         log.debug("Logging {} results", results.size());
-        for(ScenarioResult result : results){
+        for (ScenarioResult result : results) {
             log.info(result.toString());
         }
     }

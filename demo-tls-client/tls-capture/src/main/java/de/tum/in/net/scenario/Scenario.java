@@ -1,6 +1,5 @@
 package de.tum.in.net.scenario;
 
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 /**

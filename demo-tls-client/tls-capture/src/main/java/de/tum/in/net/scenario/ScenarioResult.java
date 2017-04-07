@@ -1,6 +1,5 @@
 package de.tum.in.net.scenario;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import de.tum.in.net.Tap;
@@ -59,12 +58,11 @@ public class ScenarioResult {
         this.success = false;
         this.msg = Objects.requireNonNull(msg, "msg must not be null");
         this.cause = Objects.requireNonNull(cause, "cause must not be null");
-        if ( tap != null ){
+        if (tap != null) {
             this.receivedBytes = tap.getInputBytes();
             this.sentBytes = tap.getOutputytes();
         }
     }
-
 
 
     public boolean isSuccess() {
@@ -74,6 +72,7 @@ public class ScenarioResult {
     /**
      * For a successful scenario it returns the bytes received.
      * For an unsuccessful scenario it could be null.
+     *
      * @return the bytes sent.
      */
     public byte[] getSentBytes() {
@@ -83,6 +82,7 @@ public class ScenarioResult {
     /**
      * For a successful scenario it returns the bytes received.
      * For an unsuccessful scenario it could be null.
+     *
      * @return the bytes received.
      */
     public byte[] getReceivedBytes() {
@@ -95,12 +95,12 @@ public class ScenarioResult {
     }
 
     private void ensureResult(boolean successful) {
-        if ( this.success != successful ){
+        if (this.success != successful) {
             throw new IllegalStateException("The method call is not allowed.");
         }
     }
 
-    public Throwable getCause(){
+    public Throwable getCause() {
         ensureResult(false);
         return cause;
     }
@@ -110,7 +110,7 @@ public class ScenarioResult {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Destination: " + destination + " " + (success ? "success" : "failure");
     }
 }

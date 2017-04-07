@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
 
     >
-    <MultiSelectListPreference android:title="@string/hosts_default_title"
-        android:summary="@string/hosts_default_description"
-        android:key="@string/hosts_default"
+    <MultiSelectListPreference
+        android:defaultValue="@array/hosts_default"
         android:entries="@array/hosts_default"
         android:entryValues="@array/hosts_default"
-        android:defaultValue="@array/hosts_default"
-        />
+        android:key="@string/hosts_default"
+        android:summary="@string/hosts_default_description"
+        android:title="@string/hosts_default_title" />
     <EditTextPreference
-        android:title="@string/hosts_additional_title"
         android:key="@string/hosts_additional"
         android:summary="@string/hosts_additional_description"
-        />
+        android:title="@string/hosts_additional_title" />
 </PreferenceScreen>

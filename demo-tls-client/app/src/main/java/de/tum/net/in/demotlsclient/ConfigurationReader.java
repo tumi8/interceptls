@@ -15,6 +15,7 @@ import de.tum.in.net.demotlsclient.R;
 public class ConfigurationReader {
     /**
      * Reads the configuration for the target hosts.
+     *
      * @param context
      * @return a Set of targets to probe
      */
@@ -24,9 +25,9 @@ public class ConfigurationReader {
 
         String additionalHosts = prefs.getString(context.getString(R.string.hosts_additional), "");
         String hosts[] = additionalHosts.split("\n");
-        for(String host : hosts ){
+        for (String host : hosts) {
             //targets is a set so we do not have any duplicates
-            if(!host.isEmpty()) {
+            if (!host.isEmpty()) {
                 targets.add(host.trim());
             }
         }
