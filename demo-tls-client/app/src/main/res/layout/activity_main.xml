@@ -32,20 +32,30 @@
                 android:nestedScrollingEnabled="false"
                 android:layout_alignParentTop="true"
                 android:layout_gravity="right" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+            
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:id="@+id/progressBar1"
+                />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/result"
                 android:id="@+id/textView"
                 android:textSize="@dimen/abc_text_size_headline_material"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tview_tls_handshake"
-                android:text="none" />
+                android:visibility="gone" />
 
         </LinearLayout>
     </ScrollView>

@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.apache.commons.io.FileUtils;
@@ -53,22 +54,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startTestScenarios(View v) {
+        final TextView titleView = (TextView) findViewById(R.id.textView);
         final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
         view.setText("waiting...");
         results.clear();
+
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+        final Set<String> targets = ConfigurationReader.readHosts(this);
+        progressBar.setMax(targets.size());
+        progressBar.setVisibility(View.VISIBLE);
 
         AsyncResult<ScenarioResult> asyncResult = new AsyncResult<ScenarioResult>() {
             @Override
             public void publishResult(ScenarioResult result) {
                 results.add(result);
-                view.setText("");
-                for (ScenarioResult r : results) {
-                    view.append(r.getDestination() + " " + r.isSuccess() + "\n");
+                progressBar.setProgress(results.size());
+
+                if (results.size() == targets.size() ){
+                    view.setText("");
+                    for (ScenarioResult r : results) {
+                        view.append(r.getDestination() + " " + r.isSuccess() + "\n");
+                    }
+
+                    progressBar.setVisibility(View.GONE);
+                    titleView.setVisibility(View.VISIBLE);
+                    view.setVisibility(View.VISIBLE);
                 }
             }
         };
-
-        Set<String> targets = ConfigurationReader.readHosts(this);
 
         List<Scenario> scenarios = new ArrayList<>(targets.size());
         for (String target : targets) {
