@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -67,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Set<String> targets = prefs.getStringSet(getString(R.string.hosts_default), null);
+        Set<String> targets = ConfigurationReader.readHosts(this);
 
         List<Scenario> scenarios = new ArrayList<>(targets.size());
         for (String target : targets) {
