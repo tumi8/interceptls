@@ -22,10 +22,10 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    //safe to use, see https://github.com/rtyley/spongycastle/issues/34
     compile project(':tls-capture')
-    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'org.bouncycastle:bcprov-jdk15on:1.56'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile group: 'org.slf4j', name: 'slf4j-android', version: '1.6.1-RC1'
     testCompile 'junit:junit:4.12'
 }

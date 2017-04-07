@@ -2,6 +2,8 @@ package de.tum.in.net.icsi;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.session.ICSITestSession;
 import de.tum.in.net.session.TestSession;
@@ -18,7 +20,7 @@ public class ICSITest{
         ScenarioResult result = null;
 
         TestSession session = ICSITestSession.newTestSession();
-        session.uploadResults(result, result);
+        session.uploadResults(Arrays.asList(result));
     }
 
 }

@@ -1,7 +1,6 @@
 package de.tum.net.in.demotlsclient;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -12,35 +11,29 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.apache.commons.io.FileUtils;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.openssl.PEMParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import de.tum.in.net.session.TestSessionLogger;
-import de.tum.in.net.session.TestSession;
 import de.tum.in.net.demotlsclient.R;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
+import de.tum.in.net.session.TestSession;
+import de.tum.in.net.session.TestSessionLogger;
 
 /**
  * Created by wohlfart on 11.08.16.
  */
 public class MainActivity extends AppCompatActivity {
+
+    private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
 
     // we could execute the scenarios in parallel later
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -54,9 +47,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startTestScenarios(View v) {
-        final TextView titleView = (TextView) findViewById(R.id.textView);
-        final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
-        view.setText("waiting...");
+        log.debug("Start test scenarios");
         results.clear();
 
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
@@ -71,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 progressBar.setProgress(results.size());
 
                 if (results.size() == targets.size() ){
+                    final TextView titleView = (TextView) findViewById(R.id.textView);
+                    final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
                     view.setText("");
                     for (ScenarioResult r : results) {
                         view.append(r.getDestination() + " " + r.isSuccess() + "\n");
@@ -79,6 +72,17 @@ public class MainActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                     titleView.setVisibility(View.VISIBLE);
                     view.setVisibility(View.VISIBLE);
+
+                    // TODO replace with real ICSITestSession publisher
+                    log.debug("publishing results");
+                    TestSession session = new TestSessionLogger();
+
+                    try {
+                        session.uploadResults(results);
+                    } catch (IOException e) {
+                        // TODO save and try again later
+                        e.printStackTrace();
+                    }
                 }
             }
         };
@@ -95,15 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO read ca-certs from /system/etc/security/cacerts/...
 
-        // TODO replace with real ICSITestSession publisher
-        TestSession session = new TestSessionLogger();
 
-        try {
-            session.uploadResults(results);
-        } catch (IOException e) {
-            // TODO save and try again later
-            e.printStackTrace();
-        }
+
     }
 
 

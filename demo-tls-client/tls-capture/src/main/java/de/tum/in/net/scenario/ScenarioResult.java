@@ -108,4 +108,9 @@ public class ScenarioResult {
     public String getDestination() {
         return destination;
     }
+
+    @Override
+    public String toString(){
+        return "Destination: " + destination + " " + (success ? "success" : "failure");
+    }
 }
