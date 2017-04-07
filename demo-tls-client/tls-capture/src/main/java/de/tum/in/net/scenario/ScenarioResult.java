@@ -54,8 +54,9 @@ public class ScenarioResult {
      * @param msg
      * @param cause
      */
-    public ScenarioResult(final String msg, final Throwable cause, final Tap tap) {
+    public ScenarioResult(final String destination, final String msg, final Throwable cause, final Tap tap) {
         this.success = false;
+        this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
         this.msg = Objects.requireNonNull(msg, "msg must not be null");
         this.cause = Objects.requireNonNull(cause, "cause must not be null");
         if (tap != null) {

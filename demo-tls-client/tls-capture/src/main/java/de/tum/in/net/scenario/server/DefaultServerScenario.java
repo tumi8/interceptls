@@ -52,7 +52,7 @@ public class DefaultServerScenario implements Scenario {
 
             return result;
         } catch (final IOException e) {
-            result = new ScenarioResult("Error in " + toString(), e, tap);
+            result = new ScenarioResult("Server", "Error in " + toString(), e, tap);
         }
         return result;
     }

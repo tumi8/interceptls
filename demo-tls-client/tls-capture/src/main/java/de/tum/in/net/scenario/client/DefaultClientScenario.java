@@ -69,7 +69,7 @@ public class DefaultClientScenario implements Scenario {
 
         } catch (final IOException e) {
             log.warn("Error in " + toString(), e);
-            result = new ScenarioResult("", e, tap);
+            result = new ScenarioResult(destination, "IOError", e, tap);
         }
 
         return result;
