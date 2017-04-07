@@ -11,12 +11,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import org.apache.commons.io.FileUtils;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.openssl.PEMParser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.tum.in.net.session.TestSessionLogger;
+import de.tum.in.net.session.TestSession;
 import de.tum.in.net.demotlsclient.R;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
@@ -38,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void buttonClick(View v) {
+    public void startTestScenarios(View v) {
         final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
         view.setText("waiting...");
         results.clear();
@@ -67,8 +80,17 @@ public class MainActivity extends AppCompatActivity {
             task.executeOnExecutor(executor);
         }
 
+        //TODO read ca-certs from /system/etc/security/cacerts/...
 
-        System.out.println("clicked");
+        // TODO replace with real ICSITestSession publisher
+        TestSession session = new TestSessionLogger();
+
+        try {
+            session.uploadResults(results);
+        } catch (IOException e) {
+            // TODO save and try again later
+            e.printStackTrace();
+        }
     }
 
 

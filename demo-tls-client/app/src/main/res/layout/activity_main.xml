@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:text="Start"
                 android:id="@+id/button"
-                android:onClick="buttonClick"
+                android:onClick="startTestScenarios"
                 android:nestedScrollingEnabled="false"
                 android:layout_alignParentTop="true"
                 android:layout_gravity="right" />
@@ -36,7 +36,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-                android:text="TLS Handshake"
+                android:text="@string/result"
                 android:id="@+id/textView"
                 android:textSize="@dimen/abc_text_size_headline_material"
                 android:textStyle="bold" />
@@ -45,20 +45,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/tview_tls_handshake"
-                android:text="none" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TCP Payload"
-                android:id="@+id/textView2"
-                android:textSize="@dimen/abc_text_size_headline_material"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tview_tcp_payload"
                 android:text="none" />
 
         </LinearLayout>

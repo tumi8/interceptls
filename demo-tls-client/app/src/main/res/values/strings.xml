@@ -8,4 +8,5 @@
     <string name="hosts_additional">
         <xliff:g>hosts_additional</xliff:g>
     </string>
+    <string name="result">Results</string>
 </resources>
