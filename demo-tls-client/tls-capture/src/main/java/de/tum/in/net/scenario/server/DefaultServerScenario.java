@@ -21,10 +21,10 @@ import de.tum.in.net.scenario.ScenarioResult;
 public class DefaultServerScenario implements Scenario {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultServerScenario.class);
-    private int port;
-    private byte[] buffer;
+    private final int port;
+    private final byte[] buffer;
 
-    public DefaultServerScenario(int port, int expectedBytes) {
+    public DefaultServerScenario(final int port, final int expectedBytes) {
         this.port = port;
         this.buffer = new byte[expectedBytes];
     }
@@ -38,11 +38,11 @@ public class DefaultServerScenario implements Scenario {
         ScenarioResult result;
         Tap tap = null;
         try (ServerSocket server = new ServerSocket(port)) {
-            Socket s = server.accept();
+            final Socket s = server.accept();
             tap = new Tap(s.getInputStream(), s.getOutputStream());
 
             //connect in blocking mode
-            TlsServerProtocol tlsServerProtocol = new TlsServerProtocol(tap.getIn(), tap.getOut(), new SecureRandom());
+            final TlsServerProtocol tlsServerProtocol = new TlsServerProtocol(tap.getIn(), tap.getOut(), new SecureRandom());
             tlsServerProtocol.accept(new DefaultServer());
 
             // we are now connected, therefore we can publish the captured bytes
@@ -51,7 +51,7 @@ public class DefaultServerScenario implements Scenario {
             tlsServerProtocol.getInputStream().read(buffer);
 
             return result;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             result = new ScenarioResult("Error in " + toString(), e, tap);
         }
         return result;

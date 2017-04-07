@@ -15,14 +15,15 @@ import java.util.Vector;
  * Created by wohlfart on 11.08.16.
  */
 public abstract class SniTlsClient extends DefaultTlsClient {
+
     String serverName;
 
-    public SniTlsClient(String serverName) {
+    public SniTlsClient(final String serverName) {
         super();
         this.serverName = serverName;
     }
 
-    public SniTlsClient(String serverName, TlsCipherFactory cipherFactory) {
+    public SniTlsClient(final String serverName, final TlsCipherFactory cipherFactory) {
         super(cipherFactory);
         this.serverName = serverName;
     }
@@ -33,10 +34,10 @@ public abstract class SniTlsClient extends DefaultTlsClient {
         Hashtable clientExtensions = super.getClientExtensions();
 
         // create ServerNameList
-        ServerName sn = new ServerName(NameType.host_name, serverName);
-        Vector<ServerName> vlist = new Vector<>();
+        final ServerName sn = new ServerName(NameType.host_name, serverName);
+        final Vector<ServerName> vlist = new Vector<>();
         vlist.add(sn);
-        ServerNameList list = new ServerNameList(vlist);
+        final ServerNameList list = new ServerNameList(vlist);
 
         // add list to clientExtensions
         clientExtensions = TlsExtensionsUtils.ensureExtensionsInitialised(clientExtensions);

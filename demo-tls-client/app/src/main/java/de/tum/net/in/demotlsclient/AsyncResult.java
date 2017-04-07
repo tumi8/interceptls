@@ -5,6 +5,6 @@ package de.tum.net.in.demotlsclient;
  */
 
 public interface AsyncResult<A> {
-
+    
     void publishResult(A result);
 }

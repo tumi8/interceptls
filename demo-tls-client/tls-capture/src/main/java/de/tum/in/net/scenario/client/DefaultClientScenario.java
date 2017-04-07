@@ -24,15 +24,15 @@ import de.tum.in.net.scenario.ScenarioResult;
 public class DefaultClientScenario implements Scenario {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultClientScenario.class);
-    private String destination;
-    private int port;
-    private byte[] transmit;
+    private final String destination;
+    private final int port;
+    private final byte[] transmit;
 
-    public DefaultClientScenario(String destination, int port) {
+    public DefaultClientScenario(final String destination, final int port) {
         this(destination, port, null);
     }
 
-    public DefaultClientScenario(String destination, int port, byte[] transmit) {
+    public DefaultClientScenario(final String destination, final int port, final byte[] transmit) {
         this.destination = Objects.requireNonNull(destination, "destination must not be null.");
         this.port = port;
         this.transmit = transmit;
@@ -46,13 +46,13 @@ public class DefaultClientScenario implements Scenario {
             tap = new Tap(s.getInputStream(), s.getOutputStream());
 
             //connect in blocking mode
-            TlsClientProtocol tlsClientProtocol = new TlsClientProtocol(tap.getIn(), tap.getOut(), new SecureRandom());
+            final TlsClientProtocol tlsClientProtocol = new TlsClientProtocol(tap.getIn(), tap.getOut(), new SecureRandom());
             tlsClientProtocol.connect(new DefaultTlsClient() {
                 @Override
                 public TlsAuthentication getAuthentication() throws IOException {
                     return new ServerOnlyTlsAuthentication() {
                         @Override
-                        public void notifyServerCertificate(Certificate serverCertificate) throws IOException {
+                        public void notifyServerCertificate(final Certificate serverCertificate) throws IOException {
 
                         }
                     };
@@ -67,7 +67,7 @@ public class DefaultClientScenario implements Scenario {
                 tlsClientProtocol.getOutputStream().write(transmit);
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             log.warn("Error in " + toString(), e);
             result = new ScenarioResult("", e, tap);
         }

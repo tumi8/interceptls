@@ -39,14 +39,15 @@ public class MainActivity extends AppCompatActivity {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final List<ScenarioResult> results = new ArrayList<>();
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         setContentView(R.layout.activity_main);
     }
 
-    public void startTestScenarios(View v) {
+    public void startTestScenarios(final View v) {
         log.debug("Start test scenarios");
         results.clear();
 
@@ -55,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setMax(targets.size());
         progressBar.setVisibility(View.VISIBLE);
 
-        AsyncResult<ScenarioResult> asyncResult = new AsyncResult<ScenarioResult>() {
+        final AsyncResult<ScenarioResult> asyncResult = new AsyncResult<ScenarioResult>() {
             @Override
-            public void publishResult(ScenarioResult result) {
+            public void publishResult(final ScenarioResult result) {
                 results.add(result);
                 progressBar.setProgress(results.size());
 
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     final TextView titleView = (TextView) findViewById(R.id.textView);
                     final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
                     view.setText("");
-                    for (ScenarioResult r : results) {
+                    for (final ScenarioResult r : results) {
                         view.append(r.getDestination() + " " + r.isSuccess() + "\n");
                     }
 
@@ -75,11 +76,11 @@ public class MainActivity extends AppCompatActivity {
 
                     // TODO replace with real ICSITestSession publisher
                     log.debug("publishing results");
-                    TestSession session = new TestSessionLogger();
+                    final TestSession session = new TestSessionLogger();
 
                     try {
                         session.uploadResults(results);
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         // TODO save and try again later
                         e.printStackTrace();
                     }
@@ -87,13 +88,14 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        List<Scenario> scenarios = new ArrayList<>(targets.size());
-        for (String target : targets) {
+
+        final List<Scenario> scenarios = new ArrayList<>(targets.size());
+        for (final String target : targets) {
             scenarios.add(new DefaultClientScenario(target, 443));
         }
 
-        for (Scenario scenario : scenarios) {
-            AsyncScenarioTask task = new AsyncScenarioTask(scenario, asyncResult);
+        for (final Scenario scenario : scenarios) {
+            final AsyncScenarioTask task = new AsyncScenarioTask(scenario, asyncResult);
             task.executeOnExecutor(executor);
         }
 
@@ -104,8 +106,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
         // return true so that the menu pop up is opened
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.settings:

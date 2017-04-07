@@ -27,7 +27,7 @@ public class ScenarioResult {
      * @param receivedBytes
      * @param sentBytes
      */
-    public ScenarioResult(String destination, byte[] receivedBytes, byte[] sentBytes) {
+    public ScenarioResult(final String destination, final byte[] receivedBytes, final byte[] sentBytes) {
         this.success = true;
         this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
         this.receivedBytes = Objects.requireNonNull(receivedBytes, "received bytes must not be null");
@@ -40,7 +40,7 @@ public class ScenarioResult {
      * @param msg
      * @param cause
      */
-    public ScenarioResult(String msg, Throwable cause, byte[] receivedBytes, byte[] sentBytes) {
+    public ScenarioResult(final String msg, final Throwable cause, final byte[] receivedBytes, final byte[] sentBytes) {
         this.success = false;
         this.msg = Objects.requireNonNull(msg, "msg must not be null");
         this.cause = Objects.requireNonNull(cause, "cause must not be null");
@@ -54,7 +54,7 @@ public class ScenarioResult {
      * @param msg
      * @param cause
      */
-    public ScenarioResult(String msg, Throwable cause, Tap tap) {
+    public ScenarioResult(final String msg, final Throwable cause, final Tap tap) {
         this.success = false;
         this.msg = Objects.requireNonNull(msg, "msg must not be null");
         this.cause = Objects.requireNonNull(cause, "cause must not be null");
@@ -94,7 +94,7 @@ public class ScenarioResult {
         return msg;
     }
 
-    private void ensureResult(boolean successful) {
+    private void ensureResult(final boolean successful) {
         if (this.success != successful) {
             throw new IllegalStateException("The method call is not allowed.");
         }

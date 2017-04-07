@@ -37,40 +37,41 @@ public class DefaultServer extends DefaultTlsServer {
     public DefaultServer() {
 
         try {
-            KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
-            KeyPair pair = gen.generateKeyPair();
+            final KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+            final KeyPair pair = gen.generateKeyPair();
             this.privateKey = PrivateKeyFactory.createKey(pair.getPrivate().getEncoded());
 
-            X500Name issuer = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
-            X500Name subject = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
+            final X500Name issuer = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
+            final X500Name subject = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
 
-            Date notBefore = DateTime.now().minusDays(7).toDate();
-            Date notAfter = DateTime.now().plusDays(7).toDate();
+            final Date notBefore = DateTime.now().minusDays(7).toDate();
+            final Date notAfter = DateTime.now().plusDays(7).toDate();
 
-            AsymmetricKeyParameter publicKey = PublicKeyFactory.createKey(pair.getPublic().getEncoded());
+            final AsymmetricKeyParameter publicKey = PublicKeyFactory.createKey(pair.getPublic().getEncoded());
 
-            BigInteger serial = BigInteger.valueOf(1);
-            BcX509v3CertificateBuilder certBuilder = new BcX509v3CertificateBuilder(issuer, serial, notBefore, notAfter, subject, publicKey);
+            final BigInteger serial = BigInteger.valueOf(1);
+            final BcX509v3CertificateBuilder certBuilder = new BcX509v3CertificateBuilder(issuer, serial, notBefore, notAfter, subject, publicKey);
 
 
-            AlgorithmIdentifier sigAlg = new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256withRSA");
-            AlgorithmIdentifier digAlg = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlg);
-            BcRSAContentSignerBuilder builder = new BcRSAContentSignerBuilder(sigAlg, digAlg);
-            ContentSigner signer = builder.build(privateKey);
-            X509CertificateHolder holder = certBuilder.build(signer);
+            final AlgorithmIdentifier sigAlg = new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256withRSA");
+            final AlgorithmIdentifier digAlg = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlg);
+            final BcRSAContentSignerBuilder builder = new BcRSAContentSignerBuilder(sigAlg, digAlg);
+            final ContentSigner signer = builder.build(privateKey);
+            final X509CertificateHolder holder = certBuilder.build(signer);
 
             this.certificate = new Certificate(new org.bouncycastle.asn1.x509.Certificate[]{
                     holder.toASN1Structure()});
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             throw new IllegalStateException("Java must support RSA.");
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
-        } catch (OperatorCreationException e) {
+        } catch (final OperatorCreationException e) {
             e.printStackTrace();
         }
 
     }
 
+    @Override
     protected TlsSignerCredentials getRSASignerCredentials()
             throws IOException {
         return new DefaultTlsSignerCredentials(context, certificate, privateKey);

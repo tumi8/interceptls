@@ -14,18 +14,18 @@ public class AsyncScenarioTask extends AsyncTask<Void, Void, ScenarioResult> {
     private final Scenario scenario;
     private final AsyncResult<ScenarioResult> delegate;
 
-    public AsyncScenarioTask(Scenario scenario, AsyncResult<ScenarioResult> delegate) {
+    public AsyncScenarioTask(final Scenario scenario, final AsyncResult<ScenarioResult> delegate) {
         this.scenario = scenario;
         this.delegate = delegate;
     }
 
     @Override
-    protected ScenarioResult doInBackground(Void... voids) {
+    protected ScenarioResult doInBackground(final Void... voids) {
         return scenario.call();
     }
 
     @Override
-    protected void onPostExecute(ScenarioResult v) {
+    protected void onPostExecute(final ScenarioResult v) {
         delegate.publishResult(v);
     }
 }
