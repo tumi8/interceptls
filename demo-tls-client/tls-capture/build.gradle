@@ -14,6 +14,10 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+    
 }
 
 sourceCompatibility = "1.7"

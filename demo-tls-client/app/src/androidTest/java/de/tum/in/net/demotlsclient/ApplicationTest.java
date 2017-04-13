@@ -1,4 +1,4 @@
-package de.tum.net.in.demotlsclient;
+package de.tum.in.net.demotlsclient;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

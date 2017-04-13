@@ -5,7 +5,8 @@ var router = express.Router();
 router.put('/:session', function(req, res, next) {
   var session = req.params.session;
   //TODO input validation
-  console.log("Receive captured handshake for session id [" + session + "]")
+  console.log("Receive captured handshake for session id [" + session + "]");
+  console.log(req.body);
 
   res.send("OK");
 });

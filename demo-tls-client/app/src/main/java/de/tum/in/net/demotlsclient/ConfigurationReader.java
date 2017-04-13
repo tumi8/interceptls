@@ -1,12 +1,10 @@
-package de.tum.net.in.demotlsclient;
+package de.tum.in.net.demotlsclient;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.util.Set;
-
-import de.tum.in.net.demotlsclient.R;
 
 /**
  * Created by johannes on 07.04.17.

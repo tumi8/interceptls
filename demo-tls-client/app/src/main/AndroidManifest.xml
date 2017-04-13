@@ -10,15 +10,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="de.tum.net.in.demotlsclient.MainActivity">
+        <activity android:name="de.tum.in.net.demotlsclient.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="de.tum.net.in.demotlsclient.AboutActivity" />
-        <activity android:name="de.tum.net.in.demotlsclient.SettingsActivity"></activity>
+        <activity android:name="de.tum.in.net.demotlsclient.AboutActivity" />
+        <activity android:name="de.tum.in.net.demotlsclient.SettingsActivity"></activity>
     </application>
 
 </manifest>

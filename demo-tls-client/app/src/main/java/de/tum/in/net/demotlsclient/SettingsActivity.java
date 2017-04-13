@@ -1,10 +1,8 @@
-package de.tum.net.in.demotlsclient;
+package de.tum.in.net.demotlsclient;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-
-import de.tum.in.net.demotlsclient.R;
 
 public class SettingsActivity extends PreferenceActivity {
 

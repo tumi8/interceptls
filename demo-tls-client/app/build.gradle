@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.1'
     defaultConfig {
-        applicationId "de.tum.net.in.demotlsclient"
+        applicationId "de.tum.in.net.demotlsclient"
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1

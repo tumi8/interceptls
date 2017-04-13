@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 /* POST get a new session id. */
-router.get('/', function(req, res, next) {
+router.post('/', function(req, res, next) {
   var id = {
     id : '12'
     //optional access token

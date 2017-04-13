@@ -1,7 +1,8 @@
-package de.tum.net.in.demotlsclient;
+package de.tum.in.net.demotlsclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -21,12 +22,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import de.tum.in.net.demotlsclient.R;
+import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
-import de.tum.in.net.session.TestSession;
-import de.tum.in.net.session.TestSessionLogger;
+import de.tum.in.net.session.OnlineTestSession;
 
 /**
  * Created by wohlfart on 11.08.16.
@@ -45,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         setContentView(R.layout.activity_main);
+
+        final StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     public void startTestScenarios(final View v) {
@@ -74,12 +77,12 @@ public class MainActivity extends AppCompatActivity {
                     titleView.setVisibility(View.VISIBLE);
                     view.setVisibility(View.VISIBLE);
 
-                    // TODO replace with real ICSITestSession publisher
+                    // TODO replace with real OnlineTestSession publisher
                     log.debug("publishing results");
-                    final TestSession session = new TestSessionLogger();
 
                     try {
-                        session.uploadResults(results);
+                        final TestSession session = new OnlineTestSession("http://127.0.0.1:3000");
+                        session.uploadHandshake(results);
                     } catch (final IOException e) {
                         // TODO save and try again later
                         e.printStackTrace();
