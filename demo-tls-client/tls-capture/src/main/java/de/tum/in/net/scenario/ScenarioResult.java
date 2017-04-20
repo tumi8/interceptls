@@ -1,5 +1,7 @@
 package de.tum.in.net.scenario;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import java.util.Objects;
 
 import de.tum.in.net.Tap;
@@ -14,8 +16,8 @@ public class ScenarioResult {
     private String destination;
 
     //success
-    private byte[] receivedBytes;
-    private byte[] sentBytes;
+    private String receivedBytes;
+    private String sentBytes;
 
     //error
     private String msg;
@@ -30,8 +32,10 @@ public class ScenarioResult {
     public ScenarioResult(final String destination, final byte[] receivedBytes, final byte[] sentBytes) {
         this.success = true;
         this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
-        this.receivedBytes = Objects.requireNonNull(receivedBytes, "received bytes must not be null");
-        this.sentBytes = Objects.requireNonNull(sentBytes, "sentBytes must not be null");
+        Objects.requireNonNull(receivedBytes, "received bytes must not be null");
+        Objects.requireNonNull(sentBytes, "sentBytes must not be null");
+        this.receivedBytes = Base64.toBase64String(receivedBytes);
+        this.sentBytes = Base64.toBase64String(sentBytes);
     }
 
     /**
@@ -44,8 +48,9 @@ public class ScenarioResult {
         this.success = false;
         this.msg = Objects.requireNonNull(msg, "msg must not be null");
         this.cause = Objects.requireNonNull(cause, "cause must not be null");
-        this.receivedBytes = receivedBytes;
-        this.sentBytes = sentBytes;
+
+        this.receivedBytes = receivedBytes == null ? null : Base64.toBase64String(receivedBytes);
+        this.sentBytes = sentBytes == null ? null : Base64.toBase64String(sentBytes);
     }
 
     /**
@@ -60,8 +65,8 @@ public class ScenarioResult {
         this.msg = Objects.requireNonNull(msg, "msg must not be null");
         this.cause = Objects.requireNonNull(cause, "cause must not be null");
         if (tap != null) {
-            this.receivedBytes = tap.getInputBytes();
-            this.sentBytes = tap.getOutputytes();
+            this.receivedBytes = Base64.toBase64String(tap.getInputBytes());
+            this.sentBytes = Base64.toBase64String(tap.getOutputytes());
         }
     }
 
@@ -77,7 +82,7 @@ public class ScenarioResult {
      * @return the bytes sent.
      */
     public byte[] getSentBytes() {
-        return sentBytes;
+        return sentBytes == null ? null : Base64.decode(sentBytes);
     }
 
     /**
@@ -87,7 +92,7 @@ public class ScenarioResult {
      * @return the bytes received.
      */
     public byte[] getReceivedBytes() {
-        return receivedBytes;
+        return receivedBytes == null ? null : Base64.decode(receivedBytes);
     }
 
     public String getMsg() {

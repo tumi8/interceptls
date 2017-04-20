@@ -81,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
                     log.debug("publishing results");
 
                     try {
-                        final TestSession session = new OnlineTestSession("http://127.0.0.1:3000");
+                        //10.0.2.2 is the ip of the machine running the emulator
+                        final TestSession session = new OnlineTestSession("http://10.0.2.2:3000");
                         session.uploadHandshake(results);
                     } catch (final IOException e) {
                         // TODO save and try again later
