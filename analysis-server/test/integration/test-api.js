@@ -3,6 +3,8 @@ assert = require('assert'),
 app = require('../../app');
 var uuid = require("uuid");
 
+var id;
+
 exports.create_new_session_id = function(done){
   supertest(app)
   .post('/session')
@@ -12,7 +14,8 @@ exports.create_new_session_id = function(done){
       console.log(err);
     }
     assert.ok(!err);
-    var result = response.body.id.match(/[A-Za-z0-9]+/);
+    id = response.body.id;
+    var result = id.match(/[A-Za-z0-9]+/);
     assert.ok(result != null);
     return done();
   });
@@ -20,7 +23,12 @@ exports.create_new_session_id = function(done){
 
 exports.add_captured_handshake = function(done){
   supertest(app)
-  .put('/handshake/' + uuid.v4())
+  .put('/handshake/' + id)
+  .send({
+    destination : 'www.heise.de',
+    receivedBytes: 'dGVzdAo=',
+    sentBytes: 'dGVzdAo=',
+  })
   .expect(200)
   .end(done);
 };
