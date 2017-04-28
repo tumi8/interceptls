@@ -30,7 +30,8 @@ fn main(){
 	println!("Bytes to parse: {}", bytes.len());
 
 	let res = parse_tls_plaintext(&bytes);
-	let result_json = match_result(res);
+	let result = match_result(res);
+	let result_json = json!(result);
 
 	//for the moment print to console
 	println!("{}",result_json.to_string());
@@ -38,7 +39,7 @@ fn main(){
 }
 
 //recursive approach to parse all bytes
-fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Value {
+fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 
 	let mut messages = Vec::new();
 
@@ -133,11 +134,10 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Value {
 				};
 
 				// match remaining bytes
-				let res2 = parse_tls_plaintext(&rem);
-				match_result(res2);
+				let mut res2 = match_result(parse_tls_plaintext(&rem));
+				messages.append(&mut res2);
 
 			}
-
 		},
 		IResult::Incomplete(_) => {
 			println!("Defragmentation required (TLS record)");
@@ -148,8 +148,7 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Value {
 
 	}
 
-	json!(messages)
-
+	messages
 }
 
 fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
