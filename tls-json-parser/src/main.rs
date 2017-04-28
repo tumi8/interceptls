@@ -19,27 +19,28 @@ use tls_parser::parse_tls_extensions;
 use tls_parser::TlsMessage;
 use tls_parser::TlsMessageHandshake;
 use tls_parser::TlsPlaintext;
-use tls_parser::TlsExtensionType;
 use tls_parser::TlsExtension;
 
 
 fn main(){
 
 	let mut bytes = Vec::new();
-	let mut f = File::open("exampleHandshakes/ssllabs/server.raw").expect("Unable to open file");
+	let mut f = File::open("exampleHandshakes/golem/client.raw").expect("Unable to open file");
 	f.read_to_end(&mut bytes).expect("Unable to read data");
 	println!("Bytes to parse: {}", bytes.len());
 
-
 	let res = parse_tls_plaintext(&bytes);
-	match_result(res);
+	let result_json = match_result(res);
 
-	println!("DONE");
+	//for the moment print to console
+	println!("{}",result_json.to_string());
 
 }
 
 //recursive approach to parse all bytes
-fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) {
+fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Value {
+
+	let mut messages = Vec::new();
 
 	match res {
 		// rem is the remaining data (not parsed)
@@ -52,7 +53,7 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) {
 						let change_cipher_json = json!({
 								"type": "ClientKeyExchange"
 						});
-						println!("{}", change_cipher_json.to_string());
+						messages.push(change_cipher_json);
 					}
 					TlsMessage::Alert(_) => println!("Alert(_)"),
 					TlsMessage::Handshake(handshake) => {
@@ -60,43 +61,34 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) {
 							TlsMessageHandshake::HelloRequest => println!("HelloRequest"),
 							TlsMessageHandshake::EndOfEarlyData => println!("EndOfEarlyData"),
 							TlsMessageHandshake::ClientHello(client_hello) => {
+								let extensions = match client_hello.ext {
+									Some(x) => match_extensions(parse_tls_extensions(x)),
+								    None    => json!({}) //Ignore
+								};
 
-								let mut hello_json = json!({
+								let hello_json = json!({
 									"type" : "ClientHello",
 									"version": client_hello.version,
 									"ciphers": client_hello.ciphers,
+									"ext": extensions,
 								});
 
-								match client_hello.ext {
-								    Some(x) => {
-											let extensions = parse_tls_extensions(x);
-											hello_json["ext"] = match_extensions(extensions);
-										},
-								    None    => println!("ignore"), //Ignore
-								}
-
-								println!("{}", hello_json.to_string());
-
-
+								messages.push(hello_json);
 							},
 							TlsMessageHandshake::ServerHello(server_hello) => {
+								let extensions = match server_hello.ext {
+									Some(x) => match_extensions(parse_tls_extensions(x)),
+								    None    => json!({}) //Ignore
+								};
 
-								let mut hello_json = json!({
+								let hello_json = json!({
 									"type": "ServerHello",
 									"version": server_hello.version,
-									"cipher": server_hello.cipher
+									"cipher": server_hello.cipher,
+									"ext": extensions
 								});
 
-								match server_hello.ext {
-								    Some(x) => {
-											let extensions = parse_tls_extensions(x);
-											hello_json["ext"] = match_extensions(extensions);
-										},
-								    None    => println!("ignore"), //Ignore
-								}
-
-								println!("{}", hello_json	.to_string());
-
+								messages.push(hello_json);
 							}
 							TlsMessageHandshake::ServerHelloV13(_) => println!("ServerHelloV13(_)"),
 							TlsMessageHandshake::NewSessionTicket(_) => println!("NewSessionTicket(_)"),
@@ -106,27 +98,27 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) {
 										"type": "Certificate",
 										"cert_chain": cert.cert_chain.iter().map(|x| x.data.to_base64(base64::STANDARD)).collect::<Vec<String>>()
 								});
-								println!("{}", cert_json.to_string());
+								messages.push(cert_json);
 							}
 							TlsMessageHandshake::ServerKeyExchange(_) => {
 								let key_exchange_json = json!({
 										"type": "ServerKeyExchange"
 								});
-								println!("{}", key_exchange_json.to_string());
+								messages.push(key_exchange_json);
 							}
 							TlsMessageHandshake::CertificateRequest(_) => println!("CertificateRequest(_)"),
 							TlsMessageHandshake::ServerDone(_) => {
 								let done_json = json!({
 										"type": "ServerDone"
 								});
-								println!("{}", done_json.to_string());
+								messages.push(done_json);
 							}
 							TlsMessageHandshake::CertificateVerify(_) => println!("CertificateVerify(_)"),
 							TlsMessageHandshake::ClientKeyExchange(_) => {
 								let key_exchange_json = json!({
 										"type": "ClientKeyExchange"
 								});
-								println!("{}", key_exchange_json.to_string());
+								messages.push(key_exchange_json);
 							}
 							TlsMessageHandshake::Finished(_) => println!("Finished(_)"),
 							TlsMessageHandshake::CertificateStatus(_) => println!("CertificateStatus(_)"),
@@ -156,6 +148,8 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) {
 
 	}
 
+	json!(messages)
+
 }
 
 fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
@@ -165,9 +159,8 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 
 			for ext in record {
 				match ext {
-					TlsExtension::SNI(_) => {
-						data["SNI"] = json!({});
-						println!("SNI");
+					TlsExtension::SNI(sni) => {
+						data["SNI"] = json!(sni);
 					}
 					TlsExtension::MaxFragmentLength(_) => println!("MaxFragmentLength"),
 					TlsExtension::StatusRequest(_) => println!("StatusRequest"),
