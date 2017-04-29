@@ -23,6 +23,12 @@ use tls_parser::TlsMessageHandshake;
 use tls_parser::TlsPlaintext;
 use tls_parser::TlsExtension;
 
+#[no_mangle]
+pub extern fn parse_base64(base64: &String) -> Value {
+    let bytes = decode(&base64).unwrap();
+    return parse_raw(bytes);
+}
+
 fn main(){
 	let args: Vec<_> = env::args().collect();
     if args.len() < 1 {
@@ -30,13 +36,12 @@ fn main(){
     }
 	//println!("arg: {}", args[1]);
 
-	let json = parse(&args[1]);
+	let json = parse_base64(&args[1]);
 	//print result to std::out
 	println!("{}", json.to_string());
 }
 
-fn parse(base64: &String) -> Value {
-	let bytes = &decode(base64).unwrap();
+fn parse_raw(bytes: Vec<u8>) -> Value {
 
 	let res = parse_tls_plaintext(&bytes);
 	let result = match_result(res);
@@ -218,7 +223,7 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 #[test]
 fn test_golem_client() {
 	let bytes = read_file("exampleHandshakes/golem/client.raw");
-	let json = parse(&encode(&bytes));
+	let json = parse_base64(&encode(&bytes));
 
 	println!("{}",json[0]["ciphers"]);
 	assert_eq!(json!([49195,49187,49161,49199,49191,49171,162,64,50,158,103,51,156,60,47,255]),json[0]["ciphers"]);
@@ -227,7 +232,7 @@ fn test_golem_client() {
 #[test]
 fn test_golem_server() {
 	let bytes = read_file("exampleHandshakes/golem/server.raw");
-	let json = parse(&encode(&bytes));
+	let json = parse_base64(&encode(&bytes));
 
 	println!("{}",json[0]["cipher"]);
 	assert_eq!(json!(49199),json[0]["cipher"]);
