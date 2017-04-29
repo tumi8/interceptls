@@ -1,15 +1,17 @@
 extern crate nom;
 extern crate tls_parser;
 
-extern crate rustc_serialize as serialize;
+extern crate base64;
 
-use serialize::base64::{self, ToBase64};
+use base64::{encode, decode};
+
+use std::fs::File;
+use std::io::Read;
 
 #[macro_use]
 extern crate serde_json;
 
-use std::fs::File;
-use std::io::Read;
+use std::env;
 
 use serde_json::Value;
 
@@ -21,21 +23,24 @@ use tls_parser::TlsMessageHandshake;
 use tls_parser::TlsPlaintext;
 use tls_parser::TlsExtension;
 
-
 fn main(){
+	let args: Vec<_> = env::args().collect();
+    if args.len() < 1 {
+        panic!("No argument given.");
+    }
+	//println!("arg: {}", args[1]);
 
-	let mut bytes = Vec::new();
-	let mut f = File::open("exampleHandshakes/golem/client.raw").expect("Unable to open file");
-	f.read_to_end(&mut bytes).expect("Unable to read data");
-	println!("Bytes to parse: {}", bytes.len());
+	let json = parse(&args[1]);
+	//print result to std::out
+	println!("{}", json.to_string());
+}
+
+fn parse(base64: &String) -> Value {
+	let bytes = &decode(base64).unwrap();
 
 	let res = parse_tls_plaintext(&bytes);
 	let result = match_result(res);
-	let result_json = json!(result);
-
-	//for the moment print to console
-	println!("{}",result_json.to_string());
-
+	json!(result)
 }
 
 //recursive approach to parse all bytes
@@ -56,11 +61,11 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 						});
 						messages.push(change_cipher_json);
 					}
-					TlsMessage::Alert(_) => println!("Alert(_)"),
+					TlsMessage::Alert(_) => panic!("Alert(_)"),
 					TlsMessage::Handshake(handshake) => {
 						match handshake {
-							TlsMessageHandshake::HelloRequest => println!("HelloRequest"),
-							TlsMessageHandshake::EndOfEarlyData => println!("EndOfEarlyData"),
+							TlsMessageHandshake::HelloRequest => panic!("HelloRequest"),
+							TlsMessageHandshake::EndOfEarlyData => panic!("EndOfEarlyData"),
 							TlsMessageHandshake::ClientHello(client_hello) => {
 								let extensions = match client_hello.ext {
 									Some(x) => match_extensions(parse_tls_extensions(x)),
@@ -91,13 +96,13 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 
 								messages.push(hello_json);
 							}
-							TlsMessageHandshake::ServerHelloV13(_) => println!("ServerHelloV13(_)"),
-							TlsMessageHandshake::NewSessionTicket(_) => println!("NewSessionTicket(_)"),
-							TlsMessageHandshake::HelloRetry(_) => println!("HelloRetry(_)"),
+							TlsMessageHandshake::ServerHelloV13(_) => panic!("ServerHelloV13(_)"),
+							TlsMessageHandshake::NewSessionTicket(_) => panic!("NewSessionTicket(_)"),
+							TlsMessageHandshake::HelloRetry(_) => panic!("HelloRetry(_)"),
 							TlsMessageHandshake::Certificate(cert) => {
 								let cert_json = json!({
 										"type": "Certificate",
-										"cert_chain": cert.cert_chain.iter().map(|x| x.data.to_base64(base64::STANDARD)).collect::<Vec<String>>()
+										"cert_chain": cert.cert_chain.iter().map(|x| encode(x.data)).collect::<Vec<String>>()
 								});
 								messages.push(cert_json);
 							}
@@ -107,30 +112,30 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 								});
 								messages.push(key_exchange_json);
 							}
-							TlsMessageHandshake::CertificateRequest(_) => println!("CertificateRequest(_)"),
+							TlsMessageHandshake::CertificateRequest(_) => panic!("CertificateRequest(_)"),
 							TlsMessageHandshake::ServerDone(_) => {
 								let done_json = json!({
 										"type": "ServerDone"
 								});
 								messages.push(done_json);
 							}
-							TlsMessageHandshake::CertificateVerify(_) => println!("CertificateVerify(_)"),
+							TlsMessageHandshake::CertificateVerify(_) => panic!("CertificateVerify(_)"),
 							TlsMessageHandshake::ClientKeyExchange(_) => {
 								let key_exchange_json = json!({
 										"type": "ClientKeyExchange"
 								});
 								messages.push(key_exchange_json);
 							}
-							TlsMessageHandshake::Finished(_) => println!("Finished(_)"),
-							TlsMessageHandshake::CertificateStatus(_) => println!("CertificateStatus(_)"),
-							TlsMessageHandshake::NextProtocol(_) => println!("NextProtocol(_)"),
-							TlsMessageHandshake::KeyUpdate(_) => println!("KeyUpdate(_)"),
+							TlsMessageHandshake::Finished(_) => panic!("Finished(_)"),
+							TlsMessageHandshake::CertificateStatus(_) => panic!("CertificateStatus(_)"),
+							TlsMessageHandshake::NextProtocol(_) => panic!("NextProtocol(_)"),
+							TlsMessageHandshake::KeyUpdate(_) => panic!("KeyUpdate(_)"),
 
 						}
 
 					},
-					TlsMessage::ApplicationData(_) => println!("ApplicationData(_)"),
-					TlsMessage::Heartbeat(_) => println!("Heartbeat(_)"),
+					TlsMessage::ApplicationData(_) => panic!("ApplicationData(_)"),
+					TlsMessage::Heartbeat(_) => panic!("Heartbeat(_)"),
 				};
 
 				// match remaining bytes
@@ -161,8 +166,8 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 					TlsExtension::SNI(sni) => {
 						data["SNI"] = json!(sni);
 					}
-					TlsExtension::MaxFragmentLength(_) => println!("MaxFragmentLength"),
-					TlsExtension::StatusRequest(_) => println!("StatusRequest"),
+					TlsExtension::MaxFragmentLength(_) => panic!("MaxFragmentLength"),
+					TlsExtension::StatusRequest(_) => panic!("StatusRequest"),
 					TlsExtension::EllipticCurves(curves) => {
 						data["EllipticCurves"] = json!(curves);
 					}
@@ -172,25 +177,25 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 					TlsExtension::SignatureAlgorithms(algs) => {
 						data["SignatureAlgorithms"] = json!(algs);
 					}
-					TlsExtension::SessionTicket(_) => println!("SessionTicket"),
-					TlsExtension::KeyShare(_) => println!("KeyShare"),
-					TlsExtension::PreSharedKey(_) => println!("PreSharedKey"),
-					TlsExtension::EarlyData(_) => println!("EarlyData"),
-					TlsExtension::SupportedVersions(_) => println!("SupportedVersions"),
-					TlsExtension::Cookie(_) => println!("Cookie"),
-					TlsExtension::PskExchangeModes(_) => println!("PskExchangeModes"),
-					TlsExtension::Heartbeat(_) => println!("Heartbeat"),
-					TlsExtension::ALPN(_) => println!("ALPN"),
-					TlsExtension::SignedCertificateTimestamp(_) => println!("SignedCertificateTimestamp"),
-					TlsExtension::Padding(_) => println!("Padding"),
-					TlsExtension::EncryptThenMac => println!("EncryptThenMac"),
-					TlsExtension::ExtendedMasterSecret => println!("ExtendedMasterSecret"),
-					TlsExtension::OidFilters(_) => println!("OidFilters"),
-					TlsExtension::NextProtocolNegotiation => println!("NextProtocolNegotiation"),
+					TlsExtension::SessionTicket(_) => panic!("SessionTicket"),
+					TlsExtension::KeyShare(_) => panic!("KeyShare"),
+					TlsExtension::PreSharedKey(_) => panic!("PreSharedKey"),
+					TlsExtension::EarlyData(_) => panic!("EarlyData"),
+					TlsExtension::SupportedVersions(_) => panic!("SupportedVersions"),
+					TlsExtension::Cookie(_) => panic!("Cookie"),
+					TlsExtension::PskExchangeModes(_) => panic!("PskExchangeModes"),
+					TlsExtension::Heartbeat(_) => panic!("Heartbeat"),
+					TlsExtension::ALPN(_) => panic!("ALPN"),
+					TlsExtension::SignedCertificateTimestamp(_) => panic!("SignedCertificateTimestamp"),
+					TlsExtension::Padding(_) => panic!("Padding"),
+					TlsExtension::EncryptThenMac => panic!("EncryptThenMac"),
+					TlsExtension::ExtendedMasterSecret => panic!("ExtendedMasterSecret"),
+					TlsExtension::OidFilters(_) => panic!("OidFilters"),
+					TlsExtension::NextProtocolNegotiation => panic!("NextProtocolNegotiation"),
 					TlsExtension::RenegotiationInfo(info) => {
 						data["RenegotiationInfo"] = json!(info);
 					}
-					TlsExtension::Unknown(_, _) => println!("Unknown"),
+					TlsExtension::Unknown(_, _) => panic!("Unknown"),
 				}
 
 			}
@@ -198,13 +203,39 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 
 		},
 		IResult::Incomplete(_) => {
-			println!("parse_tls_extensions defragmentation required (TLS record)");
+			panic!("parse_tls_extensions defragmentation required (TLS record)");
 		},
 		IResult::Error(e) => {
-			println!("parse_tls_extensions failed: {:?}",e);
+			panic!("parse_tls_extensions failed: {:?}",e);
 		}
 	}
 
 	data
 
+}
+
+
+#[test]
+fn test_golem_client() {
+	let bytes = read_file("exampleHandshakes/golem/client.raw");
+	let json = parse(&encode(&bytes));
+
+	println!("{}",json[0]["ciphers"]);
+	assert_eq!(json!([49195,49187,49161,49199,49191,49171,162,64,50,158,103,51,156,60,47,255]),json[0]["ciphers"]);
+}
+
+#[test]
+fn test_golem_server() {
+	let bytes = read_file("exampleHandshakes/golem/server.raw");
+	let json = parse(&encode(&bytes));
+
+	println!("{}",json[0]["cipher"]);
+	assert_eq!(json!(49199),json[0]["cipher"]);
+}
+
+fn read_file(file: &str) -> Vec<u8>{
+	let mut bytes = Vec::new();
+	let mut f = File::open(file).expect("Unable to open file");
+	f.read_to_end(&mut bytes).expect("Unable to read data");
+	bytes
 }
