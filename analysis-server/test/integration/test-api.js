@@ -27,7 +27,7 @@ exports.add_captured_handshake = function(done){
   .send({
     destination : 'www.heise.de',
     receivedBytes: 'dGVzdAo=',
-    sentBytes: 'dGVzdAo=',
+    sentBytes: 'FgMDAIMBAAB/AwMZ3t7NWtfPVfvwb6eluZiGDcP5MKpNk9yMOf+A3TbG8QAAIMArwCPACcAvwCfAEwCiAEAAMgCeAGcAMwCcADwALwD/AQAANgAKAAYABAAXABgADQAgAB4CAQMBBAEFAQYBAgIDAgQCBQIGAgIDAwMEAwUDBgMACwAEAwABAhYDAwBGEAAAQkEEKHwPcqKFkxnbFawVrRuR4UTc3CJpUxR+mu1dM8eSVJtBirBQ8KYUN0N7T/x3tSyxRdQVvslack48tyq/3C3KtRQDAwABARYDAwAoAAAAAAAAAABQ6QSWn6zHjAOM/SBc682HDXWFWQVhSAxxdOAgraecbA==',
   })
   .expect(200)
   .end(done);
