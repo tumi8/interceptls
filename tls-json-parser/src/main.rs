@@ -23,18 +23,16 @@ use tls_parser::TlsMessageHandshake;
 use tls_parser::TlsPlaintext;
 use tls_parser::TlsExtension;
 
-#[no_mangle]
-pub extern fn parse_base64(base64: &String) -> Value {
+pub fn parse_base64(base64: &String) -> Value {
     let bytes = decode(&base64).unwrap();
     return parse_raw(bytes);
 }
 
 fn main(){
 	let args: Vec<_> = env::args().collect();
-    if args.len() < 1 {
+    if args.len() < 2 {
         panic!("No argument given.");
     }
-	//println!("arg: {}", args[1]);
 
 	let json = parse_base64(&args[1]);
 	//print result to std::out
