@@ -5,13 +5,13 @@ extern crate base64;
 
 use base64::{encode, decode};
 
+use std::env;
 use std::fs::File;
 use std::io::Read;
+use std::io::Write;
 
 #[macro_use]
 extern crate serde_json;
-
-use std::env;
 
 use serde_json::Value;
 
@@ -148,10 +148,12 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 			}
 		},
 		IResult::Incomplete(_) => {
-			println!("Defragmentation required (TLS record)");
+            let mut stderr = std::io::stderr();
+            writeln!(&mut stderr, "Defragmentation required (TLS record)").unwrap();
 		},
 		IResult::Error(e) => {
-			println!("parse_tls_record_with_header failed: {:?}",e);
+            let mut stderr = std::io::stderr();
+            writeln!(&mut stderr, "parse_tls_record_with_header failed: {:?}",e).unwrap();
 		}
 
 	}
