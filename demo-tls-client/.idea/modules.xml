@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo-tls-client.iml" filepath="$PROJECT_DIR$/demo-tls-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/tls-capture/tls-capture.iml" filepath="$PROJECT_DIR$/tls-capture/tls-capture.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tls-capture-server/tls-capture-server.iml" filepath="$PROJECT_DIR$/tls-capture-server/tls-capture-server.iml" />
     </modules>
   </component>
 </project>
