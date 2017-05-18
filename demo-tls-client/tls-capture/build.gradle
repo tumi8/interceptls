@@ -8,16 +8,17 @@ jar {
 dependencies {
     testCompile 'junit:junit:4.12'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'org.bouncycastle:bcprov-jdk15on:1.56'
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.56'
+    compile 'org.bouncycastle:bcprov-jdk15on:1.57'
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.57'
+    compile 'org.bouncycastle:bctls-jdk15on:1.57'
     compile 'commons-io:commons-io:2.5'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    runtime group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
-    
+
 }
 
 sourceCompatibility = "1.7"

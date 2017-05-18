@@ -1,14 +1,10 @@
-package de.tum.in.net;
+package de.tum.in.net.scenario.server;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.bc.BcX509v3CertificateBuilder;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
-import org.bouncycastle.crypto.tls.Certificate;
-import org.bouncycastle.crypto.tls.DefaultTlsServer;
-import org.bouncycastle.crypto.tls.DefaultTlsSignerCredentials;
-import org.bouncycastle.crypto.tls.TlsSignerCredentials;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.operator.ContentSigner;
@@ -16,6 +12,17 @@ import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
+import org.bouncycastle.tls.Certificate;
+import org.bouncycastle.tls.DefaultTlsServer;
+import org.bouncycastle.tls.HashAlgorithm;
+import org.bouncycastle.tls.SignatureAlgorithm;
+import org.bouncycastle.tls.SignatureAndHashAlgorithm;
+import org.bouncycastle.tls.TlsCredentialedSigner;
+import org.bouncycastle.tls.crypto.TlsCertificate;
+import org.bouncycastle.tls.crypto.TlsCryptoParameters;
+import org.bouncycastle.tls.crypto.impl.bc.BcDefaultTlsCredentialedSigner;
+import org.bouncycastle.tls.crypto.impl.bc.BcTlsCertificate;
+import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -31,10 +38,12 @@ import java.util.Date;
  */
 public class DefaultServer extends DefaultTlsServer {
 
+    private final SignatureAndHashAlgorithm alg = new SignatureAndHashAlgorithm(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
     private Certificate certificate;
     private AsymmetricKeyParameter privateKey;
 
-    public DefaultServer() {
+    public DefaultServer(final BcTlsCrypto crypto) {
+        super(crypto);
 
         try {
             final KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
@@ -59,8 +68,9 @@ public class DefaultServer extends DefaultTlsServer {
             final ContentSigner signer = builder.build(privateKey);
             final X509CertificateHolder holder = certBuilder.build(signer);
 
-            this.certificate = new Certificate(new org.bouncycastle.asn1.x509.Certificate[]{
-                    holder.toASN1Structure()});
+            final TlsCertificate cert = new BcTlsCertificate(crypto, holder.getEncoded());
+            final TlsCertificate[] certs = {cert};
+            this.certificate = new Certificate(certs);
         } catch (final NoSuchAlgorithmException e) {
             throw new IllegalStateException("Java must support RSA.");
         } catch (final IOException e) {
@@ -72,9 +82,9 @@ public class DefaultServer extends DefaultTlsServer {
     }
 
     @Override
-    protected TlsSignerCredentials getRSASignerCredentials()
+    protected TlsCredentialedSigner getRSASignerCredentials()
             throws IOException {
-        return new DefaultTlsSignerCredentials(context, certificate, privateKey);
+        return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), (BcTlsCrypto) getCrypto(), privateKey, certificate, alg);
     }
 
 }

@@ -4,7 +4,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 import java.util.Objects;
 
-import de.tum.in.net.Tap;
+import de.tum.in.net.model.Tap;
 
 /**
  * Created by johannes on 22.03.17.

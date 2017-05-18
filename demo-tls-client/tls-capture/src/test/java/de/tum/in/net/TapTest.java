@@ -6,20 +6,22 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import de.tum.in.net.model.Tap;
+
 import static org.junit.Assert.assertEquals;
 
 public class TapTest {
 
     @Test
     public void tapSavesBytes() throws IOException {
-        String inputString = "hello world";
-        String outputString = "output";
-        byte[] input = inputString.getBytes();
-        ByteArrayInputStream in = new ByteArrayInputStream(input);
+        final String inputString = "hello world";
+        final String outputString = "output";
+        final byte[] input = inputString.getBytes();
+        final ByteArrayInputStream in = new ByteArrayInputStream(input);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        Tap tap = new Tap(in, out);
+        final Tap tap = new Tap(in, out);
 
         tap.getIn().read(new byte[inputString.length()]);
         tap.getOut().write(outputString.getBytes());

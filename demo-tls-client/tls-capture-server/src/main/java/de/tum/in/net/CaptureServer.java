@@ -1,62 +1,71 @@
 package de.tum.in.net;
 
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import de.tum.in.net.model.ClientHandlerFactory;
+import de.tum.in.net.model.TlsServerFactory;
+import de.tum.in.net.scenario.server.BcTlsServerFactory;
+import de.tum.in.net.scenario.server.DefaultClientHandlerFactory;
+import de.tum.in.net.scenario.server.SimpleServerSocket;
 
 public class CaptureServer {
 
-    private final org.apache.logging.log4j.Logger log = LogManager.getLogger();
+    private final Logger log = LoggerFactory.getLogger(CaptureServer.class);
     private final ExecutorService exec = Executors.newCachedThreadPool();
+    private final Thread[] serverThreads;
     private final int[] ports;
-    private final Future[] server;
+    private final SimpleServerSocket[] server;
+    private boolean started = false;
+    private final TlsServerFactory prov = new BcTlsServerFactory();
+
+    private final ClientHandlerFactory handler = new DefaultClientHandlerFactory(prov, (result) -> {
+        //TODO define result listener
+        System.err.println("TODO");
+
+    });
 
     public CaptureServer(final int... ports) {
         this.ports = Objects.requireNonNull(ports, "ports must not be null");
-        server = new Future[ports.length];
+        server = new SimpleServerSocket[ports.length];
+        serverThreads = new Thread[ports.length];
     }
 
-
     public static void main(final String[] args) {
-
         final CaptureServer srv = new CaptureServer(7364);
         srv.start();
     }
 
-    private void start() throws IllegalStateException {
+    public synchronized void start() throws IllegalStateException {
+        started = true;
         for (int i = 0; i < ports.length; i++) {
-            final SimpleServerSocket srvSocket = new SimpleServerSocket(ports[i], exec);
-            final Future<Void> future = exec.submit(srvSocket);
-            server[i] = future;
+            final SimpleServerSocket srvSocket = new SimpleServerSocket(ports[i], handler, exec);
+            server[i] = srvSocket;
+            serverThreads[i] = new Thread(srvSocket, "Server Port " + ports[i]);
+            serverThreads[i].start();
         }
-
-
-        while (true) {
-            try {
-                Thread.sleep(1000);
-            } catch (final InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            //search for any crashed server
-            final Optional<Future> op = Arrays.stream(server).filter(s -> s.isDone()).findAny();
-            if (op.isPresent()) {
-                try {
-                    op.get().get();
-                } catch (final ExecutionException | InterruptedException e) {
-                    log.error("A server terminated", e);
-                    throw new IllegalStateException("A server terminated", e);
-                }
-
-            }
-        }
-
-
     }
+
+    public boolean isRunning() {
+        for (final Thread t : serverThreads) {
+            if (t.isAlive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized void stop() throws IOException {
+        for (final SimpleServerSocket t : server) {
+            t.stop();
+        }
+        exec.shutdown();
+    }
+
+
 }

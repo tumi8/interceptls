@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.Objects;
 
-import de.tum.in.net.Tap;
+import de.tum.in.net.model.Tap;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
 
@@ -42,6 +42,7 @@ public class DefaultClientScenario implements Scenario {
     public ScenarioResult call() {
         ScenarioResult result;
         Tap tap = null;
+        log.debug("Trying to connect to {}:{}", destination, port);
         try (Socket s = new Socket(destination, port)) {
             tap = new Tap(s.getInputStream(), s.getOutputStream());
 

@@ -1,6 +1,7 @@
 package de.tum.in.net.scenario.server;
 
-import org.bouncycastle.crypto.tls.TlsServerProtocol;
+import org.bouncycastle.tls.TlsServerProtocol;
+import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,8 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.SecureRandom;
 
-import de.tum.in.net.DefaultServer;
-import de.tum.in.net.Tap;
+import de.tum.in.net.model.Tap;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
 
@@ -42,8 +42,8 @@ public class DefaultServerScenario implements Scenario {
             tap = new Tap(s.getInputStream(), s.getOutputStream());
 
             //connect in blocking mode
-            final TlsServerProtocol tlsServerProtocol = new TlsServerProtocol(tap.getIn(), tap.getOut(), new SecureRandom());
-            tlsServerProtocol.accept(new DefaultServer());
+            final TlsServerProtocol tlsServerProtocol = new TlsServerProtocol(tap.getIn(), tap.getOut());
+            tlsServerProtocol.accept(new DefaultServer(new BcTlsCrypto(new SecureRandom())));
 
             // we are now connected, therefore we can publish the captured bytes
             result = new ScenarioResult("Server", tap.getInputBytes(), tap.getOutputytes());
