@@ -1,3 +1,9 @@
+#eclipse
+.classpath
+.settings
+.project
+
+#maven
 /build
 target/
 pom.xml.tag
