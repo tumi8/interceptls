@@ -1,12 +1,11 @@
 package de.tum.in.net.scenario.server;
 
 import org.bouncycastle.tls.TlsServerProtocol;
-import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.SecureRandom;
+import java.util.Objects;
 
 import de.tum.in.net.model.TlsServerFactory;
 import de.tum.in.net.model.TlsSocket;
@@ -17,12 +16,20 @@ import de.tum.in.net.model.TlsSocket;
 
 public class BcTlsServerFactory implements TlsServerFactory {
 
-    private final BcTlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
+    private final TlsServerConfig config;
+
+    public BcTlsServerFactory() {
+        this(new DefaultTlsServerConfig());
+    }
+
+    public BcTlsServerFactory(final TlsServerConfig config) {
+        this.config = Objects.requireNonNull(config, "config must not be null");
+    }
 
     @Override
     public TlsSocket bind(final InputStream in, final OutputStream out) throws IOException {
         final TlsServerProtocol protocol = new TlsServerProtocol(in, out);
-        protocol.accept(new DefaultServer(crypto));
+        protocol.accept(new DefaultServer(config));
         return new TlsSocket(protocol);
     }
 }
