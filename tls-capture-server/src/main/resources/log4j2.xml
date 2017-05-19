@@ -20,7 +20,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG" includeLocation="false">
+        <Root level="INFO" includeLocation="false">
             <AppenderRef ref="RandomAccessFile" />
             <AppenderRef ref="STDOUT" />
         </Root>
