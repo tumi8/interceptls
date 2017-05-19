@@ -1,1 +1,1 @@
-include ':app', ':tls-capture', ':tls-capture-server'
+include ':app'

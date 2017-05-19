@@ -10,8 +10,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/tls-capture" />
-            <option value="$PROJECT_DIR$/tls-capture-server" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
