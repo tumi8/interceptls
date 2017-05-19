@@ -23,6 +23,6 @@ public class BcTlsServerFactory implements TlsServerFactory {
     public TlsSocket bind(final InputStream in, final OutputStream out) throws IOException {
         final TlsServerProtocol protocol = new TlsServerProtocol(in, out);
         protocol.accept(new DefaultServer(crypto));
-        return new TlsSocket(protocol.getInputStream(), protocol.getOutputStream());
+        return new TlsSocket(protocol);
     }
 }

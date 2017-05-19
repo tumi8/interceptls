@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.tum.in.net.model.ClientHandlerFactory;
+import de.tum.in.net.model.Severity;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 import de.tum.in.net.scenario.server.BcTlsServerFactory;
@@ -29,7 +30,7 @@ public class SimpleServerSocketTest {
     @Test(expected = IllegalStateException.class)
     public void cannotStopIfNotStarted() throws Exception {
         final SimpleServerSocket srv = new SimpleServerSocket(port, fac, exec);
-        srv.stop();
+        srv.close();
     }
 
     @Test
@@ -43,34 +44,37 @@ public class SimpleServerSocketTest {
 
         assertTrue(srv.isRunning());
 
-        srv.stop();
+        srv.close();
         assertFalse(srv.isRunning());
     }
 
     @Test
     public void tlsClientServerTest() throws Exception {
-        final ExecutorService exec = Executors.newSingleThreadExecutor();
+        final ExecutorService exec = Executors.newCachedThreadPool();
         final MyResultListener publisher = new MyResultListener();
         final ClientHandlerFactory fac = new DefaultClientHandlerFactory(new BcTlsServerFactory(), publisher);
 
-        final SimpleServerSocket srv = new SimpleServerSocket(port, fac, exec);
-        final Thread srvThread = new Thread(srv);
-        srvThread.start();
-        Thread.sleep(30);
+        try (final SimpleServerSocket srv = new SimpleServerSocket(port, fac, exec)) {
+            final Thread t = new Thread(srv);
+            t.start();
+            Thread.sleep(30);
 
+            final Thread clientThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final ScenarioResult result = new DefaultClientScenario("127.0.0.1", port, Severity.OK.toString().getBytes()).call();
+                }
+            });
+            clientThread.start();
 
-        final Thread clientThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final ScenarioResult result = new DefaultClientScenario("127.0.0.1", port).call();
+            while (publisher.severity == null) {
+                Thread.sleep(20);
             }
-        });
-        clientThread.start();
 
-        Thread.sleep(300);
+            assertNotNull(publisher.severity);
+            assertTrue(Severity.OK.equals(publisher.severity));
+        }
 
-        assertNotNull(publisher.result);
-        assertTrue(publisher.result.isSuccess());
 
     }
 }

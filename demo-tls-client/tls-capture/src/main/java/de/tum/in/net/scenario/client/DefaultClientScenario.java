@@ -68,6 +68,8 @@ public class DefaultClientScenario implements Scenario {
                 tlsClientProtocol.getOutputStream().write(transmit);
             }
 
+            tlsClientProtocol.close();
+
         } catch (final IOException e) {
             log.warn("Error in " + toString(), e);
             result = new ScenarioResult(destination, "IOError", e, tap);

@@ -3,10 +3,12 @@ package de.tum.in.net.scenario.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import de.tum.in.net.model.ClientHandlerFactory;
 
@@ -15,13 +17,14 @@ import de.tum.in.net.model.ClientHandlerFactory;
  * subsequently executed on the ExecutorService.
  * Created by johannes on 14.05.17.
  */
-public class SimpleServerSocket implements Runnable {
+public class SimpleServerSocket implements Runnable, Closeable {
 
     private final Logger log = LoggerFactory.getLogger(SimpleServerSocket.class);
     private final ExecutorService exec;
     private final int port;
     private final ClientHandlerFactory clientHandlerFactory;
     private ServerSocket srv;
+    private Future<?> future;
 
     public SimpleServerSocket(final int port, final ClientHandlerFactory clientHandlerFactory, final ExecutorService exec) {
         this.port = port;
@@ -54,12 +57,13 @@ public class SimpleServerSocket implements Runnable {
 
     }
 
-    public void stop() throws IOException {
-        if (srv == null) throw new IllegalStateException("The run method must be executed first.");
-        srv.close();
-    }
-
     public boolean isRunning() {
         return srv == null ? false : !srv.isClosed();
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (srv == null) throw new IllegalStateException("The run method must be executed first.");
+        srv.close();
     }
 }

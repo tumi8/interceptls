@@ -12,6 +12,8 @@ import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
+import org.bouncycastle.tls.AlertDescription;
+import org.bouncycastle.tls.AlertLevel;
 import org.bouncycastle.tls.Certificate;
 import org.bouncycastle.tls.DefaultTlsServer;
 import org.bouncycastle.tls.HashAlgorithm;
@@ -24,6 +26,8 @@ import org.bouncycastle.tls.crypto.impl.bc.BcDefaultTlsCredentialedSigner;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCertificate;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -38,6 +42,7 @@ import java.util.Date;
  */
 public class DefaultServer extends DefaultTlsServer {
 
+    private static final Logger log = LoggerFactory.getLogger(DefaultServer.class);
     private final SignatureAndHashAlgorithm alg = new SignatureAndHashAlgorithm(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
     private Certificate certificate;
     private AsymmetricKeyParameter privateKey;
@@ -79,6 +84,18 @@ public class DefaultServer extends DefaultTlsServer {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void notifyAlertRaised(final short alertLevel, final short alertDescription, final String message, final Throwable cause) {
+        super.notifyAlertRaised(alertLevel, alertDescription, message, cause);
+        log.error("Raised alert, level: {}, description: {}", AlertLevel.getName(alertLevel), AlertDescription.getName(alertDescription), message, cause);
+    }
+
+    @Override
+    public void notifyAlertReceived(final short alertLevel, final short alertDescription) {
+        super.notifyAlertReceived(alertLevel, alertDescription);
+        log.error("Received alert, level: {}, description: {}", AlertLevel.getName(alertLevel), AlertDescription.getName(alertDescription));
     }
 
     @Override

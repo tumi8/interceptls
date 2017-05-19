@@ -24,7 +24,7 @@ public class CaptureServer {
     private boolean started = false;
     private final TlsServerFactory prov = new BcTlsServerFactory();
 
-    private final ClientHandlerFactory handler = new DefaultClientHandlerFactory(prov, (result) -> {
+    private final ClientHandlerFactory handler = new DefaultClientHandlerFactory(prov, (sev, result) -> {
         //TODO define result listener
         System.err.println("TODO");
 
@@ -62,7 +62,7 @@ public class CaptureServer {
 
     public synchronized void stop() throws IOException {
         for (final SimpleServerSocket t : server) {
-            t.stop();
+            t.close();
         }
         exec.shutdown();
     }
