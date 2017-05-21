@@ -16,20 +16,20 @@ import de.tum.in.net.model.TlsSocket;
 
 public class BcTlsServerFactory implements TlsServerFactory {
 
-    private final TlsServerConfig config;
+  private final TlsServerConfig config;
 
-    public BcTlsServerFactory() {
-        this(new DefaultTlsServerConfig());
-    }
+  public BcTlsServerFactory() {
+    this(new DefaultTlsServerConfig());
+  }
 
-    public BcTlsServerFactory(final TlsServerConfig config) {
-        this.config = Objects.requireNonNull(config, "config must not be null");
-    }
+  public BcTlsServerFactory(final TlsServerConfig config) {
+    this.config = Objects.requireNonNull(config, "config must not be null");
+  }
 
-    @Override
-    public TlsSocket bind(final InputStream in, final OutputStream out) throws IOException {
-        final TlsServerProtocol protocol = new TlsServerProtocol(in, out);
-        protocol.accept(new DefaultServer(config));
-        return new TlsSocket(protocol);
-    }
+  @Override
+  public TlsSocket bind(final InputStream in, final OutputStream out) throws IOException {
+    final TlsServerProtocol protocol = new TlsServerProtocol(in, out);
+    protocol.accept(new DefaultServer(config));
+    return new TlsSocket(protocol);
+  }
 }

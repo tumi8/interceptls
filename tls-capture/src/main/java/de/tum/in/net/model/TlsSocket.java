@@ -13,22 +13,22 @@ import java.io.OutputStream;
 
 public class TlsSocket implements Closeable {
 
-    private final TlsServerProtocol protocol;
+  private final TlsServerProtocol protocol;
 
-    public TlsSocket(final TlsServerProtocol protocol) {
-        this.protocol = protocol;
-    }
+  public TlsSocket(final TlsServerProtocol protocol) {
+    this.protocol = protocol;
+  }
 
-    public InputStream getInputStream() {
-        return protocol.getInputStream();
-    }
+  public InputStream getInputStream() {
+    return protocol.getInputStream();
+  }
 
-    public OutputStream getOut() {
-        return protocol.getOutputStream();
-    }
+  public OutputStream getOut() {
+    return protocol.getOutputStream();
+  }
 
-    @Override
-    public void close() throws IOException {
-        protocol.close();
-    }
+  @Override
+  public void close() throws IOException {
+    protocol.close();
+  }
 }

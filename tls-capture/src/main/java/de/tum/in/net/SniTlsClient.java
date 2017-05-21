@@ -16,33 +16,32 @@ import java.util.Vector;
  */
 public abstract class SniTlsClient extends DefaultTlsClient {
 
-    String serverName;
+  String serverName;
 
-    public SniTlsClient(final String serverName) {
-        super();
-        this.serverName = serverName;
-    }
+  public SniTlsClient(final String serverName) {
+    super();
+    this.serverName = serverName;
+  }
 
-    public SniTlsClient(final String serverName, final TlsCipherFactory cipherFactory) {
-        super(cipherFactory);
-        this.serverName = serverName;
-    }
+  public SniTlsClient(final String serverName, final TlsCipherFactory cipherFactory) {
+    super(cipherFactory);
+    this.serverName = serverName;
+  }
 
-    @Override
-    public Hashtable getClientExtensions()
-            throws IOException {
-        Hashtable clientExtensions = super.getClientExtensions();
+  @Override
+  public Hashtable getClientExtensions() throws IOException {
+    Hashtable clientExtensions = super.getClientExtensions();
 
-        // create ServerNameList
-        final ServerName sn = new ServerName(NameType.host_name, serverName);
-        final Vector<ServerName> vlist = new Vector<>();
-        vlist.add(sn);
-        final ServerNameList list = new ServerNameList(vlist);
+    // create ServerNameList
+    final ServerName sn = new ServerName(NameType.host_name, serverName);
+    final Vector<ServerName> vlist = new Vector<>();
+    vlist.add(sn);
+    final ServerNameList list = new ServerNameList(vlist);
 
-        // add list to clientExtensions
-        clientExtensions = TlsExtensionsUtils.ensureExtensionsInitialised(clientExtensions);
-        TlsExtensionsUtils.addServerNameExtension(clientExtensions, list);
+    // add list to clientExtensions
+    clientExtensions = TlsExtensionsUtils.ensureExtensionsInitialised(clientExtensions);
+    TlsExtensionsUtils.addServerNameExtension(clientExtensions, list);
 
-        return clientExtensions;
-    }
+    return clientExtensions;
+  }
 }

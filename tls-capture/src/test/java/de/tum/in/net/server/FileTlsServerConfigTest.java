@@ -16,16 +16,20 @@ import static org.junit.Assert.assertTrue;
 
 public class FileTlsServerConfigTest {
 
-    @Test
-    public void handleEC() throws Exception {
-        final TlsServerConfig config = new FileTlsServerConfig(new File("certs/cert-ec.pem"), new File("certs/key-ec.pem"));
-        assertTrue(Arrays.contains(config.getCipherSuites(), CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384));
+  @Test
+  public void handleEC() throws Exception {
+    final TlsServerConfig config =
+        new FileTlsServerConfig(new File("certs/cert-ec.pem"), new File("certs/key-ec.pem"));
+    assertTrue(Arrays.contains(config.getCipherSuites(),
+        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384));
 
-    }
+  }
 
-    @Test
-    public void handleRSA() throws Exception {
-        final TlsServerConfig config = new FileTlsServerConfig(new File("certs/cert-rsa.pem"), new File("certs/key-rsa.pem"));
-        assertTrue(Arrays.contains(config.getCipherSuites(), CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384));
-    }
+  @Test
+  public void handleRSA() throws Exception {
+    final TlsServerConfig config =
+        new FileTlsServerConfig(new File("certs/cert-rsa.pem"), new File("certs/key-rsa.pem"));
+    assertTrue(Arrays.contains(config.getCipherSuites(),
+        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384));
+  }
 }

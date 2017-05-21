@@ -10,17 +10,17 @@ import static org.junit.Assert.assertTrue;
  */
 public class CaptureServerTest {
 
-    @Test
-    public void startAndStop() throws Exception {
-        final CaptureServer server = new CaptureServer(8989);
+  @Test
+  public void startAndStop() throws Exception {
+    final CaptureServer server = new CaptureServer(8989);
 
-        server.start();
-        Thread.sleep(50);
-        assertTrue(server.isRunning());
+    server.start();
+    Thread.sleep(50);
+    assertTrue(server.isRunning());
 
-        server.stop();
-        Thread.sleep(50);
-        assertFalse(server.isRunning());
-    }
+    server.stop();
+    Thread.sleep(50);
+    assertFalse(server.isRunning());
+  }
 
 }

@@ -15,11 +15,12 @@ import retrofit2.http.Path;
 
 public interface AnalysisAPI {
 
-    @POST("/session")
-    Call<Session> newSessionID();
+  @POST("/session")
+  Call<Session> newSessionID();
 
-    @PUT("/handshake/{session_id}")
-    Call<ResponseBody> uploadHandshake(@Path(value = "session_id", encoded = true) String sessionId, @Body ScenarioResult result);
+  @PUT("/handshake/{session_id}")
+  Call<ResponseBody> uploadHandshake(@Path(value = "session_id", encoded = true) String sessionId,
+      @Body ScenarioResult result);
 
 
 }

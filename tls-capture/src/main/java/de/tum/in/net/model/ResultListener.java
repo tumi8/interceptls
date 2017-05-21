@@ -6,5 +6,5 @@ package de.tum.in.net.model;
 
 public interface ResultListener<T> {
 
-    void publish(Severity severity, T result);
+  void publish(Severity severity, T result);
 }

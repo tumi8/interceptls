@@ -8,5 +8,5 @@ import java.net.Socket;
 
 public interface ClientHandlerFactory {
 
-    Runnable createClientHandler(Socket client);
+  Runnable createClientHandler(Socket client);
 }

@@ -10,5 +10,5 @@ import java.io.OutputStream;
 
 public interface TlsServerFactory {
 
-    TlsSocket bind(InputStream in, OutputStream out) throws IOException;
+  TlsSocket bind(InputStream in, OutputStream out) throws IOException;
 }

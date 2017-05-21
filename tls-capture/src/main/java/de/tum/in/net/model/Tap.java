@@ -15,36 +15,36 @@ import java.net.Socket;
 
 public class Tap {
 
-    private final ByteArrayOutputStream tapIn = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream tapOut = new ByteArrayOutputStream();
+  private final ByteArrayOutputStream tapIn = new ByteArrayOutputStream();
+  private final ByteArrayOutputStream tapOut = new ByteArrayOutputStream();
 
-    private final InputStream in;
-    private final OutputStream out;
+  private final InputStream in;
+  private final OutputStream out;
 
-    public Tap(final InputStream input, final OutputStream output) {
-        this.in = new TeeInputStream(input, tapIn);
-        this.out = new TeeOutputStream(output, tapOut);
-    }
+  public Tap(final InputStream input, final OutputStream output) {
+    this.in = new TeeInputStream(input, tapIn);
+    this.out = new TeeOutputStream(output, tapOut);
+  }
 
-    public Tap(final Socket s) throws IOException {
-        this.in = s.getInputStream();
-        this.out = s.getOutputStream();
-    }
+  public Tap(final Socket s) throws IOException {
+    this.in = s.getInputStream();
+    this.out = s.getOutputStream();
+  }
 
-    public InputStream getIn() {
-        return in;
-    }
+  public InputStream getIn() {
+    return in;
+  }
 
-    public OutputStream getOut() {
-        return out;
-    }
+  public OutputStream getOut() {
+    return out;
+  }
 
-    public byte[] getInputBytes() {
-        return tapIn.toByteArray();
-    }
+  public byte[] getInputBytes() {
+    return tapIn.toByteArray();
+  }
 
-    public byte[] getOutputytes() {
-        return tapOut.toByteArray();
-    }
+  public byte[] getOutputytes() {
+    return tapOut.toByteArray();
+  }
 }
 

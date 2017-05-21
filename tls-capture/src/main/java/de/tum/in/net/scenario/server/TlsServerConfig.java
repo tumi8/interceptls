@@ -12,11 +12,11 @@ import java.io.IOException;
 
 public interface TlsServerConfig {
 
-    TlsCrypto getCrypto();
+  TlsCrypto getCrypto();
 
-    TlsCredentialedSigner getRSASignerCredentials(TlsServerContext context) throws IOException;
+  TlsCredentialedSigner getRSASignerCredentials(TlsServerContext context) throws IOException;
 
-    TlsCredentialedSigner getECDSASignerCredentials(TlsServerContext context) throws IOException;
+  TlsCredentialedSigner getECDSASignerCredentials(TlsServerContext context) throws IOException;
 
-    int[] getCipherSuites();
+  int[] getCipherSuites();
 }

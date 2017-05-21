@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
  */
 public interface Scenario extends Callable<ScenarioResult> {
 
-    @Override
-    ScenarioResult call();
+  @Override
+  ScenarioResult call();
 
 }

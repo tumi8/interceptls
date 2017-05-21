@@ -5,5 +5,5 @@ package de.tum.in.net.model;
  */
 
 public enum Severity {
-    OK, NOT_OK, ERROR
+  OK, NOT_OK, ERROR
 }

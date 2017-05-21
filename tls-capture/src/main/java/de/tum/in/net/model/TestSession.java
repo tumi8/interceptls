@@ -11,10 +11,10 @@ import de.tum.in.net.scenario.ScenarioResult;
 
 public interface TestSession {
 
-    /**
-     * @return the id which is [A-Za-z0-9]+
-     */
-    String getSessionID();
+  /**
+   * @return the id which is [A-Za-z0-9]+
+   */
+  String getSessionID();
 
-    void uploadHandshake(Collection<ScenarioResult> results) throws IOException;
+  void uploadHandshake(Collection<ScenarioResult> results) throws IOException;
 }

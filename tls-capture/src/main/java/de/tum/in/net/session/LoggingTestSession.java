@@ -15,18 +15,18 @@ import de.tum.in.net.scenario.ScenarioResult;
 
 public class LoggingTestSession implements TestSession {
 
-    private static final Logger log = LoggerFactory.getLogger(LoggingTestSession.class);
+  private static final Logger log = LoggerFactory.getLogger(LoggingTestSession.class);
 
-    @Override
-    public String getSessionID() {
-        return "LocalTestSession";
-    }
+  @Override
+  public String getSessionID() {
+    return "LocalTestSession";
+  }
 
-    @Override
-    public void uploadHandshake(final Collection<ScenarioResult> results) throws IOException {
-        log.debug("Logging {} results", results.size());
-        for (final ScenarioResult result : results) {
-            log.info(result.toString());
-        }
+  @Override
+  public void uploadHandshake(final Collection<ScenarioResult> results) throws IOException {
+    log.debug("Logging {} results", results.size());
+    for (final ScenarioResult result : results) {
+      log.info(result.toString());
     }
+  }
 }

@@ -40,84 +40,86 @@ import de.tum.in.net.scenario.server.TlsServerConfig;
  */
 
 public class FileTlsServerConfig implements TlsServerConfig {
-    static {
-        Security.insertProviderAt(new BouncyCastleProvider(), 1);
-    }
+  static {
+    Security.insertProviderAt(new BouncyCastleProvider(), 1);
+  }
 
-    private final BcTlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
-    private final SignatureAndHashAlgorithm sigAndHashAlg;
-    private final AsymmetricKeyParameter privateKey;
-    private final org.bouncycastle.tls.Certificate cert;
-    private final int[] cipherSuites;
+  private final BcTlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
+  private final SignatureAndHashAlgorithm sigAndHashAlg;
+  private final AsymmetricKeyParameter privateKey;
+  private final org.bouncycastle.tls.Certificate cert;
+  private final int[] cipherSuites;
 
-    public FileTlsServerConfig(final File certFile, final File keyFile) throws IOException, CertificateException {
+  public FileTlsServerConfig(final File certFile, final File keyFile)
+      throws IOException, CertificateException {
 
-        try (final InputStream in = new FileInputStream(certFile)) {
-            final CertificateFactory factory = CertificateFactory.getInstance("X.509");
-            final Certificate cert = factory.generateCertificate(in);
+    try (final InputStream in = new FileInputStream(certFile)) {
+      final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+      final Certificate cert = factory.generateCertificate(in);
 
-            final TlsCertificate[] certs = {new BcTlsCertificate(crypto, cert.getEncoded())};
-            this.cert = new org.bouncycastle.tls.Certificate(certs);
-
-        }
-
-        final short signatureAlg;
-        try (final PEMParser pp = new PEMParser(new FileReader(keyFile))) {
-            final PEMKeyPair pemKeyPair = (PEMKeyPair) pp.readObject();
-            this.privateKey = PrivateKeyFactory.createKey(pemKeyPair.getPrivateKeyInfo());
-
-            if (this.privateKey instanceof RSAKeyParameters) {
-                signatureAlg = SignatureAlgorithm.rsa;
-                this.cipherSuites = new int[]{
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
-
-                };
-            } else if (this.privateKey instanceof ECKeyParameters) {
-                signatureAlg = SignatureAlgorithm.ecdsa;
-                this.cipherSuites = new int[]{
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
-                };
-            } else {
-                throw new IllegalStateException("Unknown key type: " + this.privateKey);
-            }
-        }
-
-        this.sigAndHashAlg = new SignatureAndHashAlgorithm(HashAlgorithm.sha256, signatureAlg);
+      final TlsCertificate[] certs = {new BcTlsCertificate(crypto, cert.getEncoded())};
+      this.cert = new org.bouncycastle.tls.Certificate(certs);
 
     }
 
-    @Override
-    public TlsCrypto getCrypto() {
-        return crypto;
+    final short signatureAlg;
+    try (final PEMParser pp = new PEMParser(new FileReader(keyFile))) {
+      final PEMKeyPair pemKeyPair = (PEMKeyPair) pp.readObject();
+      this.privateKey = PrivateKeyFactory.createKey(pemKeyPair.getPrivateKeyInfo());
+
+      if (this.privateKey instanceof RSAKeyParameters) {
+        signatureAlg = SignatureAlgorithm.rsa;
+        this.cipherSuites = new int[] {CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+            CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
+
+        };
+      } else if (this.privateKey instanceof ECKeyParameters) {
+        signatureAlg = SignatureAlgorithm.ecdsa;
+        this.cipherSuites = new int[] {CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+            CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+            CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+            CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384};
+      } else {
+        throw new IllegalStateException("Unknown key type: " + this.privateKey);
+      }
     }
 
-    @Override
-    public TlsCredentialedSigner getRSASignerCredentials(final TlsServerContext context) throws IOException {
-        assertSignatureAlgorithm(SignatureAlgorithm.rsa);
-        return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), crypto, privateKey, cert, sigAndHashAlg);
-    }
+    this.sigAndHashAlg = new SignatureAndHashAlgorithm(HashAlgorithm.sha256, signatureAlg);
+
+  }
+
+  @Override
+  public TlsCrypto getCrypto() {
+    return crypto;
+  }
+
+  @Override
+  public TlsCredentialedSigner getRSASignerCredentials(final TlsServerContext context)
+      throws IOException {
+    assertSignatureAlgorithm(SignatureAlgorithm.rsa);
+    return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), crypto, privateKey,
+        cert, sigAndHashAlg);
+  }
 
 
-    private void assertSignatureAlgorithm(final short alg) throws IOException {
-        if (this.sigAndHashAlg.getSignature() != alg) {
-            throw new TlsFatalAlert(AlertDescription.internal_error);
-        }
+  private void assertSignatureAlgorithm(final short alg) throws IOException {
+    if (this.sigAndHashAlg.getSignature() != alg) {
+      throw new TlsFatalAlert(AlertDescription.internal_error);
     }
+  }
 
-    @Override
-    public TlsCredentialedSigner getECDSASignerCredentials(final TlsServerContext context) throws IOException {
-        assertSignatureAlgorithm(SignatureAlgorithm.ecdsa);
-        return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), crypto, privateKey, cert, sigAndHashAlg);
-    }
+  @Override
+  public TlsCredentialedSigner getECDSASignerCredentials(final TlsServerContext context)
+      throws IOException {
+    assertSignatureAlgorithm(SignatureAlgorithm.ecdsa);
+    return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), crypto, privateKey,
+        cert, sigAndHashAlg);
+  }
 
-    @Override
-    public int[] getCipherSuites() {
-        return cipherSuites.clone();
-    }
+  @Override
+  public int[] getCipherSuites() {
+    return cipherSuites.clone();
+  }
 }

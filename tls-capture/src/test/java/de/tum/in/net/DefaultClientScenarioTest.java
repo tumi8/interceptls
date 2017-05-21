@@ -23,55 +23,59 @@ import static org.junit.Assert.assertTrue;
 
 public class DefaultClientScenarioTest {
 
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+  private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    @Test
-    public void testOK() throws Exception {
-        final int port = 3843;
-        final String transmit = Severity.OK.toString();
+  @Test
+  public void testOK() throws Exception {
+    final int port = 3843;
+    final String transmit = Severity.OK.toString();
 
-        final MyResultListener listener = new MyResultListener();
-        final ClientHandlerFactory fac = new DefaultClientHandlerFactory(new BcTlsServerFactory(), listener);
-        try (final SimpleServerSocket socket = new SimpleServerSocket(port, fac, executor)) {
-            executor.submit(socket);
-            Thread.sleep(20);
+    final MyResultListener listener = new MyResultListener();
+    final ClientHandlerFactory fac =
+        new DefaultClientHandlerFactory(new BcTlsServerFactory(), listener);
+    try (final SimpleServerSocket socket = new SimpleServerSocket(port, fac, executor)) {
+      executor.submit(socket);
+      Thread.sleep(20);
 
-            final DefaultClientScenario scenario = new DefaultClientScenario("127.0.0.1", port, transmit.getBytes());
+      final DefaultClientScenario scenario =
+          new DefaultClientScenario("127.0.0.1", port, transmit.getBytes());
 
-            final ScenarioResult clientResult = scenario.call();
+      final ScenarioResult clientResult = scenario.call();
 
-            while (listener.severity == null) {
-                Thread.sleep(20);
-            }
-            assertTrue(Severity.OK.equals(listener.severity));
-        }
-
+      while (listener.severity == null) {
+        Thread.sleep(20);
+      }
+      assertTrue(Severity.OK.equals(listener.severity));
     }
 
-    @Test
-    public void testNOT_OK() throws Exception {
-        final int port = 3843;
-        final String transmit = Severity.NOT_OK.toString();
+  }
 
-        final MyResultListener listener = new MyResultListener();
-        final ClientHandlerFactory fac = new DefaultClientHandlerFactory(new BcTlsServerFactory(), listener);
-        try (final SimpleServerSocket socket = new SimpleServerSocket(port, fac, executor)) {
-            executor.submit(socket);
-            Thread.sleep(20);
+  @Test
+  public void testNOT_OK() throws Exception {
+    final int port = 3843;
+    final String transmit = Severity.NOT_OK.toString();
 
-            final DefaultClientScenario scenario = new DefaultClientScenario("127.0.0.1", port, transmit.getBytes());
+    final MyResultListener listener = new MyResultListener();
+    final ClientHandlerFactory fac =
+        new DefaultClientHandlerFactory(new BcTlsServerFactory(), listener);
+    try (final SimpleServerSocket socket = new SimpleServerSocket(port, fac, executor)) {
+      executor.submit(socket);
+      Thread.sleep(20);
 
-            final ScenarioResult clientResult = scenario.call();
+      final DefaultClientScenario scenario =
+          new DefaultClientScenario("127.0.0.1", port, transmit.getBytes());
 
-            while (listener.severity == null) {
-                Thread.sleep(20);
-            }
-            assertTrue(Severity.NOT_OK.equals(listener.severity));
+      final ScenarioResult clientResult = scenario.call();
 
-            //the sent bytes must equal the received bytes
-            assertArrayEquals(clientResult.getReceivedBytes(), listener.result.getSentBytes());
-            assertArrayEquals(clientResult.getSentBytes(), listener.result.getReceivedBytes());
-        }
-        
+      while (listener.severity == null) {
+        Thread.sleep(20);
+      }
+      assertTrue(Severity.NOT_OK.equals(listener.severity));
+
+      // the sent bytes must equal the received bytes
+      assertArrayEquals(clientResult.getReceivedBytes(), listener.result.getSentBytes());
+      assertArrayEquals(clientResult.getSentBytes(), listener.result.getReceivedBytes());
     }
+
+  }
 }

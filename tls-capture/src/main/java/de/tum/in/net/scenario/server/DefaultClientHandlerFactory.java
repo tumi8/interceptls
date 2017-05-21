@@ -12,16 +12,17 @@ import de.tum.in.net.model.TlsServerFactory;
 
 public class DefaultClientHandlerFactory implements ClientHandlerFactory {
 
-    private final ResultListener publisher;
-    private final TlsServerFactory tlsServerFactory;
+  private final ResultListener publisher;
+  private final TlsServerFactory tlsServerFactory;
 
-    public DefaultClientHandlerFactory(final TlsServerFactory tlsServerFactory, final ResultListener publisher) {
-        this.tlsServerFactory = tlsServerFactory;
-        this.publisher = publisher;
-    }
+  public DefaultClientHandlerFactory(final TlsServerFactory tlsServerFactory,
+      final ResultListener publisher) {
+    this.tlsServerFactory = tlsServerFactory;
+    this.publisher = publisher;
+  }
 
-    @Override
-    public Runnable createClientHandler(final Socket client) {
-        return new TlsClientConnection(client, tlsServerFactory, publisher);
-    }
+  @Override
+  public Runnable createClientHandler(final Socket client) {
+    return new TlsClientConnection(client, tlsServerFactory, publisher);
+  }
 }

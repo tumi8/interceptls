@@ -43,70 +43,75 @@ import java.util.Date;
 
 public class DefaultTlsServerConfig implements TlsServerConfig {
 
-    private final BcTlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
-    private AsymmetricKeyParameter privateKey;
+  private final BcTlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
+  private AsymmetricKeyParameter privateKey;
 
-    private Certificate certificate;
+  private Certificate certificate;
 
-    public DefaultTlsServerConfig() {
-        try {
-            final KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
-            final KeyPair pair = gen.generateKeyPair();
-            this.privateKey = PrivateKeyFactory.createKey(pair.getPrivate().getEncoded());
+  public DefaultTlsServerConfig() {
+    try {
+      final KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+      final KeyPair pair = gen.generateKeyPair();
+      this.privateKey = PrivateKeyFactory.createKey(pair.getPrivate().getEncoded());
 
-            final X500Name issuer = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
-            final X500Name subject = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
+      final X500Name issuer = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
+      final X500Name subject = new X500Name("CN=TUM App, O=Technische Universitaet Muenchen, C=DE");
 
-            final Date notBefore = DateTime.now().minusDays(7).toDate();
-            final Date notAfter = DateTime.now().plusDays(7).toDate();
+      final Date notBefore = DateTime.now().minusDays(7).toDate();
+      final Date notAfter = DateTime.now().plusDays(7).toDate();
 
-            final AsymmetricKeyParameter publicKey = PublicKeyFactory.createKey(pair.getPublic().getEncoded());
+      final AsymmetricKeyParameter publicKey =
+          PublicKeyFactory.createKey(pair.getPublic().getEncoded());
 
-            final BigInteger serial = BigInteger.valueOf(1);
-            final BcX509v3CertificateBuilder certBuilder = new BcX509v3CertificateBuilder(issuer, serial, notBefore, notAfter, subject, publicKey);
+      final BigInteger serial = BigInteger.valueOf(1);
+      final BcX509v3CertificateBuilder certBuilder =
+          new BcX509v3CertificateBuilder(issuer, serial, notBefore, notAfter, subject, publicKey);
 
 
-            final AlgorithmIdentifier sigAlg = new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256withRSA");
-            final AlgorithmIdentifier digAlg = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlg);
-            final BcRSAContentSignerBuilder builder = new BcRSAContentSignerBuilder(sigAlg, digAlg);
-            final ContentSigner signer = builder.build(privateKey);
-            final X509CertificateHolder holder = certBuilder.build(signer);
+      final AlgorithmIdentifier sigAlg =
+          new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256withRSA");
+      final AlgorithmIdentifier digAlg = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlg);
+      final BcRSAContentSignerBuilder builder = new BcRSAContentSignerBuilder(sigAlg, digAlg);
+      final ContentSigner signer = builder.build(privateKey);
+      final X509CertificateHolder holder = certBuilder.build(signer);
 
-            final TlsCertificate cert = new BcTlsCertificate(crypto, holder.getEncoded());
-            final TlsCertificate[] certs = {cert};
-            this.certificate = new Certificate(certs);
-        } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Java must support RSA.");
-        } catch (final IOException e) {
-            e.printStackTrace();
-        } catch (final OperatorCreationException e) {
-            e.printStackTrace();
-        }
+      final TlsCertificate cert = new BcTlsCertificate(crypto, holder.getEncoded());
+      final TlsCertificate[] certs = {cert};
+      this.certificate = new Certificate(certs);
+    } catch (final NoSuchAlgorithmException e) {
+      throw new IllegalStateException("Java must support RSA.");
+    } catch (final IOException e) {
+      e.printStackTrace();
+    } catch (final OperatorCreationException e) {
+      e.printStackTrace();
     }
+  }
 
-    @Override
-    public TlsCrypto getCrypto() {
-        return this.crypto;
-    }
+  @Override
+  public TlsCrypto getCrypto() {
+    return this.crypto;
+  }
 
-    @Override
-    public TlsCredentialedSigner getRSASignerCredentials(final TlsServerContext context) throws IOException {
-        final SignatureAndHashAlgorithm alg = new SignatureAndHashAlgorithm(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
-        return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), crypto, privateKey, certificate, alg);
-    }
+  @Override
+  public TlsCredentialedSigner getRSASignerCredentials(final TlsServerContext context)
+      throws IOException {
+    final SignatureAndHashAlgorithm alg =
+        new SignatureAndHashAlgorithm(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
+    return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), crypto, privateKey,
+        certificate, alg);
+  }
 
-    @Override
-    public TlsCredentialedSigner getECDSASignerCredentials(final TlsServerContext context) throws IOException {
-        throw new TlsFatalAlert(AlertDescription.internal_error);
-    }
+  @Override
+  public TlsCredentialedSigner getECDSASignerCredentials(final TlsServerContext context)
+      throws IOException {
+    throw new TlsFatalAlert(AlertDescription.internal_error);
+  }
 
-    @Override
-    public int[] getCipherSuites() {
-        return new int[]{
-                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-                CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-                CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
-        };
-    }
+  @Override
+  public int[] getCipherSuites() {
+    return new int[] {CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384};
+  }
 }

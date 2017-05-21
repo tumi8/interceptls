@@ -6,13 +6,13 @@ package de.tum.in.net.session;
 
 public class Session {
 
-    private final String id;
+  private final String id;
 
-    public Session(final String id) {
-        this.id = id;
-    }
+  public Session(final String id) {
+    this.id = id;
+  }
 
-    public String getID() {
-        return this.id;
-    }
+  public String getID() {
+    return this.id;
+  }
 }

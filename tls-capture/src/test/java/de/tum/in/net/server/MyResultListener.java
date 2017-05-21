@@ -10,12 +10,12 @@ import de.tum.in.net.scenario.ScenarioResult;
 
 public class MyResultListener implements ResultListener<ScenarioResult> {
 
-    public Severity severity;
-    public ScenarioResult result;
+  public Severity severity;
+  public ScenarioResult result;
 
-    @Override
-    public void publish(final Severity severity, final ScenarioResult result) {
-        this.severity = severity;
-        this.result = result;
-    }
+  @Override
+  public void publish(final Severity severity, final ScenarioResult result) {
+    this.severity = severity;
+    this.result = result;
+  }
 }
