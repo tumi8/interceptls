@@ -1,17 +1,13 @@
 package de.tum.in.net.scenario.server;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.Objects;
-
 import de.tum.in.net.model.ResultListener;
-import de.tum.in.net.model.Severity;
 import de.tum.in.net.model.Tap;
 import de.tum.in.net.model.TlsServerFactory;
 import de.tum.in.net.model.TlsSocket;
@@ -51,29 +47,16 @@ class TlsClientConnection implements Runnable {
       final byte[] received = tap.getInputBytes();
       final byte[] sent = tap.getOutputytes();
 
-      // now read the answer OK <-> NOT_OK
-      final InputStream in = tlsSocket.getInputStream();
-      final byte[] answer = IOUtils.toByteArray(in);
-
-      if (Arrays.equals(answer, OK)) {
-        publisher.publish(Severity.OK, null);
-        // we do nothing
-      } else if (Arrays.equals(answer, NOT_OK)) {
-        // publish the handshake to the analysis server
-        publisher.publish(Severity.NOT_OK,
-            new ScenarioResult(socket.getRemoteSocketAddress().toString(), received, sent));
-      } else {
-        publisher.publish(Severity.ERROR, null);
-        // TODO error in client or unknown client, what to do?
-      }
+      publisher
+          .publish(new ScenarioResult(socket.getRemoteSocketAddress().toString(), received, sent));
 
       tlsSocket.close();
 
 
     } catch (final IOException e) {
       log.error("Socket closed.", e);
-      publisher.publish(Severity.ERROR,
-          new ScenarioResult(socket.getRemoteSocketAddress().toString(), "Error", e, tap));
+      publisher
+          .publish(new ScenarioResult(socket.getRemoteSocketAddress().toString(), "Error", e, tap));
     }
 
   }

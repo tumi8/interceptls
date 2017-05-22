@@ -1,9 +1,12 @@
 package de.tum.in.net;
 
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.junit.Test;
 
 import de.tum.in.net.model.ClientHandlerFactory;
 import de.tum.in.net.model.Severity;
@@ -13,9 +16,6 @@ import de.tum.in.net.scenario.server.BcTlsServerFactory;
 import de.tum.in.net.scenario.server.DefaultClientHandlerFactory;
 import de.tum.in.net.scenario.server.SimpleServerSocket;
 import de.tum.in.net.server.MyResultListener;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by johannes on 31.03.17.
@@ -42,10 +42,10 @@ public class DefaultClientScenarioTest {
 
       final ScenarioResult clientResult = scenario.call();
 
-      while (listener.severity == null) {
+      while (listener.result == null) {
         Thread.sleep(20);
       }
-      assertTrue(Severity.OK.equals(listener.severity));
+      assertTrue(listener.result.isSuccess());
     }
 
   }
@@ -53,7 +53,6 @@ public class DefaultClientScenarioTest {
   @Test
   public void testNOT_OK() throws Exception {
     final int port = 3843;
-    final String transmit = Severity.NOT_OK.toString();
 
     final MyResultListener listener = new MyResultListener();
     final ClientHandlerFactory fac =
@@ -62,15 +61,14 @@ public class DefaultClientScenarioTest {
       executor.submit(socket);
       Thread.sleep(20);
 
-      final DefaultClientScenario scenario =
-          new DefaultClientScenario("127.0.0.1", port, transmit.getBytes());
+      final DefaultClientScenario scenario = new DefaultClientScenario("127.0.0.1", port);
 
       final ScenarioResult clientResult = scenario.call();
 
-      while (listener.severity == null) {
+      while (listener.result == null) {
         Thread.sleep(20);
       }
-      assertTrue(Severity.NOT_OK.equals(listener.severity));
+      assertTrue(listener.result.isSuccess());
 
       // the sent bytes must equal the received bytes
       assertArrayEquals(clientResult.getReceivedBytes(), listener.result.getSentBytes());

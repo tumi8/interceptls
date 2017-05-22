@@ -1,21 +1,20 @@
 package de.tum.in.net.server;
 
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.junit.Test;
+
 import de.tum.in.net.model.ClientHandlerFactory;
 import de.tum.in.net.model.Severity;
-import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 import de.tum.in.net.scenario.server.BcTlsServerFactory;
 import de.tum.in.net.scenario.server.DefaultClientHandlerFactory;
 import de.tum.in.net.scenario.server.SimpleServerSocket;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by johannes on 17.05.17.
@@ -64,19 +63,17 @@ public class SimpleServerSocketTest {
       final Thread clientThread = new Thread(new Runnable() {
         @Override
         public void run() {
-          final ScenarioResult result =
-              new DefaultClientScenario("127.0.0.1", port, Severity.OK.toString().getBytes())
-                  .call();
+          new DefaultClientScenario("127.0.0.1", port, Severity.OK.toString().getBytes()).call();
         }
       });
       clientThread.start();
 
-      while (publisher.severity == null) {
+      while (publisher.result == null) {
         Thread.sleep(20);
       }
 
-      assertNotNull(publisher.severity);
-      assertTrue(Severity.OK.equals(publisher.severity));
+      assertNotNull(publisher.result);
+      assertTrue(publisher.result.isSuccess());
     }
 
 
