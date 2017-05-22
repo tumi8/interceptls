@@ -51,7 +51,7 @@ public class DefaultClientScenario implements Scenario {
             @Override
             public void notifyServerCertificate(final Certificate serverCertificate)
                 throws IOException {
-
+              log.debug("Notify server certificate.");
             }
           };
         }
