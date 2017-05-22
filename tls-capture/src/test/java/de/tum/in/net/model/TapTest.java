@@ -1,4 +1,4 @@
-package de.tum.in.net;
+package de.tum.in.net.model;
 
 import org.junit.Test;
 

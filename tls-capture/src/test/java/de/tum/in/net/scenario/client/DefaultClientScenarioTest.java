@@ -1,4 +1,4 @@
-package de.tum.in.net;
+package de.tum.in.net.scenario.client;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import org.junit.Test;
 
 import de.tum.in.net.model.ClientHandlerFactory;
-import de.tum.in.net.model.Severity;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 import de.tum.in.net.scenario.server.BcTlsServerFactory;
@@ -28,7 +27,6 @@ public class DefaultClientScenarioTest {
   @Test
   public void testOK() throws Exception {
     final int port = 3843;
-    final String transmit = Severity.OK.toString();
 
     final MyResultListener listener = new MyResultListener();
     final ClientHandlerFactory fac =
@@ -37,10 +35,8 @@ public class DefaultClientScenarioTest {
       executor.submit(socket);
       Thread.sleep(20);
 
-      final DefaultClientScenario scenario =
-          new DefaultClientScenario("127.0.0.1", port, transmit.getBytes());
-
-      final ScenarioResult clientResult = scenario.call();
+      final DefaultClientScenario scenario = new DefaultClientScenario("127.0.0.1", port);
+      scenario.call();
 
       while (listener.result == null) {
         Thread.sleep(20);
