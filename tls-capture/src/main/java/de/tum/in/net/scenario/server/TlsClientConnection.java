@@ -12,6 +12,7 @@ import de.tum.in.net.model.Tap;
 import de.tum.in.net.model.TlsServerFactory;
 import de.tum.in.net.model.TlsSocket;
 import de.tum.in.net.scenario.ScenarioResult;
+import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
 
 /**
  * Created by johannes on 14.05.17.
@@ -20,15 +21,13 @@ import de.tum.in.net.scenario.ScenarioResult;
 class TlsClientConnection implements Runnable {
 
   private static final Logger log = LoggerFactory.getLogger(TlsClientConnection.class);
-  private static final byte[] OK = "OK".getBytes();
-  private static final byte[] NOT_OK = "NOT_OK".getBytes();
 
   private final Socket socket;
-  private final ResultListener publisher;
+  private final ResultListener<ScenarioResult> publisher;
   private final TlsServerFactory tlsServerFactory;
 
   public TlsClientConnection(final Socket socket, final TlsServerFactory tlsServerFactory,
-      final ResultListener publisher) {
+      final ResultListener<ScenarioResult> publisher) {
     this.socket = Objects.requireNonNull(socket, "socket must not be null.");
     this.tlsServerFactory =
         Objects.requireNonNull(tlsServerFactory, "tlsServerFactory must not be null.");
@@ -43,20 +42,17 @@ class TlsClientConnection implements Runnable {
 
       final TlsSocket tlsSocket = tlsServerFactory.bind(tap.getIn(), tap.getOut());
 
-      // first save the handshake
-      final byte[] received = tap.getInputBytes();
-      final byte[] sent = tap.getOutputytes();
-
-      publisher
-          .publish(new ScenarioResult(socket.getRemoteSocketAddress().toString(), received, sent));
+      ScenarioResult result = new ScenarioResultBuilder(socket).transmitted(tap).connected();
+      publisher.publish(result);
 
       tlsSocket.close();
 
 
     } catch (final IOException e) {
       log.error("Socket closed.", e);
-      publisher
-          .publish(new ScenarioResult(socket.getRemoteSocketAddress().toString(), "Error", e, tap));
+      ScenarioResult result =
+          new ScenarioResultBuilder(socket).error(e).transmitted(tap).notConnected();
+      publisher.publish(result);
     }
 
   }

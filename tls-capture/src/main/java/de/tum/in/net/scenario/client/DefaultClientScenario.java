@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import de.tum.in.net.model.Tap;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
+import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
 
 /**
  * Created by johannes on 31.03.17.
@@ -58,13 +59,16 @@ public class DefaultClientScenario implements Scenario {
       });
 
       // we are now connected, therefore we can publish the captured bytes
-      result = new ScenarioResult(destination, tap.getInputBytes(), tap.getOutputytes());
+      result = new ScenarioResultBuilder(s).sent(tap.getOutputytes()).received(tap.getInputBytes())
+          .connected();
 
       tlsClientProtocol.close();
 
     } catch (final IOException e) {
       log.warn("Error in " + toString(), e);
-      result = new ScenarioResult(destination, "IOError", e, tap);
+
+      result =
+          new ScenarioResultBuilder("Client", destination).transmitted(tap).error(e).notConnected();
     }
 
     return result;
