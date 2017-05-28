@@ -1,5 +1,16 @@
 package de.tum.in.net.server;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.ECKeyParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
@@ -21,17 +32,6 @@ import org.bouncycastle.tls.crypto.TlsCryptoParameters;
 import org.bouncycastle.tls.crypto.impl.bc.BcDefaultTlsCredentialedSigner;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCertificate;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 
 import de.tum.in.net.scenario.server.TlsServerConfig;
 
@@ -55,9 +55,15 @@ public class FileTlsServerConfig implements TlsServerConfig {
 
     try (final InputStream in = new FileInputStream(certFile)) {
       final CertificateFactory factory = CertificateFactory.getInstance("X.509");
-      final Certificate cert = factory.generateCertificate(in);
+      final X509Certificate[] cert =
+          factory.generateCertificates(in).toArray(new X509Certificate[0]);
 
-      final TlsCertificate[] certs = {new BcTlsCertificate(crypto, cert.getEncoded())};
+
+      TlsCertificate[] certs = new TlsCertificate[cert.length];
+      for (int i = 0; i < cert.length; i++) {
+        certs[i] = new BcTlsCertificate(crypto, cert[i].getEncoded());
+      }
+
       this.cert = new org.bouncycastle.tls.Certificate(certs);
 
     }
