@@ -1,14 +1,13 @@
 package de.tum.in.net.scenario.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.model.ClientHandlerFactory;
 
@@ -23,7 +22,6 @@ public class SimpleServerSocket implements Runnable, Closeable {
   private final int port;
   private final ClientHandlerFactory clientHandlerFactory;
   private ServerSocket srv;
-  private Future<?> future;
 
   public SimpleServerSocket(final int port, final ClientHandlerFactory clientHandlerFactory,
       final ExecutorService exec) {
@@ -52,7 +50,7 @@ public class SimpleServerSocket implements Runnable, Closeable {
     } catch (final IOException e) {
       log.error("Unexpected IOException", e);
     } finally {
-      log.info("Server running on port {} stopped.", port);
+      log.info("Server stopped on port {}.", port);
     }
 
   }

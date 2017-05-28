@@ -29,10 +29,10 @@ public class ScenarioResult {
     this.source = source;
     this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
     this.successfullyConnected = success;
-    Objects.requireNonNull(receivedBytes, "received bytes must not be null");
-    Objects.requireNonNull(sentBytes, "sentBytes must not be null");
-    this.receivedBytes = Base64.toBase64String(receivedBytes);
-    this.sentBytes = Base64.toBase64String(sentBytes);
+    // Objects.requireNonNull(receivedBytes, "received bytes must not be null");
+    // Objects.requireNonNull(sentBytes, "sentBytes must not be null");
+    this.receivedBytes = receivedBytes == null ? null : Base64.toBase64String(receivedBytes);
+    this.sentBytes = sentBytes == null ? null : Base64.toBase64String(sentBytes);
     this.error = t;
     this.msg = msg;
   }

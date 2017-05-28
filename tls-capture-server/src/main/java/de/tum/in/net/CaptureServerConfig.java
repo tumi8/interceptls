@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 
 import de.tum.in.net.model.TestSession;
@@ -12,7 +13,7 @@ import de.tum.in.net.session.LoggingTestSession;
 
 public class CaptureServerConfig {
 
-  private enum TestSessionType {
+  public enum TestSessionType {
     ONLINE, LOCAL
   }
 
@@ -24,10 +25,15 @@ public class CaptureServerConfig {
   private final TestSessionType test_session;
   private final int port;
 
+  public CaptureServerConfig(String targetUrl, TestSessionType type, int port) {
+    this.target_url = Objects.requireNonNull(targetUrl, "targetUrl must not be null");
+    this.test_session = Objects.requireNonNull(type, "type must not be null");
+    this.port = port;
+  }
+
   public CaptureServerConfig(Properties props) {
     this.target_url = getNonEmptyProperty(props, TARGET_URL);
     this.test_session = TestSessionType.valueOf(getNonEmptyProperty(props, TEST_SESSION));
-
     this.port = Integer.parseInt(getNonEmptyProperty(props, PORT));
   }
 

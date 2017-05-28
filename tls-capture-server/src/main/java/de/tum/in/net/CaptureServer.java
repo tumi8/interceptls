@@ -3,6 +3,7 @@ package de.tum.in.net;
 import java.io.File;
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -35,8 +36,12 @@ public class CaptureServer {
   private final ClientHandlerFactory handler;
   private CaptureServerConfig conf;
 
-  public CaptureServer() throws IOException, CertificateException {
-    this.conf = CaptureServerConfig.load(CONF_FILE);
+  public CaptureServer() throws CertificateException, IOException {
+    this(CaptureServerConfig.load(CONF_FILE));
+  }
+
+  public CaptureServer(CaptureServerConfig conf) throws IOException, CertificateException {
+    this.conf = Objects.requireNonNull(conf, "conf must not be null");
     final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
     prov = new BcTlsServerFactory(config);
     ResultListener<ScenarioResult> uploader = new ResultUploader(conf);
