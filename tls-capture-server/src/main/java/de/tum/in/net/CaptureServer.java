@@ -56,9 +56,8 @@ public class CaptureServer {
   public synchronized void start() throws IllegalStateException {
     int port = conf.getPort();
     log.debug("Start CaptureServer on port {}", port);
-    final SimpleServerSocket srvSocket = new SimpleServerSocket(port, handler, exec);
-    server = srvSocket;
-    serverThread = new Thread(srvSocket, "Server on port " + port);
+    server = new SimpleServerSocket(port, handler, exec);
+    serverThread = new Thread(server, "Server on port " + port);
     serverThread.start();
   }
 

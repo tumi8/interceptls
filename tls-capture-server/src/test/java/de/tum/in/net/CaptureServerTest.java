@@ -38,6 +38,7 @@ public class CaptureServerTest {
 
     server.start();
     assertTrue(server.isRunning());
+    Thread.sleep(10);
 
     server.stop();
     Thread.sleep(50);
@@ -50,6 +51,7 @@ public class CaptureServerTest {
 
     server.start();
     assertTrue(server.isRunning());
+    Thread.sleep(10);
 
     DefaultClientScenario client = new DefaultClientScenario("127.0.0.1", port);
     ScenarioResult result = client.call();
@@ -67,6 +69,7 @@ public class CaptureServerTest {
 
     server.start();
     assertTrue(server.isRunning());
+    Thread.sleep(10);
 
     ExecutorService exec = Executors.newFixedThreadPool(numberOfClients / 2);
     List<Callable<ScenarioResult>> clients = new ArrayList<>();
