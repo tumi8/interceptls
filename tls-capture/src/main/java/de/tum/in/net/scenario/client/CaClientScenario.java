@@ -96,6 +96,7 @@ public class CaClientScenario implements Scenario {
 
               } catch (NoSuchAlgorithmException | CertificateException
                   | InvalidAlgorithmParameterException | CertPathValidatorException e) {
+                log.error("Bad certificate", e);
                 throw new TlsFatalAlert(AlertDescription.bad_certificate, e);
               }
 
