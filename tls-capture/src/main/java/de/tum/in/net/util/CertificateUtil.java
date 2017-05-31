@@ -10,7 +10,15 @@ import java.security.cert.X509Certificate;
 
 public class CertificateUtil {
 
-  public static X509Certificate[] readChain(File file) throws IOException, CertificateException {
+  public static X509Certificate[] readCerts(InputStream stream)
+      throws IOException, CertificateException {
+    try (final InputStream in = stream) {
+      final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+      return factory.generateCertificates(in).toArray(new X509Certificate[0]);
+    }
+  }
+
+  public static X509Certificate[] readCerts(File file) throws IOException, CertificateException {
     try (final InputStream in = new FileInputStream(file)) {
       final CertificateFactory factory = CertificateFactory.getInstance("X.509");
       return factory.generateCertificates(in).toArray(new X509Certificate[0]);

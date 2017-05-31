@@ -50,7 +50,7 @@ public class FileTlsServerConfig implements TlsServerConfig {
 
   public FileTlsServerConfig(final File certFile, final File keyFile)
       throws IOException, CertificateException {
-    final X509Certificate[] cert = CertificateUtil.readChain(certFile);
+    final X509Certificate[] cert = CertificateUtil.readCerts(certFile);
 
     TlsCertificate[] certs = new TlsCertificate[cert.length];
     for (int i = 0; i < cert.length; i++) {
