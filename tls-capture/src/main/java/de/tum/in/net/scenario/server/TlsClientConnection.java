@@ -50,8 +50,7 @@ class TlsClientConnection implements Runnable {
 
     } catch (final IOException e) {
       log.error("Socket closed.", e);
-      ScenarioResult result =
-          new ScenarioResultBuilder(socket).error(e).transmitted(tap).notConnected();
+      ScenarioResult result = new ScenarioResultBuilder(socket).transmitted(tap).error(e);
       publisher.publish(result);
     }
 

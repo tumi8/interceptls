@@ -67,8 +67,7 @@ public class DefaultClientScenario implements Scenario {
     } catch (final IOException e) {
       log.warn("Error in " + toString(), e);
 
-      result =
-          new ScenarioResultBuilder("Client", destination).transmitted(tap).error(e).notConnected();
+      result = new ScenarioResultBuilder("Client", destination).transmitted(tap).error(e);
     }
 
     return result;

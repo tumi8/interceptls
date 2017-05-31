@@ -13,10 +13,14 @@ import de.tum.in.net.model.Tap;
 
 public class ScenarioResult {
 
+  private enum STATE {
+    CONNECTED, NO_CONNECTION, ERROR
+  }
+
   // required
   private final String source;
   private final String destination;
-  private final boolean successfullyConnected;
+  private final STATE state;
 
   // optional
   private final String receivedBytes;
@@ -24,11 +28,11 @@ public class ScenarioResult {
   private final Throwable error;
   private final String msg;
 
-  private ScenarioResult(final String source, final String destination, boolean success,
+  private ScenarioResult(final String source, final String destination, STATE state,
       final byte[] receivedBytes, final byte[] sentBytes, Throwable t, String msg) {
     this.source = source;
     this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
-    this.successfullyConnected = success;
+    this.state = Objects.requireNonNull(state, "state must not be null");
     // Objects.requireNonNull(receivedBytes, "received bytes must not be null");
     // Objects.requireNonNull(sentBytes, "sentBytes must not be null");
     this.receivedBytes = receivedBytes == null ? null : Base64.toBase64String(receivedBytes);
@@ -37,10 +41,12 @@ public class ScenarioResult {
     this.msg = msg;
   }
 
-
+  public STATE getState() {
+    return state;
+  }
 
   public boolean isSuccess() {
-    return successfullyConnected;
+    return STATE.CONNECTED.equals(state);
   }
 
   /**
@@ -64,14 +70,7 @@ public class ScenarioResult {
   }
 
   public String getMsg() {
-    ensureResult(false);
     return msg;
-  }
-
-  private void ensureResult(final boolean successful) {
-    if (this.successfullyConnected != successful) {
-      throw new IllegalStateException("The method call is not allowed.");
-    }
   }
 
   public Throwable getError() {
@@ -88,15 +87,14 @@ public class ScenarioResult {
 
   @Override
   public String toString() {
-    return "ScenarioResult [" + source + "->" + destination + "] "
-        + (successfullyConnected ? "success" : "failure");
+    return "ScenarioResult [" + source + "->" + destination + "] " + state;
   }
 
   public static class ScenarioResultBuilder {
     // always required
     private String source;
     private String destination;
-    boolean successfullyConnected = true;
+    private STATE state;
 
     // optional
     private byte[] receivedBytes;
@@ -124,10 +122,6 @@ public class ScenarioResult {
       return this;
     }
 
-    public ScenarioResultBuilder error(Throwable t) {
-      this.t = t;
-      return this;
-    }
 
     public ScenarioResultBuilder message(String msg) {
       this.msg = msg;
@@ -135,18 +129,24 @@ public class ScenarioResult {
     }
 
     public ScenarioResult connected() {
-      this.successfullyConnected = true;
+      this.state = STATE.CONNECTED;
       return build();
     }
 
-    public ScenarioResult notConnected() {
-      this.successfullyConnected = false;
+    public ScenarioResult noConnection() {
+      this.state = STATE.NO_CONNECTION;
       return build();
     }
+
+    public ScenarioResult error(Throwable t) {
+      this.t = t;
+      this.state = STATE.ERROR;
+      return build();
+    }
+
 
     private ScenarioResult build() {
-      return new ScenarioResult(source, destination, successfullyConnected, receivedBytes,
-          sentBytes, t, msg);
+      return new ScenarioResult(source, destination, state, receivedBytes, sentBytes, t, msg);
     }
 
     /**
@@ -160,8 +160,6 @@ public class ScenarioResult {
       }
       return this;
     }
-
-
 
   }
 }
