@@ -25,6 +25,14 @@ public class CertificateUtil {
     }
   }
 
+  public static X509Certificate readCert(InputStream stream)
+      throws IOException, CertificateException {
+    try (final InputStream in = stream) {
+      final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+      return (X509Certificate) factory.generateCertificate(in);
+    }
+  }
+
   public static X509Certificate readCert(File file) throws IOException, CertificateException {
     try (final InputStream in = new FileInputStream(file)) {
       final CertificateFactory factory = CertificateFactory.getInstance("X.509");
