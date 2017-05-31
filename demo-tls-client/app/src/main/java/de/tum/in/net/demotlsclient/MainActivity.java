@@ -15,6 +15,7 @@ import android.widget.TextView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
@@ -63,12 +64,14 @@ public class MainActivity extends AppCompatActivity {
         final List<Scenario> scenarios = new ArrayList<>();
 
         try {
-            final InputStream in = getAssets().open("ca-cert.pem");
-            final X509Certificate[] certs = CertificateUtil.readCerts(in);
+            final String caDir = "ca-certs";
             final Set<TrustAnchor> trustAnchors = new HashSet<>();
-            for (final X509Certificate cert : certs) {
-                trustAnchors.add(new TrustAnchor(cert, null));
+            for (final String ca : getAssets().list(caDir)) {
+                final InputStream in = getAssets().open(caDir + File.separator + ca);
+                final X509Certificate caCert = CertificateUtil.readCert(in);
+                trustAnchors.add(new TrustAnchor(caCert, null));
             }
+
             scenarios.add(new CaClientScenario("10.0.2.2", 7623, trustAnchors));
 
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
@@ -116,9 +119,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } catch (final IOException e) {
-            e.printStackTrace();
+            log.error("IOError", e);
         } catch (final CertificateException e) {
-            e.printStackTrace();
+            log.error("Illegal Cert", e);
         }
 
 
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         //for (final String target : targets) {
         //    scenarios.add(new DefaultClientScenario(target, 443));
         //}
-        
+
         //TODO read ca-certs from /system/etc/security/cacerts/...
 
 
