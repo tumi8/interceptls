@@ -16,7 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.TrustAnchor;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -25,8 +30,9 @@ import java.util.concurrent.Executors;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
-import de.tum.in.net.scenario.client.DefaultClientScenario;
+import de.tum.in.net.scenario.client.CaClientScenario;
 import de.tum.in.net.session.OnlineTestSession;
+import de.tum.in.net.util.CertificateUtil;
 
 /**
  * Created by wohlfart on 11.08.16.
@@ -54,55 +60,76 @@ public class MainActivity extends AppCompatActivity {
         log.debug("Start test scenarios");
         results.clear();
 
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
-        final Set<String> targets = ConfigurationReader.readHosts(this);
-        progressBar.setMax(targets.size());
-        progressBar.setVisibility(View.VISIBLE);
+        final List<Scenario> scenarios = new ArrayList<>();
 
-        final AsyncResult<ScenarioResult> asyncResult = new AsyncResult<ScenarioResult>() {
-            @Override
-            public void publishResult(final ScenarioResult result) {
-                results.add(result);
-                progressBar.setProgress(results.size());
+        try {
+            final InputStream in = getAssets().open("ca-cert.pem");
+            final X509Certificate[] certs = CertificateUtil.readCerts(in);
+            final Set<TrustAnchor> trustAnchors = new HashSet<>();
+            for (final X509Certificate cert : certs) {
+                trustAnchors.add(new TrustAnchor(cert, null));
+            }
+            scenarios.add(new CaClientScenario("10.0.2.2", 7623, trustAnchors));
 
-                if (results.size() == targets.size()) {
-                    final TextView titleView = (TextView) findViewById(R.id.textView);
-                    final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
-                    view.setText("");
-                    for (final ScenarioResult r : results) {
-                        view.append(r.getDestination() + " " + r.isSuccess() + "\n");
-                    }
+            final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+            final Set<String> targets = ConfigurationReader.readHosts(this);
+            progressBar.setMax(scenarios.size());
+            progressBar.setVisibility(View.VISIBLE);
 
-                    progressBar.setVisibility(View.GONE);
-                    titleView.setVisibility(View.VISIBLE);
-                    view.setVisibility(View.VISIBLE);
+            final AsyncResult<ScenarioResult> asyncResult = new AsyncResult<ScenarioResult>() {
+                @Override
+                public void publishResult(final ScenarioResult result) {
+                    results.add(result);
+                    progressBar.setProgress(results.size());
 
-                    // TODO replace with real OnlineTestSession publisher
-                    log.debug("publishing results");
+                    if (results.size() == scenarios.size()) {
+                        final TextView titleView = (TextView) findViewById(R.id.textView);
+                        final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
+                        view.setText("");
+                        for (final ScenarioResult r : results) {
+                            view.append(r.getDestination() + " " + r.getState() + "\n");
+                        }
 
-                    try {
-                        //10.0.2.2 is the ip of the machine running the emulator
-                        final TestSession session = new OnlineTestSession("http://10.0.2.2:3000");
-                        session.uploadHandshake(results);
-                    } catch (final IOException e) {
-                        // TODO save and try again later
-                        e.printStackTrace();
+                        progressBar.setVisibility(View.GONE);
+                        titleView.setVisibility(View.VISIBLE);
+                        view.setVisibility(View.VISIBLE);
+
+                        // TODO replace with real OnlineTestSession publisher
+                        log.debug("publishing results");
+
+                        try {
+                            //10.0.2.2 is the ip of the machine running the emulator
+                            final TestSession session = new OnlineTestSession("http://10.0.2.2:3000");
+                            session.uploadHandshake(results);
+                        } catch (final IOException e) {
+                            // TODO save and try again later
+                            e.printStackTrace();
+                        }
                     }
                 }
+            };
+
+
+            for (final Scenario scenario : scenarios) {
+                final AsyncScenarioTask task = new AsyncScenarioTask(scenario, asyncResult);
+                task.executeOnExecutor(executor);
             }
-        };
 
-
-        final List<Scenario> scenarios = new ArrayList<>(targets.size());
-        for (final String target : targets) {
-            scenarios.add(new DefaultClientScenario(target, 443));
+        } catch (final IOException e) {
+            e.printStackTrace();
+        } catch (final CertificateException e) {
+            e.printStackTrace();
         }
 
-        for (final Scenario scenario : scenarios) {
-            final AsyncScenarioTask task = new AsyncScenarioTask(scenario, asyncResult);
-            task.executeOnExecutor(executor);
-        }
 
+        //scenarios.add(new DefaultClientScenario("10.0.2.2", 7623));
+
+        //
+        //final List<Scenario> scenarios = new ArrayList<>(targets.size());
+        //for (final String target : targets) {
+        //    scenarios.add(new DefaultClientScenario(target, 443));
+        //}
+        
         //TODO read ca-certs from /system/etc/security/cacerts/...
 
 
