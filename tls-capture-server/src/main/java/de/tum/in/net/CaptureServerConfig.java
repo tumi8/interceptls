@@ -11,7 +11,7 @@ import de.tum.in.net.model.TestSession;
 import de.tum.in.net.session.FixedIdTestSession;
 import de.tum.in.net.session.LoggingTestSession;
 
-public class CaptureServerConfig {
+public class CaptureServerConfig implements TestSessionProvider {
 
   public enum TestSessionType {
     ONLINE, LOCAL
@@ -53,7 +53,8 @@ public class CaptureServerConfig {
     return new CaptureServerConfig(props);
   }
 
-  public TestSession getNewTestSession() throws IOException {
+  @Override
+  public TestSession newTestSession() throws IOException {
     switch (this.test_session) {
       case LOCAL:
         return new LoggingTestSession();

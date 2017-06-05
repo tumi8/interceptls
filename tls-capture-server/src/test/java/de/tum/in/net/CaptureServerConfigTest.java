@@ -47,7 +47,7 @@ public class CaptureServerConfigTest {
   @Test
   public void okLocal() throws Exception {
     CaptureServerConfig conf = new CaptureServerConfig(props);
-    TestSession session = conf.getNewTestSession();
+    TestSession session = conf.newTestSession();
     session.uploadHandshake(Arrays.asList());
   }
 
@@ -55,7 +55,7 @@ public class CaptureServerConfigTest {
   public void okOnline() throws Exception {
     props.setProperty("test.session", "ONLINE");
     CaptureServerConfig conf = new CaptureServerConfig(props);
-    TestSession session = conf.getNewTestSession();
+    TestSession session = conf.newTestSession();
     session.uploadHandshake(Arrays.asList());
   }
 
