@@ -13,14 +13,10 @@ import de.tum.in.net.model.Tap;
 
 public class ScenarioResult {
 
-  private enum STATE {
-    CONNECTED, NO_CONNECTION, ERROR
-  }
-
   // required
   private final String source;
   private final String destination;
-  private final STATE state;
+  private final State state;
 
   // optional
   private final String receivedBytes;
@@ -28,7 +24,7 @@ public class ScenarioResult {
   private final Throwable error;
   private final String msg;
 
-  private ScenarioResult(final String source, final String destination, STATE state,
+  private ScenarioResult(final String source, final String destination, State state,
       final byte[] receivedBytes, final byte[] sentBytes, Throwable t, String msg) {
     this.source = source;
     this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
@@ -41,12 +37,12 @@ public class ScenarioResult {
     this.msg = msg;
   }
 
-  public STATE getState() {
+  public State getState() {
     return state;
   }
 
   public boolean isSuccess() {
-    return STATE.CONNECTED.equals(state);
+    return State.CONNECTED.equals(state);
   }
 
   /**
@@ -94,7 +90,7 @@ public class ScenarioResult {
     // always required
     private String source;
     private String destination;
-    private STATE state;
+    private State state;
 
     // optional
     private byte[] receivedBytes;
@@ -129,18 +125,18 @@ public class ScenarioResult {
     }
 
     public ScenarioResult connected() {
-      this.state = STATE.CONNECTED;
+      this.state = State.CONNECTED;
       return build();
     }
 
     public ScenarioResult noConnection() {
-      this.state = STATE.NO_CONNECTION;
+      this.state = State.NO_CONNECTION;
       return build();
     }
 
     public ScenarioResult error(Throwable t) {
       this.t = t;
-      this.state = STATE.ERROR;
+      this.state = State.ERROR;
       return build();
     }
 
