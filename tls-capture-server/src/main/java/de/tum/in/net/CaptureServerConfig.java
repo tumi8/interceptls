@@ -59,7 +59,7 @@ public class CaptureServerConfig implements TestSessionProvider {
       case LOCAL:
         return new LoggingTestSession();
       case ONLINE:
-        return new FixedIdTestSession(target_url);
+        return new FixedIdTestSession("server", target_url);
       default:
         throw new IllegalStateException("unknown test session: " + this.test_session);
     }

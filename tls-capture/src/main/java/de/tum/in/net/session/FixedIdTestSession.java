@@ -2,6 +2,7 @@ package de.tum.in.net.session;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Objects;
 
 import de.tum.in.net.model.AnalysisAPI;
 import de.tum.in.net.model.TestSession;
@@ -13,10 +14,11 @@ import de.tum.in.net.scenario.ScenarioResult;
 
 public class FixedIdTestSession implements TestSession {
 
-  private static final String id = "1";
+  private final String id;
   private final AnalysisAPI analysisAPI;
 
-  public FixedIdTestSession(final String ip) throws IOException {
+  public FixedIdTestSession(final String id, final String ip) throws IOException {
+    this.id = Objects.requireNonNull(id, "id must not be null");
     this.analysisAPI = APIClient.createClient(ip).create(AnalysisAPI.class);
   }
 
