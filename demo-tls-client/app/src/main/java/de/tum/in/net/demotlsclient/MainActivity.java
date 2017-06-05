@@ -21,9 +21,8 @@ import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +30,7 @@ import java.util.concurrent.Executors;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
+import de.tum.in.net.scenario.State;
 import de.tum.in.net.scenario.client.CaClientScenario;
 import de.tum.in.net.session.OnlineTestSession;
 import de.tum.in.net.util.CertificateUtil;
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
     // we could execute the scenarios in parallel later
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final List<ScenarioResult> results = new ArrayList<>();
 
 
     @Override
@@ -59,64 +58,54 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTestScenarios(final View v) {
         log.debug("Start test scenarios");
-        results.clear();
-
-        final List<Scenario> scenarios = new ArrayList<>();
 
         try {
-            final String caDir = "ca-certs";
-            final Set<TrustAnchor> trustAnchors = new HashSet<>();
-            for (final String ca : getAssets().list(caDir)) {
-                final InputStream in = getAssets().open(caDir + File.separator + ca);
-                final X509Certificate caCert = CertificateUtil.readCert(in);
-                trustAnchors.add(new TrustAnchor(caCert, null));
-            }
+            final Set<TrustAnchor> trustAnchors = readCaCerts();
 
-            scenarios.add(new CaClientScenario("10.0.2.2", 7623, trustAnchors));
+            final Scenario scenario = new CaClientScenario("10.0.2.2", 7623, trustAnchors);
 
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
             final Set<String> targets = ConfigurationReader.readHosts(this);
-            progressBar.setMax(scenarios.size());
+            progressBar.setIndeterminate(true);
             progressBar.setVisibility(View.VISIBLE);
 
             final AsyncResult<ScenarioResult> asyncResult = new AsyncResult<ScenarioResult>() {
                 @Override
                 public void publishResult(final ScenarioResult result) {
-                    results.add(result);
-                    progressBar.setProgress(results.size());
 
-                    if (results.size() == scenarios.size()) {
-                        final TextView titleView = (TextView) findViewById(R.id.textView);
-                        final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
-                        view.setText("");
-                        for (final ScenarioResult r : results) {
-                            view.append(r.getDestination() + " " + r.getState() + "\n");
-                        }
+                    final TextView titleView = (TextView) findViewById(R.id.textView);
+                    final TextView view = (TextView) findViewById(R.id.tview_tls_handshake);
+                    view.setText(result.getDestination() + " " + result.getState() + "\n");
 
-                        progressBar.setVisibility(View.GONE);
-                        titleView.setVisibility(View.VISIBLE);
-                        view.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                    titleView.setVisibility(View.VISIBLE);
+                    view.setVisibility(View.VISIBLE);
 
-                        // TODO replace with real OnlineTestSession publisher
-                        log.debug("publishing results");
+                    // TODO replace with real OnlineTestSession publisher
+                    log.debug("publishing results");
 
+
+                    //upload only in case of error (e.g. wrong certificate)
+                    if (State.ERROR.equals(result.getState())) {
                         try {
                             //10.0.2.2 is the ip of the machine running the emulator
                             final TestSession session = new OnlineTestSession("http://10.0.2.2:3000");
-                            session.uploadHandshake(results);
+                            session.uploadHandshake(Arrays.asList(result));
                         } catch (final IOException e) {
                             // TODO save and try again later
                             e.printStackTrace();
                         }
                     }
+
+
                 }
             };
 
 
-            for (final Scenario scenario : scenarios) {
-                final AsyncScenarioTask task = new AsyncScenarioTask(scenario, asyncResult);
-                task.executeOnExecutor(executor);
-            }
+            //for (final Scenario scenario : scenarios) {
+            final AsyncScenarioTask task = new AsyncScenarioTask(scenario, asyncResult);
+            task.executeOnExecutor(executor);
+            //}
 
         } catch (final IOException e) {
             log.error("IOError", e);
@@ -136,6 +125,17 @@ public class MainActivity extends AppCompatActivity {
         //TODO read ca-certs from /system/etc/security/cacerts/...
 
 
+    }
+
+    private Set<TrustAnchor> readCaCerts() throws IOException, CertificateException {
+        final String caDir = "ca-certs";
+        final Set<TrustAnchor> trustAnchors = new HashSet<>();
+        for (final String ca : getAssets().list(caDir)) {
+            final InputStream in = getAssets().open(caDir + File.separator + ca);
+            final X509Certificate caCert = CertificateUtil.readCert(in);
+            trustAnchors.add(new TrustAnchor(caCert, null));
+        }
+        return trustAnchors;
     }
 
 
