@@ -52,13 +52,13 @@ public class ResultUploaderTest {
       }
     });
 
-    ScenarioResult result = new ScenarioResultBuilder("src", "dst").connected();
+    ScenarioResult result = new ScenarioResultBuilder("src", "dst").error(new Throwable());
     uploader.publish(result);
 
-    ScenarioResult result2 = new ScenarioResultBuilder("src2", "dst2").connected();
+    ScenarioResult result2 = new ScenarioResultBuilder("src2", "dst2").error(new Throwable());
     uploader.publish(result2);
 
-    ScenarioResult result3 = new ScenarioResultBuilder("src3", "dst3").connected();
+    ScenarioResult result3 = new ScenarioResultBuilder("src3", "dst3").error(new Throwable());
     uploader.publish(result3);
 
   }
