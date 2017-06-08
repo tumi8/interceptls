@@ -19,22 +19,40 @@ public class ScenarioResult {
   private final State state;
 
   // optional
-  private final String receivedBytes;
-  private final String sentBytes;
-  private final Throwable error;
-  private final String msg;
+  private String receivedBytes;
+  private String sentBytes;
+  private Throwable error;
+  private String msg;
 
   private ScenarioResult(final String source, final String destination, State state,
       final byte[] receivedBytes, final byte[] sentBytes, Throwable t, String msg) {
     this.source = source;
     this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
     this.state = Objects.requireNonNull(state, "state must not be null");
-    // Objects.requireNonNull(receivedBytes, "received bytes must not be null");
-    // Objects.requireNonNull(sentBytes, "sentBytes must not be null");
-    this.receivedBytes = receivedBytes == null ? null : Base64.toBase64String(receivedBytes);
-    this.sentBytes = sentBytes == null ? null : Base64.toBase64String(sentBytes);
-    this.error = t;
-    this.msg = msg;
+
+    // depending on state additional parameter are required
+    switch (this.state) {
+      case CONNECTED:
+        this.receivedBytes = Base64.toBase64String(
+            Objects.requireNonNull(receivedBytes, "receivedBytes must not be null"));
+        this.sentBytes =
+            Base64.toBase64String(Objects.requireNonNull(sentBytes, "sentBytes must not be null"));
+        break;
+
+      case NO_CONNECTION:
+        // TODO no
+        break;
+
+      case ERROR:
+        // this.msg = Objects.requireNonNull(msg, "msg must not be null");
+        this.error = Objects.requireNonNull(t, "error must not be null");
+        break;
+
+      default:
+        throw new IllegalStateException("Unknown state: " + this.state);
+
+    }
+
   }
 
   public State getState() {
