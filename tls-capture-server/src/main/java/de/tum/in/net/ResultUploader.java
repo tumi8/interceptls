@@ -50,7 +50,7 @@ public class ResultUploader implements ResultListener<ScenarioResult> {
         // success, we can remove the results
         unpublishedResults.clear();
       } catch (IOException e) {
-        log.debug("Could not upload results.", e);
+        log.warn("Could not upload results.", e);
       }
     }
 
