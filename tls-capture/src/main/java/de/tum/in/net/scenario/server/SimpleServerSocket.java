@@ -43,14 +43,14 @@ public class SimpleServerSocket implements Runnable, Closeable {
       while (true) {
         // blocks
         final Socket socket = srv.accept();
-        log.debug("Received new client connection: {}", socket.getRemoteSocketAddress());
+        log.info("New client connection {}", socket.getRemoteSocketAddress());
         final Runnable clientHandler = clientHandlerFactory.createClientHandler(socket);
         exec.submit(clientHandler);
       }
     } catch (final IOException e) {
       log.error("Unexpected IOException", e);
     } finally {
-      log.info("Server stopped on port {}.", port);
+      log.warn("Server stopped on port {}.", port);
     }
 
   }
