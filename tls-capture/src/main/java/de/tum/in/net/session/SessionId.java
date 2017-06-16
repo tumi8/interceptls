@@ -20,7 +20,19 @@ public class SessionId {
     return this.id;
   }
 
+  @Override
   public String toString() {
     return id;
   }
+
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return this.id.equals(o);
+  }
+
 }
