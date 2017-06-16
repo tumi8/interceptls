@@ -32,7 +32,10 @@ public class SessionId {
 
   @Override
   public boolean equals(Object o) {
-    return this.id.equals(o);
+    if (o instanceof SessionId) {
+      return this.id.equals(((SessionId) o).id);
+    }
+    return false;
   }
 
 }
