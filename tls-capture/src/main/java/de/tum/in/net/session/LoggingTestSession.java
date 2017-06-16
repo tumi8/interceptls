@@ -17,8 +17,8 @@ public class LoggingTestSession implements TestSession {
   private static final Logger log = LoggerFactory.getLogger(LoggingTestSession.class);
 
   @Override
-  public String getSessionID() {
-    return "LocalTestSession";
+  public SessionId getSessionID() {
+    return new SessionId("LocalTestSession");
   }
 
   @Override

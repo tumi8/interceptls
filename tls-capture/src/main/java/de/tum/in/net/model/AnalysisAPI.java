@@ -19,8 +19,8 @@ public interface AnalysisAPI {
   Call<SessionId> newSessionID();
 
   @PUT("/handshake/{session_id}")
-  Call<ResponseBody> uploadHandshake(@Path(value = "session_id", encoded = true) String sessionId,
-      @Body ScenarioResult result);
+  Call<ResponseBody> uploadHandshake(
+      @Path(value = "session_id", encoded = true) SessionId sessionId, @Body ScenarioResult result);
 
 
 }

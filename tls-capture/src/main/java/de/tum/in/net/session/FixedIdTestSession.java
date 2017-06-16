@@ -13,17 +13,17 @@ import de.tum.in.net.scenario.ScenarioResult;
 
 public class FixedIdTestSession implements TestSession {
 
-  private final String id;
+  private final SessionId id;
   private final AnalysisAPI analysisAPI;
 
-  public FixedIdTestSession(final String id, final String ip) throws IOException {
+  public FixedIdTestSession(final SessionId id, final String ip) throws IOException {
     this.id = Objects.requireNonNull(id, "id must not be null");
     this.analysisAPI = APIClient.createClient(ip).create(AnalysisAPI.class);
   }
 
 
   @Override
-  public String getSessionID() {
+  public SessionId getSessionID() {
     return id;
   }
 

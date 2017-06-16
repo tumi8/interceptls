@@ -52,7 +52,7 @@ public class ResultUploader implements ResultListener<ScenarioResult> {
       while (it.hasNext()) {
         SessionResult res = it.next();
         try {
-          TestSession session = new FixedIdTestSession(res.id.getID(), targetUrl);
+          TestSession session = new FixedIdTestSession(res.id, targetUrl);
           session.uploadHandshake(res.result);
 
           // success, remove the result

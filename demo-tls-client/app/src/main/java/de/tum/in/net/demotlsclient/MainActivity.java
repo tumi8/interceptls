@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -62,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             final Set<TrustAnchor> trustAnchors = readCaCerts();
 
-            final Scenario scenario = new CaClientScenario("10.0.2.2", 7623, trustAnchors);
+            final TestSession session = new OnlineTestSession("http://10.0.2.2:3000");
+            final TlsTestIdIncrementor inc = new TlsTestIdIncrementor(session.getSessionID());
+
+            final Scenario scenario = new CaClientScenario(inc.next(), "10.0.2.2", 7623, trustAnchors);
 
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
             final Set<String> targets = ConfigurationReader.readHosts(this);
@@ -89,8 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     if (State.ERROR.equals(result.getState())) {
                         try {
                             //10.0.2.2 is the ip of the machine running the emulator
-                            final TestSession session = new OnlineTestSession("http://10.0.2.2:3000");
-                            session.uploadHandshake(Arrays.asList(result));
+                            session.uploadHandshake(result);
                         } catch (final IOException e) {
                             // TODO save and try again later
                             e.printStackTrace();
