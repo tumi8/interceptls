@@ -1,12 +1,13 @@
 package de.tum.in.net;
 
-import java.util.Arrays;
 import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.tum.in.net.model.TestSession;
+import de.tum.in.net.model.TlsTestId;
+import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
 
 public class CaptureServerConfigTest {
 
@@ -48,7 +49,8 @@ public class CaptureServerConfigTest {
   public void okLocal() throws Exception {
     CaptureServerConfig conf = new CaptureServerConfig(props);
     TestSession session = conf.newTestSession();
-    session.uploadHandshake(Arrays.asList());
+    session.uploadHandshake(new ScenarioResultBuilder("src", "dst").error(new Throwable(),
+        TlsTestId.randomID().getTestId()));
   }
 
   @Test
@@ -56,7 +58,8 @@ public class CaptureServerConfigTest {
     props.setProperty("test.session", "ONLINE");
     CaptureServerConfig conf = new CaptureServerConfig(props);
     TestSession session = conf.newTestSession();
-    session.uploadHandshake(Arrays.asList());
+    // session.uploadHandshake(new ScenarioResultBuilder("src", "dst").error(new Throwable(),
+    // TlsTestId.randomID().getTestId()));
   }
 
 }

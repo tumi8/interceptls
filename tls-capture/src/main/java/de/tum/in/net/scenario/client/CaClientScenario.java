@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.model.Tap;
+import de.tum.in.net.model.TlsTestId;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
@@ -45,9 +46,12 @@ public class CaClientScenario implements Scenario {
   private final String destination;
   private final int port;
   private Set<TrustAnchor> trustAnchors;
+  private TlsTestId testId;
 
 
-  public CaClientScenario(final String destination, final int port, Set<TrustAnchor> trustAnchors) {
+  public CaClientScenario(TlsTestId testId, final String destination, final int port,
+      Set<TrustAnchor> trustAnchors) {
+    this.testId = testId;
     this.destination = Objects.requireNonNull(destination, "destination must not be null.");
     this.port = port;
     this.trustAnchors = trustAnchors;
@@ -107,14 +111,18 @@ public class CaClientScenario implements Scenario {
 
       // we are now connected, therefore we can publish the captured bytes
       result = new ScenarioResultBuilder(s).sent(tap.getOutputytes()).received(tap.getInputBytes())
-          .connected();
+          .connected(testId.getTestId());
+
+      // then we send our session-id
+      tlsClientProtocol.getOutputStream().write(testId.getTransmitBytes());
 
       tlsClientProtocol.close();
 
     } catch (final IOException e) {
       log.warn("Error in " + toString(), e);
 
-      result = new ScenarioResultBuilder("Client", destination).transmitted(tap).error(e);
+      result = new ScenarioResultBuilder("Client", destination).transmitted(tap).error(e,
+          testId.getTestId());
     }
 
     return result;

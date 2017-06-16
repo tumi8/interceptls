@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.tum.in.net.CaptureServerConfig.TestSessionType;
+import de.tum.in.net.model.TlsTestId;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 
@@ -26,6 +27,7 @@ public class CaptureServerTest {
 
   private CaptureServerConfig conf;
   private final int port = 34234;
+  private final TlsTestId id = TlsTestId.randomID();
 
   @Before
   public void setUp() {
@@ -53,7 +55,7 @@ public class CaptureServerTest {
     assertTrue(server.isRunning());
     Thread.sleep(10);
 
-    DefaultClientScenario client = new DefaultClientScenario("127.0.0.1", port);
+    DefaultClientScenario client = new DefaultClientScenario(id, "127.0.0.1", port);
     ScenarioResult result = client.call();
     assertTrue(result.isSuccess());
 
@@ -74,7 +76,7 @@ public class CaptureServerTest {
     ExecutorService exec = Executors.newFixedThreadPool(numberOfClients / 2);
     List<Callable<ScenarioResult>> clients = new ArrayList<>();
     IntStream.range(1, numberOfClients)
-        .forEach(e -> clients.add(new DefaultClientScenario("127.0.0.1", port)));
+        .forEach(e -> clients.add(new DefaultClientScenario(id, "127.0.0.1", port)));
 
     List<Future<ScenarioResult>> results = exec.invokeAll(clients, 5, TimeUnit.SECONDS);
     for (Future<ScenarioResult> result : results) {

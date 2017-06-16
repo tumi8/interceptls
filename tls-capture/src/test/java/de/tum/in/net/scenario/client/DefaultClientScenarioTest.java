@@ -1,6 +1,7 @@
 package de.tum.in.net.scenario.client;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.ExecutorService;
@@ -9,6 +10,7 @@ import java.util.concurrent.Executors;
 import org.junit.Test;
 
 import de.tum.in.net.model.ClientHandlerFactory;
+import de.tum.in.net.model.TlsTestId;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.server.BcTlsServerFactory;
 import de.tum.in.net.scenario.server.DefaultClientHandlerFactory;
@@ -25,6 +27,9 @@ public class DefaultClientScenarioTest {
   @Test
   public void testOK() throws Exception {
     final int port = 3843;
+    String sessionId = "sessionId";
+    String testId = "testId";
+    TlsTestId id = new TlsTestId(sessionId, testId);
 
     final MyResultListener listener = new MyResultListener();
     final ClientHandlerFactory fac =
@@ -33,7 +38,7 @@ public class DefaultClientScenarioTest {
       executor.submit(socket);
       Thread.sleep(20);
 
-      final DefaultClientScenario scenario = new DefaultClientScenario("127.0.0.1", port);
+      final DefaultClientScenario scenario = new DefaultClientScenario(id, "127.0.0.1", port);
 
       final ScenarioResult clientResult = scenario.call();
 
@@ -45,6 +50,10 @@ public class DefaultClientScenarioTest {
       // the sent bytes must equal the received bytes
       assertArrayEquals(clientResult.getReceivedBytes(), listener.result.getSentBytes());
       assertArrayEquals(clientResult.getSentBytes(), listener.result.getReceivedBytes());
+
+      // received test id's
+      assertEquals(sessionId, listener.id.getID());
+      assertEquals(testId, listener.result.getTestId().toString());
     }
 
   }

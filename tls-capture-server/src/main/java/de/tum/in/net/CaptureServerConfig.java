@@ -74,4 +74,8 @@ public class CaptureServerConfig implements TestSessionProvider {
     return value.trim();
   }
 
+  public TestSessionType getTestSession() {
+    return this.test_session;
+  }
+
 }

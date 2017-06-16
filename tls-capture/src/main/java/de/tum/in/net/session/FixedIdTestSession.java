@@ -1,7 +1,6 @@
 package de.tum.in.net.session;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Objects;
 
 import de.tum.in.net.model.AnalysisAPI;
@@ -29,9 +28,7 @@ public class FixedIdTestSession implements TestSession {
   }
 
   @Override
-  public void uploadHandshake(final Collection<ScenarioResult> results) throws IOException {
-    for (final ScenarioResult result : results) {
-      analysisAPI.uploadHandshake(id, result).execute();
-    }
+  public void uploadHandshake(final ScenarioResult result) throws IOException {
+    analysisAPI.uploadHandshake(id, result).execute();
   }
 }

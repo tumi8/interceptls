@@ -1,7 +1,6 @@
 package de.tum.in.net.model;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import de.tum.in.net.scenario.ScenarioResult;
 
@@ -16,5 +15,7 @@ public interface TestSession {
    */
   String getSessionID();
 
-  void uploadHandshake(Collection<ScenarioResult> results) throws IOException;
+  // void uploadHandshake(Collection<ScenarioResult> results) throws IOException;
+
+  void uploadHandshake(ScenarioResult result) throws IOException;
 }

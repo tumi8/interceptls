@@ -44,7 +44,19 @@ public class CaptureServer {
     this.conf = Objects.requireNonNull(conf, "conf must not be null");
     final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
     prov = new BcTlsServerFactory(config);
-    ResultListener<ScenarioResult> uploader = new ResultUploader(conf);
+
+    final ResultListener<ScenarioResult> uploader;
+    switch (conf.getTestSession()) {
+      case LOCAL:
+        uploader = new LogResultListener();
+        break;
+      case ONLINE:
+        uploader = new ResultUploader(conf.getTargetUrl());
+        break;
+      default:
+        throw new IllegalStateException("unknown test session: " + conf.getTestSession());
+    }
+
     handler = new DefaultClientHandlerFactory(prov, uploader);
   }
 

@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import org.junit.Test;
 
 import de.tum.in.net.model.ClientHandlerFactory;
+import de.tum.in.net.model.TlsTestId;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 import de.tum.in.net.scenario.server.BcTlsServerFactory;
 import de.tum.in.net.scenario.server.DefaultClientHandlerFactory;
@@ -62,7 +63,7 @@ public class SimpleServerSocketTest {
       final Thread clientThread = new Thread(new Runnable() {
         @Override
         public void run() {
-          new DefaultClientScenario("127.0.0.1", port).call();
+          new DefaultClientScenario(TlsTestId.randomID(), "127.0.0.1", port).call();
         }
       });
       clientThread.start();

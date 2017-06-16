@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.bouncycastle.util.encoders.Base64;
 
 import de.tum.in.net.model.Tap;
+import de.tum.in.net.model.TestId;
 
 /**
  * Created by johannes on 22.03.17.
@@ -14,6 +15,7 @@ import de.tum.in.net.model.Tap;
 public class ScenarioResult {
 
   // required
+  private final TestId testId;
   private final String source;
   private final String destination;
   private final State state;
@@ -24,8 +26,9 @@ public class ScenarioResult {
   private Throwable error;
   private String msg;
 
-  private ScenarioResult(final String source, final String destination, State state,
+  private ScenarioResult(TestId testId, final String source, final String destination, State state,
       final byte[] receivedBytes, final byte[] sentBytes, Throwable t, String msg) {
+    this.testId = Objects.requireNonNull(testId, "testId must not be null");
     this.source = source;
     this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
     this.state = Objects.requireNonNull(state, "state must not be null");
@@ -53,6 +56,10 @@ public class ScenarioResult {
 
     }
 
+  }
+
+  public TestId getTestId() {
+    return testId;
   }
 
   public State getState() {
@@ -115,6 +122,7 @@ public class ScenarioResult {
     private byte[] sentBytes;
     private Throwable t;
     private String msg;
+    private TestId testId;
 
     public ScenarioResultBuilder(String source, String destination) {
       this.source = source;
@@ -142,8 +150,9 @@ public class ScenarioResult {
       return this;
     }
 
-    public ScenarioResult connected() {
+    public ScenarioResult connected(TestId testId) {
       this.state = State.CONNECTED;
+      this.testId = testId;
       return build();
     }
 
@@ -152,15 +161,17 @@ public class ScenarioResult {
       return build();
     }
 
-    public ScenarioResult error(Throwable t) {
+    public ScenarioResult error(Throwable t, TestId testId) {
       this.t = t;
+      this.testId = testId;
       this.state = State.ERROR;
       return build();
     }
 
 
     private ScenarioResult build() {
-      return new ScenarioResult(source, destination, state, receivedBytes, sentBytes, t, msg);
+      return new ScenarioResult(testId, source, destination, state, receivedBytes, sentBytes, t,
+          msg);
     }
 
     /**
