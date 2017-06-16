@@ -5,10 +5,6 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tum.in.net.model.TestSession;
-import de.tum.in.net.model.TlsTestId;
-import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
-
 public class CaptureServerConfigTest {
 
   Properties props;
@@ -45,21 +41,6 @@ public class CaptureServerConfigTest {
     new CaptureServerConfig(props);
   }
 
-  @Test
-  public void okLocal() throws Exception {
-    CaptureServerConfig conf = new CaptureServerConfig(props);
-    TestSession session = conf.newTestSession();
-    session.uploadHandshake(new ScenarioResultBuilder("src", "dst").error(new Throwable(),
-        TlsTestId.randomID().getTestId()));
-  }
 
-  @Test
-  public void okOnline() throws Exception {
-    props.setProperty("test.session", "ONLINE");
-    CaptureServerConfig conf = new CaptureServerConfig(props);
-    TestSession session = conf.newTestSession();
-    // session.uploadHandshake(new ScenarioResultBuilder("src", "dst").error(new Throwable(),
-    // TlsTestId.randomID().getTestId()));
-  }
 
 }

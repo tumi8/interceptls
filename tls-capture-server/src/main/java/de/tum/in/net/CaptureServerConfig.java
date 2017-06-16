@@ -7,11 +7,7 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.Properties;
 
-import de.tum.in.net.model.TestSession;
-import de.tum.in.net.session.FixedIdTestSession;
-import de.tum.in.net.session.LoggingTestSession;
-
-public class CaptureServerConfig implements TestSessionProvider {
+public class CaptureServerConfig {
 
   public enum TestSessionType {
     ONLINE, LOCAL
@@ -53,18 +49,7 @@ public class CaptureServerConfig implements TestSessionProvider {
     return new CaptureServerConfig(props);
   }
 
-  @Override
-  public TestSession newTestSession() throws IOException {
-    switch (this.test_session) {
-      case LOCAL:
-        return new LoggingTestSession();
-      case ONLINE:
-        return new FixedIdTestSession("server", target_url);
-      default:
-        throw new IllegalStateException("unknown test session: " + this.test_session);
-    }
 
-  }
 
   private static String getNonEmptyProperty(Properties props, String key) {
     String value = props.getProperty(key);
