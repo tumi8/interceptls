@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.tum.in.net.CaptureServerConfig.TestSessionType;
-import de.tum.in.net.model.TlsTestId;
+import de.tum.in.net.model.TestID;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
 
@@ -27,7 +27,7 @@ public class CaptureServerTest {
 
   private CaptureServerConfig conf;
   private final int port = 34234;
-  private final TlsTestId id = TlsTestId.randomID();
+  private final TestID id = TestID.randomID();
 
   @Before
   public void setUp() {

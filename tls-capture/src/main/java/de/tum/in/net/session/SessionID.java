@@ -5,35 +5,35 @@ package de.tum.in.net.session;
  * 
  * @author johannes
  */
-public class SessionId {
+public class SessionID {
 
-  private final String id;
+  private final String sessionID;
 
-  public SessionId(final String id) {
-    this.id = id;
+  public SessionID(final String id) {
+    this.sessionID = id;
     if (!id.matches("[A-Za-z0-9]+")) {
       throw new IllegalArgumentException("id does not match the regex");
     }
   }
 
   public String getID() {
-    return this.id;
+    return this.sessionID;
   }
 
   @Override
   public String toString() {
-    return id;
+    return sessionID;
   }
 
   @Override
   public int hashCode() {
-    return id.hashCode();
+    return sessionID.hashCode();
   }
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof SessionId) {
-      return this.id.equals(((SessionId) o).id);
+    if (o instanceof SessionID) {
+      return this.sessionID.equals(((SessionID) o).sessionID);
     }
     return false;
   }

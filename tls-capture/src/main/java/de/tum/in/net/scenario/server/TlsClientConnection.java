@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.model.ResultListener;
 import de.tum.in.net.model.Tap;
+import de.tum.in.net.model.TestID;
 import de.tum.in.net.model.TlsServerFactory;
 import de.tum.in.net.model.TlsSocket;
-import de.tum.in.net.model.TlsTestId;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
 
@@ -46,10 +46,10 @@ class TlsClientConnection implements Runnable {
       ScenarioResultBuilder builder = new ScenarioResultBuilder(socket).transmitted(tap);
 
       // we always require the session-id
-      TlsTestId id = TlsTestId.read(tlsSocket.getInputStream());
-      ScenarioResult result = builder.connected(id.getTestId());
+      TestID id = TestID.read(tlsSocket.getInputStream());
+      ScenarioResult result = builder.connected();
 
-      publisher.publish(id.getTestSessionId(), result);
+      publisher.publish(id, result);
 
 
       tlsSocket.close();
@@ -57,8 +57,7 @@ class TlsClientConnection implements Runnable {
 
     } catch (final IOException e) {
       log.error("Socket closed.", e);
-      ScenarioResult result = new ScenarioResultBuilder(socket).transmitted(tap).error(e,
-          TlsTestId.randomID().getTestId());
+      ScenarioResult result = new ScenarioResultBuilder(socket).transmitted(tap).error(e);
       publisher.publish(null, result);
     }
 

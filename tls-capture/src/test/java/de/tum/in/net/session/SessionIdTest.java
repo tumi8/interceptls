@@ -9,9 +9,9 @@ public class SessionIdTest {
 
   @Test
   public void equals() {
-    SessionId s1 = new SessionId("s1");
-    SessionId s1_copy = new SessionId("s1");
-    SessionId s2 = new SessionId("s2");
+    SessionID s1 = new SessionID("s1");
+    SessionID s1_copy = new SessionID("s1");
+    SessionID s2 = new SessionID("s2");
 
     assertTrue(s1.equals(s1_copy));
     assertFalse(s1.equals(s2));

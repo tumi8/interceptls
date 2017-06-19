@@ -1,8 +1,8 @@
 package de.tum.in.net.server;
 
 import de.tum.in.net.model.ResultListener;
+import de.tum.in.net.model.TestID;
 import de.tum.in.net.scenario.ScenarioResult;
-import de.tum.in.net.session.SessionId;
 
 /**
  * Created by johannes on 17.05.17.
@@ -10,13 +10,14 @@ import de.tum.in.net.session.SessionId;
 
 public class MyResultListener implements ResultListener<ScenarioResult> {
 
-  public SessionId id;
+  public TestID testID;
   public ScenarioResult result;
 
   @Override
-  public void publish(SessionId id, ScenarioResult result) {
-    this.id = id;
+  public void publish(TestID id, ScenarioResult result) {
+    this.testID = id;
     this.result = result;
   }
+
 
 }

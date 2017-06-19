@@ -9,10 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.tum.in.net.model.ResultListener;
+import de.tum.in.net.model.TestID;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.session.FixedIdTestSession;
-import de.tum.in.net.session.SessionId;
 
 /**
  * Publishes the result to the configured target from CaptureServerConfig. If the upload results in
@@ -34,7 +34,7 @@ public class ResultUploader implements ResultListener<ScenarioResult> {
 
 
   @Override
-  public void publish(SessionId id, ScenarioResult result) {
+  public void publish(TestID id, ScenarioResult result) {
     // if queue is full, remove one element
     if (0 == unpublishedResults.remainingCapacity()) {
       unpublishedResults.poll();
@@ -52,8 +52,8 @@ public class ResultUploader implements ResultListener<ScenarioResult> {
       while (it.hasNext()) {
         SessionResult res = it.next();
         try {
-          TestSession session = new FixedIdTestSession(res.id, targetUrl);
-          session.uploadHandshake(res.result);
+          TestSession session = new FixedIdTestSession(res.id.getSessionID(), targetUrl);
+          session.uploadHandshake(res.id.getCounter(), res.result);
 
           // success, remove the result
           it.remove();
@@ -72,10 +72,10 @@ public class ResultUploader implements ResultListener<ScenarioResult> {
   }
 
   private class SessionResult {
-    SessionId id;
+    TestID id;
     ScenarioResult result;
 
-    public SessionResult(SessionId id, ScenarioResult result) {
+    public SessionResult(TestID id, ScenarioResult result) {
       this.id = id;
       this.result = result;
     }

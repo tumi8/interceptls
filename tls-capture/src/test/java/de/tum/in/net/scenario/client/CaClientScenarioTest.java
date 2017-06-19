@@ -17,7 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tum.in.net.model.ClientHandlerFactory;
-import de.tum.in.net.model.TlsTestId;
+import de.tum.in.net.model.TestID;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.server.BcTlsServerFactory;
 import de.tum.in.net.scenario.server.DefaultClientHandlerFactory;
@@ -54,7 +54,7 @@ public class CaClientScenarioTest {
       Thread.sleep(20);
 
       final CaClientScenario scenario =
-          new CaClientScenario(TlsTestId.randomID(), "127.0.0.1", port, trustAnchors);
+          new CaClientScenario(TestID.randomID(), "127.0.0.1", port, trustAnchors);
       scenario.call();
 
       while (listener.result == null) {
@@ -69,8 +69,8 @@ public class CaClientScenarioTest {
   public void certPathValid() throws Exception {
     final int port = 3843;
     String sessionId = "sessionId";
-    String testId = "testId";
-    TlsTestId id = new TlsTestId(sessionId, testId);
+    int counter = 3;
+    TestID testID = new TestID(sessionId, counter);
 
     final MyResultListener listener = new MyResultListener();
     BcTlsServerFactory tlsFac = new BcTlsServerFactory(
@@ -80,7 +80,8 @@ public class CaClientScenarioTest {
       executor.submit(socket);
       Thread.sleep(20);
 
-      final CaClientScenario scenario = new CaClientScenario(id, "127.0.0.1", port, trustAnchors);
+      final CaClientScenario scenario =
+          new CaClientScenario(testID, "127.0.0.1", port, trustAnchors);
       final ScenarioResult clientResult = scenario.call();
 
       while (listener.result == null) {
@@ -93,8 +94,7 @@ public class CaClientScenarioTest {
       assertArrayEquals(clientResult.getSentBytes(), listener.result.getReceivedBytes());
 
       // received test id's
-      assertEquals(sessionId, listener.id.getID());
-      assertEquals(testId, listener.result.getTestId().toString());
+      assertEquals(testID, listener.testID);
     }
 
   }
