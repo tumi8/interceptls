@@ -36,7 +36,7 @@ fn main(){
 
 	let json = parse_base64(&args[1]);
 	//print result to std::out
-	println!("{}", json.to_string());
+	print!("{}", json.to_string());
 }
 
 fn parse_raw(bytes: Vec<u8>) -> Value {
