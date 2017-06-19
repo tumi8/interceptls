@@ -75,6 +75,11 @@ public class TestID {
 
   }
 
+  public static boolean isTestID(String str) {
+    Objects.requireNonNull(str, "str must not be null");
+    return str.matches("[A-Za-z0-9]+-[0-9]+");
+  }
+
   public static TestID parse(String str) {
     Objects.requireNonNull(str, "str must not be null");
     String[] splitted = str.split("-");

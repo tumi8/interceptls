@@ -46,4 +46,17 @@ public class TestIDTest {
     TestID.parse("8293u-abc");
   }
 
+  @Test
+  public void isTestIDTest() {
+    assertTrue(TestID.isTestID("jieFIEW38234-234"));
+    assertTrue(TestID.isTestID("jieFIEW38234-234"));
+    assertTrue(TestID.isTestID("a-1"));
+
+    assertFalse(TestID.isTestID("jieFIEW38234-abc"));
+    assertFalse(TestID.isTestID("jieFIEW38234-"));
+    assertFalse(TestID.isTestID("-234"));
+    assertFalse(TestID.isTestID("-"));
+
+  }
+
 }

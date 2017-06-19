@@ -1,5 +1,6 @@
 package de.tum.in.net.scenario;
 
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.Objects;
 
@@ -11,9 +12,15 @@ import de.tum.in.net.model.Tap;
  * Created by johannes on 22.03.17.
  */
 
-public class ScenarioResult {
+public class ScenarioResult implements Serializable {
+
+  /**
+   * 
+   */
+  private transient static final long serialVersionUID = -3516742151876099169L;
 
   // required
+  private final Node node;
   private final String source;
   private final String destination;
   private final State state;
@@ -21,11 +28,12 @@ public class ScenarioResult {
   // optional
   private String receivedBytes;
   private String sentBytes;
-  private Throwable error;
+  private String error;
   private String msg;
 
-  private ScenarioResult(final String source, final String destination, State state,
+  private ScenarioResult(Node node, final String source, final String destination, State state,
       final byte[] receivedBytes, final byte[] sentBytes, Throwable t, String msg) {
+    this.node = Objects.requireNonNull(node, "node must not be null");
     this.source = source;
     this.destination = Objects.requireNonNull(destination, "destination bytes must not be null");
     this.state = Objects.requireNonNull(state, "state must not be null");
@@ -45,7 +53,7 @@ public class ScenarioResult {
 
       case ERROR:
         // this.msg = Objects.requireNonNull(msg, "msg must not be null");
-        this.error = Objects.requireNonNull(t, "error must not be null");
+        this.error = Objects.requireNonNull(t, "error must not be null").getMessage();
         break;
 
       default:
@@ -53,6 +61,10 @@ public class ScenarioResult {
 
     }
 
+  }
+
+  public Node getNode() {
+    return node;
   }
 
   public State getState() {
@@ -69,9 +81,27 @@ public class ScenarioResult {
    *
    * @return the bytes sent.
    */
-  public byte[] getSentBytes() {
+  public byte[] getSentBytesRaw() {
     return sentBytes == null ? null : Base64.decode(sentBytes);
   }
+
+  /**
+   * 
+   * @return Base-64 encoded value, or null.
+   */
+  public String getSentBytes() {
+    return sentBytes;
+  }
+
+  /**
+   * 
+   * @return Base-64 encoded value, or null.
+   */
+  public String getReceivedBytes() {
+    return receivedBytes;
+  }
+
+
 
   /**
    * For a successful scenario it returns the bytes received. For an unsuccessful scenario it could
@@ -79,7 +109,7 @@ public class ScenarioResult {
    *
    * @return the bytes received.
    */
-  public byte[] getReceivedBytes() {
+  public byte[] getReceivedBytesRaw() {
     return receivedBytes == null ? null : Base64.decode(receivedBytes);
   }
 
@@ -87,7 +117,7 @@ public class ScenarioResult {
     return msg;
   }
 
-  public Throwable getError() {
+  public String getError() {
     return error;
   }
 
@@ -106,6 +136,7 @@ public class ScenarioResult {
 
   public static class ScenarioResultBuilder {
     // always required
+    private Node node;
     private String source;
     private String destination;
     private State state;
@@ -116,12 +147,14 @@ public class ScenarioResult {
     private Throwable t;
     private String msg;
 
-    public ScenarioResultBuilder(String source, String destination) {
+    public ScenarioResultBuilder(Node node, String source, String destination) {
+      this.node = node;
       this.source = source;
       this.destination = destination;
     }
 
-    public ScenarioResultBuilder(Socket s) {
+    public ScenarioResultBuilder(Node node, Socket s) {
+      this.node = node;
       this.source = s.getLocalSocketAddress().toString().split("/")[1];
       this.destination = s.getRemoteSocketAddress().toString().split("/")[1];
     }
@@ -160,7 +193,7 @@ public class ScenarioResult {
 
 
     private ScenarioResult build() {
-      return new ScenarioResult(source, destination, state, receivedBytes, sentBytes, t, msg);
+      return new ScenarioResult(node, source, destination, state, receivedBytes, sentBytes, t, msg);
     }
 
     /**

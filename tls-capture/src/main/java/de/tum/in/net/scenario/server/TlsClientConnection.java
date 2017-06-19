@@ -12,6 +12,7 @@ import de.tum.in.net.model.Tap;
 import de.tum.in.net.model.TestID;
 import de.tum.in.net.model.TlsServerFactory;
 import de.tum.in.net.model.TlsSocket;
+import de.tum.in.net.scenario.Node;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
 
@@ -43,7 +44,8 @@ class TlsClientConnection implements Runnable {
 
       final TlsSocket tlsSocket = tlsServerFactory.bind(tap.getIn(), tap.getOut());
 
-      ScenarioResultBuilder builder = new ScenarioResultBuilder(socket).transmitted(tap);
+      ScenarioResultBuilder builder =
+          new ScenarioResultBuilder(Node.SERVER, socket).transmitted(tap);
 
       // we always require the session-id
       TestID id = TestID.read(tlsSocket.getInputStream());
@@ -57,7 +59,8 @@ class TlsClientConnection implements Runnable {
 
     } catch (final IOException e) {
       log.error("Socket closed.", e);
-      ScenarioResult result = new ScenarioResultBuilder(socket).transmitted(tap).error(e);
+      ScenarioResult result =
+          new ScenarioResultBuilder(Node.SERVER, socket).transmitted(tap).error(e);
       publisher.publish(null, result);
     }
 

@@ -90,8 +90,8 @@ public class CaClientScenarioTest {
       assertTrue(listener.result.isSuccess());
 
       // the sent bytes must equal the received bytes
-      assertArrayEquals(clientResult.getReceivedBytes(), listener.result.getSentBytes());
-      assertArrayEquals(clientResult.getSentBytes(), listener.result.getReceivedBytes());
+      assertArrayEquals(clientResult.getReceivedBytesRaw(), listener.result.getSentBytesRaw());
+      assertArrayEquals(clientResult.getSentBytesRaw(), listener.result.getReceivedBytesRaw());
 
       // received test id's
       assertEquals(testID, listener.testID);
