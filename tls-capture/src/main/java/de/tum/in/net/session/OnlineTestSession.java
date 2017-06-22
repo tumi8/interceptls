@@ -3,6 +3,7 @@ package de.tum.in.net.session;
 import java.io.IOException;
 
 import de.tum.in.net.model.AnalysisAPI;
+import de.tum.in.net.model.AnalysisResult;
 import de.tum.in.net.model.TestID;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.ScenarioResult;
@@ -32,5 +33,10 @@ public class OnlineTestSession implements TestSession {
   @Override
   public void uploadHandshake(int testCounter, ScenarioResult result) throws IOException {
     analysisAPI.uploadHandshake(new TestID(sessionId, testCounter), result).execute();
+  }
+
+  @Override
+  public AnalysisResult getAnalysisResult(int testCounter) throws IOException {
+    return analysisAPI.getAnalysis(new TestID(sessionId, testCounter)).execute().body();
   }
 }

@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.tum.in.net.model.AnalysisResult;
 import de.tum.in.net.model.TestID;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.Scenario;
@@ -91,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
 
                     try {
                         session.uploadHandshake(testID.getCounter(), result);
+
+
+                        final AnalysisResult analysisResult = session.getAnalysisResult(testID.getCounter());
+                        view.append("Intercepted? " + analysisResult.isIntercepted());
+
                     } catch (final IOException e) {
                         // TODO save and try again later
                         e.printStackTrace();

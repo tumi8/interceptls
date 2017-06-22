@@ -17,4 +17,6 @@ public interface TestSession {
   SessionID getSessionID();
 
   void uploadHandshake(int testCounter, ScenarioResult result) throws IOException;
+
+  AnalysisResult getAnalysisResult(int testCounter) throws IOException;
 }

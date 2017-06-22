@@ -24,7 +24,7 @@ public interface AnalysisAPI {
       @Body ScenarioResult result);
 
   @GET("/analysis/{session_id}")
-  Call<?> getAnalysis(@Path(value = "session_id", encoded = true) TestID testID);
+  Call<AnalysisResult> getAnalysis(@Path(value = "session_id", encoded = true) TestID testID);
 
 
 }
