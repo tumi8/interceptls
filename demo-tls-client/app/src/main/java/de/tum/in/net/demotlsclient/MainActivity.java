@@ -30,7 +30,6 @@ import de.tum.in.net.model.TestID;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
-import de.tum.in.net.scenario.State;
 import de.tum.in.net.scenario.client.CaClientScenario;
 import de.tum.in.net.session.OnlineTestSession;
 import de.tum.in.net.util.CertificateUtil;
@@ -89,14 +88,12 @@ public class MainActivity extends AppCompatActivity {
                     // TODO replace with real OnlineTestSession publisher
                     log.debug("publishing results");
 
-                    //upload only in case of error (e.g. wrong certificate)
-                    if (State.ERROR.equals(result.getState())) {
-                        try {
-                            session.uploadHandshake(testID.getCounter(), result);
-                        } catch (final IOException e) {
-                            // TODO save and try again later
-                            e.printStackTrace();
-                        }
+
+                    try {
+                        session.uploadHandshake(testID.getCounter(), result);
+                    } catch (final IOException e) {
+                        // TODO save and try again later
+                        e.printStackTrace();
                     }
 
 
