@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.tum.in.net.model.TestID;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
@@ -62,9 +63,11 @@ public class MainActivity extends AppCompatActivity {
             final Set<TrustAnchor> trustAnchors = readCaCerts();
 
             final TestSession session = new OnlineTestSession("http://10.0.2.2:3000");
-            final TlsTestIdIncrementor inc = new TlsTestIdIncrementor(session.getSessionID());
+            final TestIDIncrementer inc = new TestIDIncrementer(session.getSessionID());
+            final TestID testID = inc.next();
 
-            final Scenario scenario = new CaClientScenario(inc.next(), "10.0.2.2", 7623, trustAnchors);
+            //10.0.2.2 is the ip of the machine running the emulator
+            final Scenario scenario = new CaClientScenario(testID, "10.0.2.2", 7623, trustAnchors);
 
             final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
             final Set<String> targets = ConfigurationReader.readHosts(this);
@@ -86,12 +89,10 @@ public class MainActivity extends AppCompatActivity {
                     // TODO replace with real OnlineTestSession publisher
                     log.debug("publishing results");
 
-
                     //upload only in case of error (e.g. wrong certificate)
                     if (State.ERROR.equals(result.getState())) {
                         try {
-                            //10.0.2.2 is the ip of the machine running the emulator
-                            session.uploadHandshake(result);
+                            session.uploadHandshake(testID.getCounter(), result);
                         } catch (final IOException e) {
                             // TODO save and try again later
                             e.printStackTrace();
