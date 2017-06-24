@@ -54,13 +54,31 @@ public class AnalysisResource {
 
     TestResult result = db.getResult(TestID.parse(testID));
 
-    try {
-      return new Gson().toJson(createDiff(result));
-
-    } catch (Exception e) {
-      log.error("err", e);
-      throw new WebApplicationException(Status.BAD_REQUEST);
+    AnalysisResult analysisResult;
+    if (result.hasClientResult()) {
+      if (result.hasServerResult()) {
+        // all data available
+        try {
+          analysisResult = createDiff(result);
+        } catch (IOException e) {
+          log.error("Could not parse handshake", e);
+          analysisResult = AnalysisResult.error("Error parsing handshake");
+        }
+      } else {
+        // server data missing
+        analysisResult = AnalysisResult.noServerResult();
+      }
+    } else {
+      if (result.hasServerResult()) {
+        // client data missing
+        analysisResult = AnalysisResult.noClientResult();
+      } else {
+        // no client and no server data available
+        analysisResult = AnalysisResult.noClientNoServerResult();
+      }
     }
+
+    return new Gson().toJson(analysisResult);
   }
 
   private AnalysisResult createDiff(TestResult result) throws IOException {

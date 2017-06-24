@@ -2,6 +2,7 @@ package de.tum.in.net;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,8 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import de.tum.in.net.model.AnalysisResult;
+import de.tum.in.net.model.AnalysisResultType;
 import de.tum.in.net.scenario.Node;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
@@ -78,9 +81,63 @@ public class AnalysisResourceTest {
     Response response2 = target.path("analysis/a-1").request().get();
     assertEquals(200, response2.getStatus());
 
-    System.err.println(response2.readEntity(String.class));
+    AnalysisResult result = getResult(response2);
+    assertNotNull(result);
+    assertEquals(AnalysisResultType.NO_INTERCEPTION, result.getType());
+
+  }
+
+  @Test
+  public void noServerData() {
+    ScenarioResult clientResult = new ScenarioResultBuilder(Node.CLIENT, "source", "dst")
+        .sent(golemClient).received(golemServer).connected();
+
+    Response response =
+        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(clientResult)));
+    assertEquals(204, response.getStatus());
 
 
+    Response response2 = target.path("analysis/a-1").request().get();
+    assertEquals(200, response2.getStatus());
 
+    AnalysisResult result = getResult(response2);
+    assertNotNull(result);
+    assertEquals(AnalysisResultType.NO_SERVER_RESULT, result.getType());
+
+  }
+
+  @Test
+  public void noClientData() {
+    ScenarioResult serverResult = new ScenarioResultBuilder(Node.SERVER, "source", "dst")
+        .sent(golemServer).received(golemClient).connected();
+
+    Response response =
+        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(serverResult)));
+    assertEquals(204, response.getStatus());
+
+    Response response2 = target.path("analysis/a-1").request().get();
+    assertEquals(200, response2.getStatus());
+
+    AnalysisResult result = getResult(response2);
+    assertNotNull(result);
+    assertEquals(AnalysisResultType.NO_CLIENT_RESULT, result.getType());
+
+  }
+
+  @Test
+  public void noDataAtAll() {
+
+    Response response = target.path("analysis/a-1").request().get();
+    assertEquals(200, response.getStatus());
+
+    AnalysisResult result = getResult(response);
+    assertNotNull(result);
+    assertEquals(AnalysisResultType.NO_CLIENT_NO_SERVER_RESULT, result.getType());
+
+  }
+
+  private AnalysisResult getResult(Response response) {
+    String content = response.readEntity(String.class);
+    return new Gson().fromJson(content, AnalysisResult.class);
   }
 }
