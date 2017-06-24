@@ -29,7 +29,8 @@ public class ResultResourceTest {
 
   @Before
   public void setUp() throws Exception {
-    server = Main.startServer(new MapDBDatabaseService(false));
+    AnalysisServerConfig conf = AnalysisServerConfig.loadDefault();
+    server = Main.startServer(conf, new MapDBDatabaseService(false));
     Client c = ClientBuilder.newClient();
 
     // uncomment the following line if you want to enable
@@ -38,7 +39,7 @@ public class ResultResourceTest {
     // --
     // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
-    target = c.target(Main.BASE_URI);
+    target = c.target(conf.getURI());
   }
 
   @After
