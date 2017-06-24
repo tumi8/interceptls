@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -18,6 +17,7 @@ import com.google.gson.Gson;
 
 import de.tum.in.net.services.MapDBDatabaseService;
 import de.tum.in.net.session.SessionID;
+import de.tum.in.net.util.ClientUtil;
 
 public class SessionResourceTest {
 
@@ -28,7 +28,7 @@ public class SessionResourceTest {
   public void setUp() throws Exception {
     AnalysisServerConfig conf = AnalysisServerConfig.loadDefault();
     server = Main.startServer(conf, new MapDBDatabaseService(false));
-    Client c = ClientBuilder.newClient();
+    Client c = ClientUtil.createDefaultTLSClient(conf);
 
     // uncomment the following line if you want to enable
     // support for JSON in the client (you also have to uncomment

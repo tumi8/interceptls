@@ -13,15 +13,20 @@ public class AnalysisServerConfig {
 
   private static final File CONF_FILE = new File("conf", "server.properties");
   private static final String PORT = "port";
+  private static final String TLS_KEYSTORE_FILE = "tls.keystore.file";
+  private static final String TLS_KEYSTORE_PASSWORD = "tls.keystore.password";
 
   private final int port;
+  private final String keystorePassword;
 
-  public AnalysisServerConfig(int port) {
+  public AnalysisServerConfig(int port, String keystorePassword) {
     this.port = port;
+    this.keystorePassword = keystorePassword;
   }
 
   public AnalysisServerConfig(Properties props) {
     this.port = Integer.parseInt(getNonEmptyProperty(props, PORT));
+    this.keystorePassword = getNonEmptyProperty(props, TLS_KEYSTORE_PASSWORD);
   }
 
 
@@ -30,7 +35,15 @@ public class AnalysisServerConfig {
   }
 
   public URI getURI() {
-    return UriBuilder.fromUri("http://localhost").port(port).build();
+    return UriBuilder.fromUri("https://localhost").port(port).build();
+  }
+
+  public String getKeyStore() {
+    return "conf" + File.separator + "tls.p12";
+  }
+
+  public String getKeyStorePassword() {
+    return keystorePassword;
   }
 
   public static AnalysisServerConfig load(File confFile) throws IOException {

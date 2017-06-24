@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
@@ -28,6 +27,7 @@ import de.tum.in.net.scenario.Node;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
 import de.tum.in.net.services.MapDBDatabaseService;
+import de.tum.in.net.util.ClientUtil;
 
 public class AnalysisResourceTest {
 
@@ -47,7 +47,7 @@ public class AnalysisResourceTest {
   public void setUp() throws Exception {
     AnalysisServerConfig conf = AnalysisServerConfig.loadDefault();
     server = Main.startServer(conf, new MapDBDatabaseService(false));
-    Client c = ClientBuilder.newClient();
+    Client c = ClientUtil.createDefaultTLSClient(conf);
 
     // uncomment the following line if you want to enable
     // support for JSON in the client (you also have to uncomment

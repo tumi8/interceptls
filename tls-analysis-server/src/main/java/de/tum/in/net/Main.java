@@ -1,11 +1,10 @@
 package de.tum.in.net;
 
 import java.io.IOException;
-import java.net.URI;
-
-import javax.ws.rs.core.UriBuilder;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
+import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -52,8 +51,14 @@ public class Main {
 
     // create and start a new instance of grizzly http server
     // exposing the Jersey application at BASE_URI
-    URI uri = UriBuilder.fromUri("http://localhost").port(conf.getPort()).build();
-    return GrizzlyHttpServerFactory.createHttpServer(uri, rc);
+    SSLContextConfigurator sslContext = new SSLContextConfigurator();
+    sslContext.setKeyStoreFile(conf.getKeyStore());;
+    sslContext.setKeyStorePass(conf.getKeyStorePassword());
+    SSLEngineConfigurator engineConf = new SSLEngineConfigurator(sslContext);
+    engineConf.setClientMode(false);
+    engineConf.setNeedClientAuth(false);
+
+    return GrizzlyHttpServerFactory.createHttpServer(conf.getURI(), rc, true, engineConf);
   }
 
   /**
