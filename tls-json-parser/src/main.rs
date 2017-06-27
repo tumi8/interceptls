@@ -189,9 +189,13 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 					TlsExtension::SupportedVersions(_) => panic!("SupportedVersions"),
 					TlsExtension::Cookie(_) => panic!("Cookie"),
 					TlsExtension::PskExchangeModes(_) => panic!("PskExchangeModes"),
-					TlsExtension::Heartbeat(_) => panic!("Heartbeat"),
+					TlsExtension::Heartbeat(hb) => {
+                        data["Heartbeat"] = json!(hb);
+                    }
 					TlsExtension::ALPN(_) => panic!("ALPN"),
-					TlsExtension::SignedCertificateTimestamp(_) => panic!("SignedCertificateTimestamp"),
+					TlsExtension::SignedCertificateTimestamp(stamp) => {
+                        data["SignedCertificateTimestamp"] = json!(stamp);
+                    }
 					TlsExtension::Padding(_) => panic!("Padding"),
 					TlsExtension::EncryptThenMac => panic!("EncryptThenMac"),
 					TlsExtension::ExtendedMasterSecret => panic!("ExtendedMasterSecret"),
