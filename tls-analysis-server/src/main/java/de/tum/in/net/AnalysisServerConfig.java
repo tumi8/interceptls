@@ -12,8 +12,8 @@ import javax.ws.rs.core.UriBuilder;
 public class AnalysisServerConfig {
 
   private static final File CONF_FILE = new File("conf", "server.properties");
+  private static final File KEYSTORE_FILE = new File("conf", "tls.p12");
   private static final String PORT = "port";
-  private static final String TLS_KEYSTORE_FILE = "tls.keystore.file";
   private static final String TLS_KEYSTORE_PASSWORD = "tls.keystore.password";
 
   private final int port;
@@ -39,7 +39,7 @@ public class AnalysisServerConfig {
   }
 
   public String getKeyStore() {
-    return "conf" + File.separator + "tls.p12";
+    return KEYSTORE_FILE.getAbsolutePath();
   }
 
   public String getKeyStorePassword() {

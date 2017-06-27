@@ -52,8 +52,9 @@ public class Main {
     // create and start a new instance of grizzly http server
     // exposing the Jersey application at BASE_URI
     SSLContextConfigurator sslContext = new SSLContextConfigurator();
-    sslContext.setKeyStoreFile(conf.getKeyStore());;
+    sslContext.setKeyStoreFile(conf.getKeyStore());
     sslContext.setKeyStorePass(conf.getKeyStorePassword());
+    sslContext.setKeyStoreType("PKCS12");
     SSLEngineConfigurator engineConf = new SSLEngineConfigurator(sslContext);
     engineConf.setClientMode(false);
     engineConf.setNeedClientAuth(false);

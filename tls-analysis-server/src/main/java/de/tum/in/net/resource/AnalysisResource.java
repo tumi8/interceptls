@@ -97,6 +97,9 @@ public class AnalysisResource {
     root.put("diff_sent", diff_sent);
     root.put("diff_rec", diff_rec);
 
+    log.debug("diff_rec: {}", diff_rec);
+    log.debug("diff_sent: {}", diff_sent);
+
     if (diff_sent.size() == 0 && diff_rec.size() == 0) {
       return AnalysisResult.noInterception();
     } else {

@@ -28,6 +28,7 @@ public class RustHandshakeParser implements HandshakeParser {
 
     String stdout = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
     String stderr = IOUtils.toString(p.getErrorStream(), Charset.defaultCharset());
+
     if (stderr != null && !stderr.isEmpty()) {
       log.error("Rust-parser stderr:" + stderr);
     }
