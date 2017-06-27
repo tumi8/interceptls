@@ -35,7 +35,7 @@ public class AnalysisServerConfig {
   }
 
   public URI getURI() {
-    return UriBuilder.fromUri("https://localhost").port(port).build();
+    return UriBuilder.fromUri("https://0.0.0.0").port(port).build();
   }
 
   public String getKeyStore() {
