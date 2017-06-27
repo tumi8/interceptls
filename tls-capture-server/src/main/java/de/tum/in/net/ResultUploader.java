@@ -35,6 +35,7 @@ public class ResultUploader implements ResultListener<ScenarioResult> {
 
   @Override
   public void publish(TestID id, ScenarioResult result) {
+    log.info("Publish results");
     // if queue is full, remove one element
     if (0 == unpublishedResults.remainingCapacity()) {
       unpublishedResults.poll();
@@ -55,7 +56,7 @@ public class ResultUploader implements ResultListener<ScenarioResult> {
           TestSession session = new FixedIdTestSession(res.id.getSessionID(), targetUrl);
           session.uploadHandshake(res.id.getCounter(), res.result);
 
-          // success, remove the result
+          log.info("{} succesfully published", res.id.getSessionID());
           it.remove();
 
         } catch (IOException e) {
