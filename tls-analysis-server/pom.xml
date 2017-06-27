@@ -112,7 +112,7 @@
                 <executions>
                     <execution>
                         <id>compile-tls-json-parser</id>
-                        <phase>compile</phase>
+                        <phase>validate</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -125,14 +125,29 @@
           						</arguments>
                         </configuration>
                     </execution>
-                </executions>
+                    <execution>
+                    	<!-- unfortunately the file permissions get lost, so we set them again -->
+                    	<id>script-chmod</id>
+                    	<phase>compile</phase>
+                    	<goals>
+                        	<goal>exec</goal>
+                    	</goals>
+                    	<configuration>
+                        	<executable>chmod</executable>
+                        	<arguments>
+                            	<argument>+x</argument>
+                            	<argument>lib/tls-json-parser</argument>
+                        	</arguments>
+                    	</configuration>
+                	</execution>
+               	</executions>
             </plugin>
             <plugin>
         		<artifactId>maven-resources-plugin</artifactId>
         		<version>3.0.2</version>
         		<executions>
           			<execution>
-            			<id>copy-resources</id>
+            			<id>copy-tls-json-parser</id>
             			<phase>validate</phase>
             			<goals>
               				<goal>copy-resources</goal>
@@ -150,6 +165,7 @@
           			</execution>
         		</executions>
      		 </plugin>
+     		 
             
        		<plugin>
         		<groupId>org.apache.maven.plugins</groupId>
