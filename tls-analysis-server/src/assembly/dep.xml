@@ -24,6 +24,14 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/lib</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>tls-json-parser</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
       <directory>${project.build.directory}/site</directory>
       <outputDirectory>docs</outputDirectory>
     </fileSet>
