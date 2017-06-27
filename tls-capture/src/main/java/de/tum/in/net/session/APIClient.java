@@ -1,7 +1,5 @@
 package de.tum.in.net.session;
 
-import javax.net.ssl.SSLContext;
-
 import de.tum.in.net.CaptureTLSContext;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -19,10 +17,12 @@ public class APIClient {
 
     final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
     interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-    final SSLContext sslContext = CaptureTLSContext.createContext();
+
+
 
     final OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor)
-        .sslSocketFactory(sslContext.getSocketFactory()).build();
+        .hostnameVerifier(CaptureTLSContext.getHostnameVerifier())
+        .sslSocketFactory(CaptureTLSContext.createContext().getSocketFactory()).build();
 
     return new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create())
         .client(client).build();
