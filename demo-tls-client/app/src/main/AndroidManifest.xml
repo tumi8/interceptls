@@ -10,15 +10,30 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="de.tum.in.net.demotlsclient.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="de.tum.in.net.demotlsclient.AboutActivity" />
-        <activity android:name="de.tum.in.net.demotlsclient.SettingsActivity"></activity>
+        <activity
+            android:name=".AboutActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".TestViewActivity"
+            android:label="@string/title_activity_result_view"
+            android:parentActivityName=".SessionViewActivity" />
+        <activity
+            android:name=".ProgressActivity"
+            android:label="@string/title_activity_progress" />
+        <activity
+            android:name=".SessionViewActivity"
+            android:label="@string/title_activity_session_view"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

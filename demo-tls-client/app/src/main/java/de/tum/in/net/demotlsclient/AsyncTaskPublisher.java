@@ -2,33 +2,30 @@ package de.tum.in.net.demotlsclient;
 
 import android.os.AsyncTask;
 
-import java.util.concurrent.Callable;
+import de.tum.in.net.scenario.Scenario;
+import de.tum.in.net.scenario.ScenarioResult;
 
 /**
  * Created by johannes on 22.03.17.
  */
 
-public class AsyncScenarioTask<T> extends AsyncTask<Void, Void, T> {
+public class AsyncTaskPublisher extends AsyncTask<Object, Object, ScenarioResult> {
 
-    private final Callable<T> scenario;
-    private final AsyncResult<T> delegate;
+    private final Scenario scenario;
+    private final AsyncResult<ScenarioResult> delegate;
 
-    public AsyncScenarioTask(final Callable<T> scenario, final AsyncResult<T> delegate) {
+    public AsyncTaskPublisher(final Scenario scenario, final AsyncResult<ScenarioResult> delegate) {
         this.scenario = scenario;
         this.delegate = delegate;
     }
 
     @Override
-    protected T doInBackground(final Void... voids) {
-        try {
-            return scenario.call();
-        } catch (final Exception e) {
-            throw new RuntimeException("unexcepted error", e);
-        }
+    protected ScenarioResult doInBackground(final Object... voids) {
+        return scenario.call();
     }
 
     @Override
-    protected void onPostExecute(final T v) {
+    protected void onPostExecute(final ScenarioResult v) {
         delegate.publishResult(v);
     }
 }

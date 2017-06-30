@@ -19,4 +19,8 @@ class TestIDIncrementer {
         counter++;
         return new TestID(this.sessionId, counter);
     }
+
+    public int getCounter() {
+        return counter;
+    }
 }

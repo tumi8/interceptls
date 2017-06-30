@@ -13,4 +13,8 @@
         android:key="@string/hosts_additional"
         android:summary="@string/hosts_additional_description"
         android:title="@string/hosts_additional_title" />
+    <EditTextPreference
+        android:key="@string/target"
+        android:title="@string/target"
+        android:defaultValue="@string/target_default" />
 </PreferenceScreen>
