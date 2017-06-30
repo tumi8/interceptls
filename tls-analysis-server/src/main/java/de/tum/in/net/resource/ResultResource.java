@@ -55,11 +55,13 @@ public class ResultResource {
   @PUT
   public void uploadResult(@PathParam("testID") String testID, String body) {
     ScenarioResult result = new Gson().fromJson(body, ScenarioResult.class);
-    log.debug("Received {} result: {}", result.getNode(), testID);
+    log.info("Received {} result: {}", result.getNode(), testID);
 
     if (!TestID.isTestID(testID)) {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
+
+    log.info("sent: {}, received: {}", result.getSentBytes(), result.getReceivedBytes());
 
     TestID id = TestID.parse(testID);
     try {

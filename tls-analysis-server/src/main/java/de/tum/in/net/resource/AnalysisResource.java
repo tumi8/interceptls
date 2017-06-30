@@ -1,6 +1,8 @@
 package de.tum.in.net.resource;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -14,17 +16,17 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonpatch.diff.JsonDiff;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import de.tum.in.net.TestResult;
 import de.tum.in.net.model.AnalysisResult;
 import de.tum.in.net.model.DatabaseService;
+import de.tum.in.net.model.Diff;
 import de.tum.in.net.model.HandshakeParser;
+import de.tum.in.net.model.TLSHandshake;
 import de.tum.in.net.model.TestID;
+import de.tum.in.net.model.TlsMessageType;
 
 /**
  * Session resource.
@@ -63,6 +65,12 @@ public class AnalysisResource {
         } catch (IOException e) {
           log.error("Could not parse handshake", e);
           analysisResult = AnalysisResult.error("Error parsing handshake");
+        } catch (IllegalStateException e) {
+          log.error("Unexpected error in handshake bytes", e);
+          analysisResult = AnalysisResult.error("Unexpected error in handshake bytes");
+        } catch (Exception e) {
+          log.error("Unknwon error", e);
+          analysisResult = AnalysisResult.error("Unexpected error");
         }
       } else {
         // server data missing
@@ -88,23 +96,28 @@ public class AnalysisResource {
     String rec_server = parser.parse(result.getServerResult().getReceivedBytes());
     String sent_server = parser.parse(result.getServerResult().getSentBytes());
 
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode diff_rec = JsonDiff.asJson(mapper.readTree(rec_client), mapper.readTree(sent_server));
-    JsonNode diff_sent = JsonDiff.asJson(mapper.readTree(sent_client), mapper.readTree(rec_server));
-
-
-    ObjectNode root = mapper.createObjectNode();
-    root.put("diff_sent", diff_sent);
-    root.put("diff_rec", diff_rec);
-
-    log.debug("diff_rec: {}", diff_rec);
-    log.debug("diff_sent: {}", diff_sent);
-
-    if (diff_sent.size() == 0 && diff_rec.size() == 0) {
+    if (rec_client.equals(sent_server) && sent_client.equals(rec_server)) {
       return AnalysisResult.noInterception();
-    } else {
-      return AnalysisResult.intercepted(diff_sent.toString(), diff_rec.toString());
     }
+
+    System.out.println(rec_server);
+    System.out.println(sent_client);
+
+    Type listType = new TypeToken<List<TLSHandshake>>() {}.getType();
+
+    List<TLSHandshake> messages_rec = new Gson().fromJson(rec_server, listType);
+    List<TLSHandshake> messages_sent = new Gson().fromJson(sent_client, listType);
+
+
+    TLSHandshake clientHello_rec = messages_sent.stream()
+        .filter(msg -> TlsMessageType.ClientHello.equals(msg.getType())).findFirst()
+        .orElseThrow(() -> new IllegalStateException("Could not find client hello."));
+
+    List<Diff> clientHelloDiffs = clientHello_rec.createDiff(messages_rec);
+
+    System.err.println(clientHelloDiffs);
+
+    return AnalysisResult.intercepted(clientHelloDiffs);
 
   }
 }

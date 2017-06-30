@@ -37,10 +37,24 @@ public class AnalysisResourceTest {
   private static byte[] golemClient;
   private static byte[] golemServer;
 
+  private static byte[] sslSplitClientSent;
+  private static byte[] sslSplitClientReceived;
+  private static byte[] sslSplitServerSent;
+  private static byte[] sslSplitServerReceived;
+
   @BeforeClass
   public static void loadHandshakes() throws IOException {
     golemClient = FileUtils.readFileToByteArray(new File("exampleHandshakes/golem/client.raw"));
     golemServer = FileUtils.readFileToByteArray(new File("exampleHandshakes/golem/server.raw"));
+
+    sslSplitClientSent =
+        FileUtils.readFileToByteArray(new File("exampleHandshakes/sslsplit/client.sent.raw"));
+    sslSplitClientReceived =
+        FileUtils.readFileToByteArray(new File("exampleHandshakes/sslsplit/client.rec.raw"));
+    sslSplitServerSent =
+        FileUtils.readFileToByteArray(new File("exampleHandshakes/sslsplit/server.sent.raw"));
+    sslSplitServerReceived =
+        FileUtils.readFileToByteArray(new File("exampleHandshakes/sslsplit/server.rec.raw"));
   }
 
   @Before
@@ -85,6 +99,30 @@ public class AnalysisResourceTest {
     AnalysisResult result = getResult(response2);
     assertNotNull(result);
     assertEquals(AnalysisResultType.NO_INTERCEPTION, result.getType());
+
+  }
+
+  @Test
+  public void interception() {
+    ScenarioResult clientResult = new ScenarioResultBuilder(Node.CLIENT, "source", "dst")
+        .sent(sslSplitClientSent).received(sslSplitClientReceived).connected();
+    ScenarioResult serverResult = new ScenarioResultBuilder(Node.SERVER, "source", "dst")
+        .sent(sslSplitServerSent).received(sslSplitServerReceived).connected();
+
+    Response response =
+        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(clientResult)));
+    assertEquals(204, response.getStatus());
+    response =
+        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(serverResult)));
+    assertEquals(204, response.getStatus());
+
+
+    Response response2 = target.path("analysis/a-1").request().get();
+    assertEquals(200, response2.getStatus());
+
+    AnalysisResult result = getResult(response2);
+    assertNotNull(result);
+    assertEquals(AnalysisResultType.INTERCEPTION, result.getType());
 
   }
 
