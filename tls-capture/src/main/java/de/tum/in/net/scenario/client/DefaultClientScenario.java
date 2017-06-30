@@ -2,14 +2,10 @@ package de.tum.in.net.scenario.client;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.SecureRandom;
 import java.util.Objects;
 
-import org.bouncycastle.crypto.tls.Certificate;
-import org.bouncycastle.crypto.tls.DefaultTlsClient;
-import org.bouncycastle.crypto.tls.ServerOnlyTlsAuthentication;
-import org.bouncycastle.crypto.tls.TlsAuthentication;
-import org.bouncycastle.crypto.tls.TlsClientProtocol;
+import org.bouncycastle.tls.TlsClient;
+import org.bouncycastle.tls.TlsClientProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,20 +43,9 @@ public class DefaultClientScenario implements Scenario {
       tap = new Tap(s.getInputStream(), s.getOutputStream());
 
       // connect in blocking mode
-      final TlsClientProtocol tlsClientProtocol =
-          new TlsClientProtocol(tap.getIn(), tap.getOut(), new SecureRandom());
-      tlsClientProtocol.connect(new DefaultTlsClient() {
-        @Override
-        public TlsAuthentication getAuthentication() throws IOException {
-          return new ServerOnlyTlsAuthentication() {
-            @Override
-            public void notifyServerCertificate(final Certificate serverCertificate)
-                throws IOException {
-              log.debug("Notify server certificate.");
-            }
-          };
-        }
-      });
+      final TlsClientProtocol tlsClientProtocol = new TlsClientProtocol(tap.getIn(), tap.getOut());
+      TlsClient client = new TrimmedTlsClient();
+      tlsClientProtocol.connect(client);
 
       // we are now connected, therefore we can publish the captured bytes
       result = new ScenarioResultBuilder(Node.CLIENT, s).sent(tap.getOutputytes())

@@ -1,34 +1,32 @@
 package de.tum.in.net.model;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class AnalysisResult {
 
   private AnalysisResultType type;
-  private final String diffSent;
-  private final String diffRec;
-  private final String errorMsg;
+  private List<Diff> clientHello;
+  private String error;
 
   private AnalysisResult(AnalysisResultType type) {
     this.type = Objects.requireNonNull(type);
-    this.diffSent = null;
-    this.diffRec = null;
-    this.errorMsg = null;
+    this.clientHello = null;
   }
 
-
-  private AnalysisResult(String diffSent, String diffRec) {
+  private AnalysisResult(List<Diff> clientHello) {
     this.type = AnalysisResultType.INTERCEPTION;
-    this.diffSent = Objects.requireNonNull(diffSent);
-    this.diffRec = Objects.requireNonNull(diffRec);
-    this.errorMsg = null;
+    this.clientHello = Objects.requireNonNull(clientHello);
   }
 
   public AnalysisResult(String msg) {
     this.type = AnalysisResultType.ERROR;
-    this.diffSent = null;
-    this.diffRec = null;
-    this.errorMsg = msg;
+    this.error = msg;
+  }
+
+  public List<Diff> getClientHelloDiffs() {
+    return Collections.unmodifiableList(clientHello);
   }
 
 
@@ -52,8 +50,8 @@ public class AnalysisResult {
     return new AnalysisResult(msg);
   }
 
-  public static AnalysisResult intercepted(String diffSent, String diffRec) {
-    return new AnalysisResult(diffSent, diffRec);
+  public static AnalysisResult intercepted(List<Diff> diffs) {
+    return new AnalysisResult(diffs);
   }
 
   public boolean isIntercepted() {
@@ -64,12 +62,8 @@ public class AnalysisResult {
     return type;
   }
 
-  public String getDiffSent() {
-    return diffSent;
-  }
-
-  public String getDiffRec() {
-    return diffRec;
+  public String getErrorMsg() {
+    return error;
   }
 
 
