@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.tum.in.net.model.AnalysisResult;
+import de.tum.in.net.model.AnalysisResultType;
 import de.tum.in.net.model.Diff;
 import de.tum.in.net.model.TestID;
 import de.tum.in.net.session.FixedIdTestSession;
@@ -61,49 +62,26 @@ public class TestViewActivity extends AppCompatActivity {
 
             final TestID test = TestID.parse(testID);
 
+            final TextView generalResult = (TextView) findViewById(R.id.result_general);
+
             try {
                 final FixedIdTestSession session = new FixedIdTestSession(test.getSessionID(), "https://10.83.81.2:3000");
+                final AnalysisResult analysisResult = session.getAnalysisResult(test.getCounter());
 
-                int counter = 0;
-                boolean success = false;
-                AnalysisResult analysisResult;
-                do {
-                    counter++;
-                    analysisResult = session.getAnalysisResult(test.getCounter());
-
-                    switch (analysisResult.getType()) {
-                        case NO_CLIENT_NO_SERVER_RESULT:
-                        case NO_CLIENT_RESULT:
-                        case NO_SERVER_RESULT:
-                            try {
-                                Thread.sleep(2000);
-                            } catch (final InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-
-                        default:
-                            success = true;
-                            break;
-
-                    }
-                } while (!success && counter <= 15);
-
-
+                generalResult.setText("Status: " + analysisResult.getType() + "\n");
                 final TextView clientResultView = (TextView) findViewById(R.id.resultClientHello);
-                clientResultView.setVisibility(View.VISIBLE);
-                if (success) {
 
-                    //generalResultsView.append("Intercepted? " + analysisResult.getType() + "\n");
+                if (AnalysisResultType.INTERCEPTION.equals(analysisResult.getType())) {
 
                     for (final Diff diff : analysisResult.getClientHelloDiffs()) {
                         clientResultView.append(diff.toString() + "\n");
                     }
                 } else {
-                    clientResultView.append("Result? " + analysisResult.getType() + "\n");
+                    clientResultView.append(analysisResult.getType() + "\n");
                 }
             } catch (final IOException e) {
-                e.printStackTrace();
+                log.error("Could not get analysis result", e);
+                generalResult.setText("Error, " + e.getMessage());
             }
 
         }
