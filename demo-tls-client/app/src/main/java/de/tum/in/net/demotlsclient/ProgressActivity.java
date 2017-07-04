@@ -1,10 +1,10 @@
 package de.tum.in.net.demotlsclient;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +29,18 @@ public class ProgressActivity extends AppCompatActivity {
 
         log.debug("Start test scenarios");
 
-        final Context ctx = this;
         final ProgressActivity progressActivity = this;
         final ExecuteSessionTask task = new ExecuteSessionTask(this, textView, new AsyncResult<SessionID>() {
             @Override
             public void publishResult(final SessionID result) {
                 progressActivity.finish();
-                final Intent intent = new Intent(ctx, SessionViewActivity.class);
-                intent.putExtra("sessionID", result.toString());
-                ctx.startActivity(intent);
+                if (result == null) {
+                    Toast.makeText(progressActivity, "Connection error", Toast.LENGTH_LONG).show();
+                } else {
+                    final Intent intent = new Intent(progressActivity, SessionViewActivity.class);
+                    intent.putExtra("sessionID", result.toString());
+                    progressActivity.startActivity(intent);
+                }
             }
         });
         task.execute();
