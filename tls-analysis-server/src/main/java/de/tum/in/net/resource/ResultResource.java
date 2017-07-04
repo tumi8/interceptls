@@ -61,8 +61,6 @@ public class ResultResource {
       throw new WebApplicationException(Status.BAD_REQUEST);
     }
 
-    log.info("sent: {}, received: {}", result.getSentBytes(), result.getReceivedBytes());
-
     TestID id = TestID.parse(testID);
     try {
       db.addResult(id, result);

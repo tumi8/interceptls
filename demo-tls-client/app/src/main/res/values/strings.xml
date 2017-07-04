@@ -19,4 +19,5 @@
     <string name="text_no_results">No results yet.</string>
     <string name="title_activity_progress">Test in progress</string>
     <string name="title_activity_session_view">Test overview</string>
+    <string name="tls_version">TLS-Version:</string>
 </resources>

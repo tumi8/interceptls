@@ -2,6 +2,6 @@ package de.tum.in.net.model;
 
 public enum TlsMessageType {
 
-  ClientHello, ClientKeyExchange
+  ClientHello, ServerHello, Certificate
 
 }

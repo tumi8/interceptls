@@ -22,10 +22,10 @@ import com.google.gson.Gson;
 import de.tum.in.net.TestResult;
 import de.tum.in.net.model.AnalysisResult;
 import de.tum.in.net.model.DatabaseService;
-import de.tum.in.net.model.Diff;
 import de.tum.in.net.model.HandshakeParser;
 import de.tum.in.net.model.TLSHandshake;
 import de.tum.in.net.model.TestID;
+import de.tum.in.net.model.TlsMessageDiff;
 import de.tum.in.net.model.TlsMessageType;
 
 /**
@@ -102,22 +102,39 @@ public class AnalysisResource {
 
     System.out.println(rec_server);
     System.out.println(sent_client);
+    System.out.println(sent_server);
+    System.out.println(rec_client);
 
     Type listType = new TypeToken<List<TLSHandshake>>() {}.getType();
 
+    // client hello diff
     List<TLSHandshake> messages_rec = new Gson().fromJson(rec_server, listType);
     List<TLSHandshake> messages_sent = new Gson().fromJson(sent_client, listType);
-
 
     TLSHandshake clientHello_rec = messages_sent.stream()
         .filter(msg -> TlsMessageType.ClientHello.equals(msg.getType())).findFirst()
         .orElseThrow(() -> new IllegalStateException("Could not find client hello."));
 
-    List<Diff> clientHelloDiffs = clientHello_rec.createDiff(messages_rec);
+    TlsMessageDiff clientHello = clientHello_rec.createDiff(messages_rec);
 
-    System.err.println(clientHelloDiffs);
 
-    return AnalysisResult.intercepted(clientHelloDiffs);
+    // server hello and certificate diff
+    messages_rec = new Gson().fromJson(rec_client, listType);
+    messages_sent = new Gson().fromJson(sent_server, listType);
+
+    TLSHandshake serverHello_rec = messages_rec.stream()
+        .filter(msg -> TlsMessageType.ServerHello.equals(msg.getType())).findFirst()
+        .orElseThrow(() -> new IllegalStateException("Could not find server hello."));
+
+    TlsMessageDiff serverHello = serverHello_rec.createDiff(messages_sent);
+
+    TLSHandshake certificate_rec = messages_rec.stream()
+        .filter(msg -> TlsMessageType.Certificate.equals(msg.getType())).findFirst()
+        .orElseThrow(() -> new IllegalStateException("Could not find certificate."));
+
+    TlsMessageDiff certificate = certificate_rec.createDiff(messages_sent);
+
+    return AnalysisResult.intercepted(clientHello, serverHello, certificate);
 
   }
 }

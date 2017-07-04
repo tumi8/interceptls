@@ -169,18 +169,18 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 			for ext in record {
 				match ext {
 					TlsExtension::SNI(sni) => {
-						data["SNI"] = json!(sni);
+						data["sni"] = json!(sni);
 					}
 					TlsExtension::MaxFragmentLength(_) => panic!("MaxFragmentLength"),
 					TlsExtension::StatusRequest(_) => panic!("StatusRequest"),
 					TlsExtension::EllipticCurves(curves) => {
-						data["EllipticCurves"] = json!(curves);
+						data["ellipticCurves"] = json!(curves);
 					}
 					TlsExtension::EcPointFormats(formats) => {
-						data["EcPointFormats"] = json!(formats);
+						data["ecPointFormats"] = json!(formats);
 					}
 					TlsExtension::SignatureAlgorithms(algs) => {
-						data["SignatureAlgorithms"] = json!(algs);
+						data["signatureAlgorithms"] = json!(algs);
 					}
 					TlsExtension::SessionTicket(_) => panic!("SessionTicket"),
 					TlsExtension::KeyShare(_) => panic!("KeyShare"),
@@ -190,11 +190,11 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 					TlsExtension::Cookie(_) => panic!("Cookie"),
 					TlsExtension::PskExchangeModes(_) => panic!("PskExchangeModes"),
 					TlsExtension::Heartbeat(hb) => {
-                        data["Heartbeat"] = json!(hb);
+                        data["heartbeat"] = json!(hb);
                     }
 					TlsExtension::ALPN(_) => panic!("ALPN"),
 					TlsExtension::SignedCertificateTimestamp(stamp) => {
-                        data["SignedCertificateTimestamp"] = json!(stamp);
+                        data["signedCertificateTimestamp"] = json!(stamp);
                     }
 					TlsExtension::Padding(_) => panic!("Padding"),
 					TlsExtension::EncryptThenMac => panic!("EncryptThenMac"),
@@ -202,7 +202,7 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 					TlsExtension::OidFilters(_) => panic!("OidFilters"),
 					TlsExtension::NextProtocolNegotiation => panic!("NextProtocolNegotiation"),
 					TlsExtension::RenegotiationInfo(info) => {
-						data["RenegotiationInfo"] = json!(info);
+						data["denegotiationInfo"] = json!(info);
 					}
 					TlsExtension::Unknown(_, _) => panic!("Unknown"),
 				}

@@ -4,30 +4,27 @@ import java.util.Arrays;
 
 public class Diff {
 
-  private final String name;
   protected final String expected;
   protected final String actual;
 
-  public Diff(String name, String expected, String actual) {
-    this.name = name;
+  public Diff(String expected, String actual) {
     this.expected = expected;
     this.actual = actual;
   }
 
-  public Diff(String name, Integer expected, Integer actual) {
-    this.name = name;
+  public Diff(Integer expected, Integer actual) {
     this.expected = expected == null ? null : expected.toString();
     this.actual = actual == null ? null : actual.toString();
   }
 
-  public Diff(String name, int[] expected, int[] actual) {
-    this.name = name;
+  public Diff(int[] expected, int[] actual) {
     this.expected = Arrays.toString(expected);
     this.actual = Arrays.toString(actual);
   }
 
-  public String getName() {
-    return name;
+  public Diff(String[] expected, String[] actual) {
+    this.expected = Arrays.toString(expected);
+    this.actual = Arrays.toString(actual);
   }
 
   public String getExpected() {
@@ -39,15 +36,15 @@ public class Diff {
   }
 
   public boolean differs() {
-    return this.actual == null && expected == null ? true : !this.actual.equals(expected);
+    return this.actual == null && expected == null ? false : !this.actual.equals(expected);
   }
 
   @Override
   public String toString() {
     if (differs()) {
-      return name + "(expected: " + expected + ", but was: " + actual + ")";
+      return "expected: " + expected + ", but was: " + actual + "";
     }
-    return name + "(NoDiff)";
+    return "NoDiff(" + actual + ")";
   }
 
 }

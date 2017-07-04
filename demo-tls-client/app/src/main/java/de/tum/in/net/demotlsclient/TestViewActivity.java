@@ -1,6 +1,7 @@
 package de.tum.in.net.demotlsclient;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -18,12 +19,14 @@ import java.security.cert.CertificateException;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import de.tum.in.net.model.AnalysisResult;
 import de.tum.in.net.model.AnalysisResultType;
 import de.tum.in.net.model.Diff;
 import de.tum.in.net.model.TestID;
+import de.tum.in.net.model.TlsMessageDiff;
 import de.tum.in.net.session.FixedIdTestSession;
 import de.tum.in.net.util.CertificateUtil;
 
@@ -68,23 +71,44 @@ public class TestViewActivity extends AppCompatActivity {
                 final FixedIdTestSession session = new FixedIdTestSession(test.getSessionID(), "https://10.83.81.2:3000");
                 final AnalysisResult analysisResult = session.getAnalysisResult(test.getCounter());
 
-                generalResult.setText("Status: " + analysisResult.getType() + "\n");
+                generalResult.setText(analysisResult.getType() + "\n");
                 final TextView clientResultView = (TextView) findViewById(R.id.resultClientHello);
 
                 if (AnalysisResultType.INTERCEPTION.equals(analysisResult.getType())) {
+                    generalResult.setTextColor(Color.parseColor("#FF0000"));
+                    final TlsMessageDiff diffClientHello = analysisResult.getClientHelloDiff();
 
-                    for (final Diff diff : analysisResult.getClientHelloDiffs()) {
-                        clientResultView.append(diff.toString() + "\n");
+                    Diff version = diffClientHello.getVersionDiff();
+                    final TextView versionView = (TextView) findViewById(R.id.tls_version_client);
+                    versionView.setText(version.toString());
+
+                    for (final Map.Entry<String, Diff> diff : diffClientHello.getExtensionsDiff().entrySet()) {
+                        clientResultView.append(diff.getKey() + ": " + diff.getValue() + "\n");
                     }
-                } else {
-                    clientResultView.append(analysisResult.getType() + "\n");
+
+                    final TlsMessageDiff diffServerHello = analysisResult.getServerHelloDiff();
+
+                    version = diffClientHello.getVersionDiff();
+                    final TextView versionViewServer = (TextView) findViewById(R.id.tls_version_server);
+                    versionViewServer.setText(version.toString());
+
+                    final TextView serverResultView = (TextView) findViewById(R.id.resultServerHello);
+                    for (final Map.Entry<String, Diff> diff : diffServerHello.getExtensionsDiff().entrySet()) {
+                        serverResultView.append(diff.getKey() + ": " + diff.getValue() + "\n");
+                    }
+
+                    final TlsMessageDiff certDiff = analysisResult.getCertificateDiff();
+                    final TextView certResultView = (TextView) findViewById(R.id.resultCertificate);
+                    certResultView.setText(certDiff.getCertChainDiff().toString());
                 }
+
             } catch (final IOException e) {
                 log.error("Could not get analysis result", e);
                 generalResult.setText("Error, " + e.getMessage());
             }
 
         }
+
     }
 
 

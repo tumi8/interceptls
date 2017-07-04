@@ -1,7 +1,8 @@
 package de.tum.in.net.model;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Extensions {
 
@@ -19,12 +20,12 @@ public class Extensions {
     return ellipticCurves;
   }
 
-  public List<Diff> createDiff(Extensions ext) {
-    List<Diff> diffs = new ArrayList<>();
+  public Map<String, Diff> createDiff(Extensions ext) {
+    Map<String, Diff> diffs = new HashMap<>();
 
-    diffs.add(new Diff("ecPointFormats", ecPointFormats, ext.ecPointFormats));
-    diffs.add(new Diff("ellipticCurves", ellipticCurves, ext.ellipticCurves));
-    diffs.add(new Diff("heartbeat", heartbeat, ext.heartbeat));
+    diffs.put("ecPointFormats", new Diff(ecPointFormats, ext.ecPointFormats));
+    diffs.put("ellipticCurves", new Diff(ellipticCurves, ext.ellipticCurves));
+    diffs.put("heartbeat", new Diff(heartbeat, ext.heartbeat));
     // diffs.add(new Diff("signatureAlgorithms", signatureAlgorithms, ext.signatureAlgorithms));
 
     return diffs;

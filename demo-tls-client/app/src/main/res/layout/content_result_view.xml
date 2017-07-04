@@ -6,18 +6,107 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="de.tum.in.net.demotlsclient.TestViewActivity"
+    tools:context=".TestViewActivity"
     tools:showIn="@layout/activity_result_view">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_default"
+            android:textSize="20dp"
+            android:text="Status" />
+
+        <TextView
+            android:id="@+id/result_general"
+            android:layout_margin="@dimen/margin_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/result_general"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Client Hello"
+        android:layout_margin="@dimen/margin_default"
+        android:textSize="20dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_default"
+            android:text="@string/tls_version" />
+
+        <TextView
+            android:id="@+id/tls_version_client"
+            android:layout_margin="@dimen/margin_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/resultClientHello"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Server Hello"
+        android:layout_margin="@dimen/margin_default"
+        android:textSize="20dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tls_version"
+            android:layout_margin="@dimen/margin_default" />
+
+        <TextView
+            android:id="@+id/tls_version_server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_default" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/resultServerHello"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Certificate"
+        android:layout_margin="@dimen/margin_default"
+        android:textSize="20dp" />
+
+
+    <TextView
+        android:id="@+id/resultCertificate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp" />
 
 </LinearLayout>
