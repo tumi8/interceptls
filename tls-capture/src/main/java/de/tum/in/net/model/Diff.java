@@ -1,6 +1,7 @@
 package de.tum.in.net.model;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Diff {
 
@@ -25,6 +26,11 @@ public class Diff {
   public Diff(String[] expected, String[] actual) {
     this.expected = Arrays.toString(expected);
     this.actual = Arrays.toString(actual);
+  }
+
+  public Diff(List<?> expected, List<?> actual) {
+    this.expected = expected == null ? null : expected.toString();
+    this.actual = actual == null ? null : actual.toString();
   }
 
   public String getExpected() {

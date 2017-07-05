@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import de.tum.in.net.model.TestID;
@@ -18,6 +20,7 @@ import de.tum.in.net.scenario.Scenario;
 import de.tum.in.net.scenario.ScenarioResult;
 import de.tum.in.net.scenario.State;
 import de.tum.in.net.scenario.client.DefaultClientScenario;
+import de.tum.in.net.scenario.client.SniTlsClient;
 import de.tum.in.net.session.OnlineTestSession;
 import de.tum.in.net.session.SessionID;
 
@@ -31,6 +34,7 @@ public class ExecuteSessionTask extends AsyncTask<Void, String, SessionID> {
     private final Context ctx;
     private final TextView textView;
     private final AsyncResult<SessionID> listener;
+
 
     public ExecuteSessionTask(final Context ctx, final TextView textView, final AsyncResult<SessionID> listener) {
         this.ctx = ctx;
@@ -54,42 +58,42 @@ public class ExecuteSessionTask extends AsyncTask<Void, String, SessionID> {
             publishProgress("Got online test session");
             final TestIDIncrementer inc = new TestIDIncrementer(session.getSessionID());
 
-            final TestID testID = inc.next();
+            TestID testID = inc.next();
             ConfigurationReader.addTestID(ctx, testID);
 
             //10.0.2.2 is the ip of the machine running the emulator
             final String target = ConfigurationReader.getTargetHost(ctx);
-            final Scenario scenario = new DefaultClientScenario(testID, target, 443);
+            final Scenario sc = new DefaultClientScenario(testID, target, 443);
 
-            final Set<String> targets = ConfigurationReader.readHosts(ctx);
+            testID = inc.next();
+            ConfigurationReader.addTestID(ctx, testID);
+            final Scenario sc2 = new DefaultClientScenario(testID, target, 443, new SniTlsClient("net.in.tum.de"));
+            final List<Scenario> tasks = Arrays.asList(sc, sc2);
 
+            int counter = 0;
+            for (final Scenario s : tasks) {
+                counter++;
+                publishProgress("Run scenario " + counter + "/" + tasks.size());
+                final ScenarioResult result = s.call();
+                if (State.CONNECTED.equals(result.getState())) {
 
-            publishProgress("Start scenario");
-            final ScenarioResult result = scenario.call();
-
-
-            edit.putString(testID.toString(), TestLifecycle.CONNECTED.toString());
-            edit.apply();
-
-
-            if (State.CONNECTED.equals(result.getState())) {
-                publishProgress("Publish results");
-
-                try {
-                    session.uploadHandshake(testID.getCounter(), result);
-                    edit.putString(testID.toString(), TestLifecycle.PUBLISHED.toString());
-                    edit.apply();
+                    try {
+                        session.uploadHandshake(s.getTestID().getCounter(), result);
+                        edit.putString(s.getTestID().toString(), TestLifecycle.PUBLISHED.toString());
+                        edit.apply();
 
 
-                } catch (final IOException e) {
-                    // TODO save and try again later
-                    e.printStackTrace();
+                    } catch (final IOException e) {
+                        // TODO save and try again later
+                        e.printStackTrace();
+                    }
+                } else {
+                    //error or no_connection
+                    //TODO
+
                 }
-            } else {
-                //error or no_connection
-                //TODO
-
             }
+
 
         } catch (final IOException e) {
             log.error("IOError" + e.getMessage(), e);

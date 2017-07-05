@@ -26,12 +26,19 @@ public class DefaultClientScenario implements Scenario {
   private final TestID id;
   private final String destination;
   private final int port;
+  private final TlsClient client;
 
 
   public DefaultClientScenario(TestID id, final String destination, final int port) {
+    this(id, destination, port, new TrimmedTlsClient());
+  }
+
+  public DefaultClientScenario(TestID id, final String destination, final int port,
+      TlsClient client) {
     this.id = Objects.requireNonNull(id, "id must not be null");
     this.destination = Objects.requireNonNull(destination, "destination must not be null.");
     this.port = port;
+    this.client = Objects.requireNonNull(client, "client must not be null");
   }
 
   @Override
@@ -44,7 +51,6 @@ public class DefaultClientScenario implements Scenario {
 
       // connect in blocking mode
       final TlsClientProtocol tlsClientProtocol = new TlsClientProtocol(tap.getIn(), tap.getOut());
-      TlsClient client = new TrimmedTlsClient();
       tlsClientProtocol.connect(client);
 
       // we are now connected, therefore we can publish the captured bytes
@@ -70,5 +76,10 @@ public class DefaultClientScenario implements Scenario {
   @Override
   public String toString() {
     return DefaultClientScenario.class.getName();
+  }
+
+  @Override
+  public TestID getTestID() {
+    return id;
   }
 }

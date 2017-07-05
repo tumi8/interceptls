@@ -169,7 +169,14 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 			for ext in record {
 				match ext {
 					TlsExtension::SNI(sni) => {
-						data["sni"] = json!(sni);
+                        let mut sni_vec = Vec::new();
+                        for s in sni {
+                            sni_vec.push(json!({
+                                "type": s.0,
+                                "name": s.1
+                            }));
+                        }
+                        data["sni"] = json!(sni_vec);
 					}
 					TlsExtension::MaxFragmentLength(_) => panic!("MaxFragmentLength"),
 					TlsExtension::StatusRequest(_) => panic!("StatusRequest"),
@@ -212,7 +219,8 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 
 		},
 		IResult::Incomplete(_) => {
-			panic!("parse_tls_extensions defragmentation required (TLS record)");
+            let mut stderr = std::io::stderr();
+            writeln!(&mut stderr, "parse_tls_extensions defragmentation required (TLS record)").unwrap();
 		},
 		IResult::Error(e) => {
 			panic!("parse_tls_extensions failed: {:?}",e);

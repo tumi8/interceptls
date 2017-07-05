@@ -134,4 +134,9 @@ public class CaClientScenario implements Scenario {
   public String toString() {
     return CaClientScenario.class.getName();
   }
+
+  @Override
+  public TestID getTestID() {
+    return testId;
+  }
 }
