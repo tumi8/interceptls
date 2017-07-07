@@ -74,7 +74,7 @@ public class Main {
     final HttpServer server = startServer();
     System.out.println("Jersey app started");
     System.in.read();
-    server.stop();
+    server.shutdownNow();
   }
 }
 
