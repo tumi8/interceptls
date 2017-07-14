@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.security.Security;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -36,6 +38,7 @@ public class CaClientScenarioTest {
 
   @BeforeClass
   public static void initCerts() throws Exception {
+    Security.insertProviderAt(new BouncyCastleProvider(), 1);
     trustAnchors = new HashSet<>();
     X509Certificate ca = CertificateUtil.readCert(new File("certs", "ca-cert.pem"));
     trustAnchors.add(new TrustAnchor(ca, null));
