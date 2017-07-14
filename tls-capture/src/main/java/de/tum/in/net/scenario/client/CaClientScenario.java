@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -90,7 +91,7 @@ public class CaClientScenario implements Scenario {
               }
 
               try {
-                CertificateFactory fac = CertificateFactory.getInstance("X.509");
+                CertificateFactory fac = CertificateFactory.getInstance("X.509", "BC");
                 CertPath cp = fac.generateCertPath(x509);
 
                 PKIXParameters pkixp = new PKIXParameters(trustAnchors);
@@ -100,7 +101,8 @@ public class CaClientScenario implements Scenario {
                 cpv.validate(cp, pkixp);
 
               } catch (NoSuchAlgorithmException | CertificateException
-                  | InvalidAlgorithmParameterException | CertPathValidatorException e) {
+                  | InvalidAlgorithmParameterException | CertPathValidatorException
+                  | NoSuchProviderException e) {
                 log.error("Bad certificate", e);
                 throw new TlsFatalAlert(AlertDescription.bad_certificate, e);
               }
