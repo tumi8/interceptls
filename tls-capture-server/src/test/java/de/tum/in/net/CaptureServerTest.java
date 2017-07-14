@@ -65,12 +65,12 @@ public class CaptureServerTest {
 
   @Test
   public void multiThreading() throws Exception {
-    int numberOfClients = 100;
+    int numberOfClients = 50;
     final CaptureServer server = new CaptureServer(conf);
 
     server.start();
     assertTrue(server.isRunning());
-    Thread.sleep(10);
+    Thread.sleep(20);
 
     ExecutorService exec = Executors.newFixedThreadPool(numberOfClients / 2);
     List<Callable<ScenarioResult>> clients = new ArrayList<>();
