@@ -7,7 +7,7 @@ authors = [ "Johannes Schleger <johannes.schleger@tum.de>" ]
 
 [dependencies]
 tls-parser = "0.4.0"
-serde_json = "1.0"
-nom = "*"
-rustc-serialize = "0.3"
-base64 = "~0.5.0"
+serde_json = "1.0.2"
+nom = "2.2.1"
+rustc-serialize = "0.3.24"
+base64 = "0.5.2"
