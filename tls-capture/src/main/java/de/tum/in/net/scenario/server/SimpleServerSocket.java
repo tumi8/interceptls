@@ -59,6 +59,10 @@ public class SimpleServerSocket implements Runnable, Closeable {
     return srv == null ? false : !srv.isClosed();
   }
 
+  public int getLocalPort() {
+    return srv.getLocalPort();
+  }
+
   @Override
   public void close() throws IOException {
     if (srv == null)

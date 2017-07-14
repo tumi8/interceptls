@@ -44,17 +44,16 @@ public class CaClientScenarioTest {
 
   @Test
   public void certPathInvalid() throws Exception {
-    final int port = 3843;
 
     final MyResultListener listener = new MyResultListener();
     final ClientHandlerFactory fac =
         new DefaultClientHandlerFactory(new BcTlsServerFactory(), listener);
-    try (final SimpleServerSocket socket = new SimpleServerSocket(port, fac, executor)) {
+    try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
       executor.submit(socket);
       Thread.sleep(20);
 
       final CaClientScenario scenario =
-          new CaClientScenario(TestID.randomID(), "127.0.0.1", port, trustAnchors);
+          new CaClientScenario(TestID.randomID(), "127.0.0.1", socket.getLocalPort(), trustAnchors);
       scenario.call();
 
       while (listener.result == null) {
@@ -67,7 +66,6 @@ public class CaClientScenarioTest {
 
   @Test
   public void certPathValid() throws Exception {
-    final int port = 3843;
     String sessionId = "sessionId";
     int counter = 3;
     TestID testID = new TestID(sessionId, counter);
@@ -76,12 +74,12 @@ public class CaClientScenarioTest {
     BcTlsServerFactory tlsFac = new BcTlsServerFactory(
         new FileTlsServerConfig(new File("certs", "ca-cert.pem"), new File("certs", "ca-key.pem")));
     final ClientHandlerFactory fac = new DefaultClientHandlerFactory(tlsFac, listener);
-    try (final SimpleServerSocket socket = new SimpleServerSocket(port, fac, executor)) {
+    try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
       executor.submit(socket);
       Thread.sleep(20);
 
       final CaClientScenario scenario =
-          new CaClientScenario(testID, "127.0.0.1", port, trustAnchors);
+          new CaClientScenario(testID, "127.0.0.1", socket.getLocalPort(), trustAnchors);
       final ScenarioResult clientResult = scenario.call();
 
       while (listener.result == null) {

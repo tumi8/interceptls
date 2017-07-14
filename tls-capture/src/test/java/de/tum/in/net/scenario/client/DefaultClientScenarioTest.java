@@ -26,7 +26,6 @@ public class DefaultClientScenarioTest {
 
   @Test
   public void testOK() throws Exception {
-    final int port = 3843;
     String sessionId = "sessionId";
     int counter = 6;
     TestID testID = new TestID(sessionId, counter);
@@ -34,11 +33,12 @@ public class DefaultClientScenarioTest {
     final MyResultListener listener = new MyResultListener();
     final ClientHandlerFactory fac =
         new DefaultClientHandlerFactory(new BcTlsServerFactory(), listener);
-    try (final SimpleServerSocket socket = new SimpleServerSocket(port, fac, executor)) {
+    try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
       executor.submit(socket);
       Thread.sleep(20);
 
-      final DefaultClientScenario scenario = new DefaultClientScenario(testID, "127.0.0.1", port);
+      final DefaultClientScenario scenario =
+          new DefaultClientScenario(testID, "127.0.0.1", socket.getLocalPort());
 
       final ScenarioResult clientResult = scenario.call();
 
