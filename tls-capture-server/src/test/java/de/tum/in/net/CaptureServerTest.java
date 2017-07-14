@@ -10,7 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,8 +74,9 @@ public class CaptureServerTest {
 
     ExecutorService exec = Executors.newFixedThreadPool(numberOfClients / 2);
     List<Callable<ScenarioResult>> clients = new ArrayList<>();
-    IntStream.range(1, numberOfClients)
-        .forEach(e -> clients.add(new DefaultClientScenario(id, "127.0.0.1", port)));
+    for (int i = 0; i < numberOfClients; i++) {
+      clients.add(new DefaultClientScenario(id, "127.0.0.1", port));
+    }
 
     List<Future<ScenarioResult>> results = exec.invokeAll(clients, 5, TimeUnit.SECONDS);
     for (Future<ScenarioResult> result : results) {
