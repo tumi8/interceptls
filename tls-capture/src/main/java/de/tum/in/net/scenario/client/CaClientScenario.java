@@ -97,7 +97,7 @@ public class CaClientScenario implements Scenario {
                 PKIXParameters pkixp = new PKIXParameters(trustAnchors);
                 pkixp.setRevocationEnabled(false);
 
-                CertPathValidator cpv = CertPathValidator.getInstance("PKIX");
+                CertPathValidator cpv = CertPathValidator.getInstance("PKIX", "BC");
                 cpv.validate(cp, pkixp);
 
               } catch (NoSuchAlgorithmException | CertificateException
