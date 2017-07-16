@@ -64,13 +64,13 @@ public class AnalysisResource {
           analysisResult = createDiff(result);
         } catch (IOException e) {
           log.error("Could not parse handshake", e);
-          analysisResult = AnalysisResult.error("Error parsing handshake");
+          throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         } catch (IllegalStateException e) {
           log.error("Unexpected error in handshake bytes", e);
-          analysisResult = AnalysisResult.error("Unexpected error in handshake bytes");
+          throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
           log.error("Unknwon error", e);
-          analysisResult = AnalysisResult.error("Unexpected error");
+          throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
       } else {
         // server data missing
