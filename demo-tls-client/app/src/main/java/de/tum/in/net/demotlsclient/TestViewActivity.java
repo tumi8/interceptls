@@ -68,7 +68,7 @@ public class TestViewActivity extends AppCompatActivity {
             final TextView generalResult = (TextView) findViewById(R.id.result_general);
 
             try {
-                final FixedIdTestSession session = new FixedIdTestSession(test.getSessionID(), "https://10.83.81.2:3000");
+                final FixedIdTestSession session = new FixedIdTestSession(test.getSessionID(), "https://141.40.254.119:3000");
                 final AnalysisResult analysisResult = session.getAnalysisResult(test.getCounter());
 
                 generalResult.setText(analysisResult.getType() + "\n");

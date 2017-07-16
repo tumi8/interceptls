@@ -52,7 +52,7 @@ public class ExecuteSessionTask extends AsyncTask<Void, String, SessionID> {
         try {
 
             publishProgress("Start online test session");
-            final TestSession session = new OnlineTestSession("https://10.83.81.2:3000");
+            final TestSession session = new OnlineTestSession("https://141.40.254.119:3000");
             sessionID = session.getSessionID();
             ConfigurationReader.addSessionID(ctx, sessionID);
             publishProgress("Got online test session");

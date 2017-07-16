@@ -10,7 +10,7 @@
     </string>
     <string name="result">Results</string>
     <string name="target">Target Host</string>
-    <string name="target_default">10.83.81.4</string>
+    <string name="target_default">141.40.254.119</string>
     <string name="hosts_default_title">Default hosts</string>
     <string name="hosts_default_description">Which hosts do we probe?</string>
     <string name="hosts_additional_title">Additional hosts</string>
