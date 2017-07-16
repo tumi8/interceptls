@@ -42,20 +42,17 @@ class TlsClientConnection implements Runnable {
     try {
       tap = new Tap(socket.getInputStream(), socket.getOutputStream());
 
-      final TlsSocket tlsSocket = tlsServerFactory.bind(tap.getIn(), tap.getOut());
+      try (final TlsSocket tlsSocket = tlsServerFactory.bind(tap.getIn(), tap.getOut())) {
 
-      ScenarioResultBuilder builder =
-          new ScenarioResultBuilder(Node.SERVER, socket).transmitted(tap);
+        ScenarioResultBuilder builder =
+            new ScenarioResultBuilder(Node.SERVER, socket).transmitted(tap);
 
-      // we always require the session-id
-      TestID id = TestID.read(tlsSocket.getInputStream());
-      ScenarioResult result = builder.connected();
+        // we always require the session-id
+        TestID id = TestID.read(tlsSocket.getInputStream());
+        ScenarioResult result = builder.connected();
 
-      publisher.publish(id, result);
-
-
-      tlsSocket.close();
-
+        publisher.publish(id, result);
+      }
 
     } catch (final IOException e) {
       log.error("Socket closed.", e);

@@ -8,7 +8,6 @@ public class AnalysisResult {
   private TlsMessageDiff clientHello;
   private TlsMessageDiff serverHello;
   private TlsMessageDiff certificate;
-  private String error;
 
   private AnalysisResult(AnalysisResultType type) {
     this.type = Objects.requireNonNull(type);
@@ -20,11 +19,6 @@ public class AnalysisResult {
     this.clientHello = Objects.requireNonNull(clientHello);
     this.serverHello = Objects.requireNonNull(serverHello);
     this.certificate = Objects.requireNonNull(certificate);
-  }
-
-  public AnalysisResult(String msg) {
-    this.type = AnalysisResultType.ERROR;
-    this.error = msg;
   }
 
   public TlsMessageDiff getClientHelloDiff() {
@@ -56,10 +50,6 @@ public class AnalysisResult {
     return new AnalysisResult(AnalysisResultType.NO_INTERCEPTION);
   }
 
-  public static AnalysisResult error(String msg) {
-    return new AnalysisResult(msg);
-  }
-
   public static AnalysisResult intercepted(TlsMessageDiff clientHello, TlsMessageDiff serverHello,
       TlsMessageDiff certificate) {
     return new AnalysisResult(clientHello, serverHello, certificate);
@@ -72,11 +62,6 @@ public class AnalysisResult {
   public AnalysisResultType getType() {
     return type;
   }
-
-  public String getErrorMsg() {
-    return error;
-  }
-
 
 
 }
