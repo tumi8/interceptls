@@ -1,6 +1,5 @@
 package de.tum.in.net.services;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -18,7 +17,7 @@ import de.tum.in.net.model.DatabaseService;
 import de.tum.in.net.model.TestID;
 import de.tum.in.net.scenario.ScenarioResult;
 
-public class MapDBDatabaseService implements DatabaseService, Closeable {
+public class MapDBDatabaseService implements DatabaseService {
 
   private final Random random = new SecureRandom();
   private DB db;
@@ -52,6 +51,8 @@ public class MapDBDatabaseService implements DatabaseService, Closeable {
     do {
       key = new BigInteger(130, random).toString(32);
     } while (sessions.contains(key));
+    sessions.add(key);
+    db.commit();
 
     return key;
   }
@@ -65,9 +66,11 @@ public class MapDBDatabaseService implements DatabaseService, Closeable {
     switch (result.getNode()) {
       case SERVER:
         serverResults.put(id.toString(), result);
+        db.commit();
         break;
       case CLIENT:
         clientResults.put(id.toString(), result);
+        db.commit();
         break;
       default:
         throw new IllegalStateException("Unknown node type");
