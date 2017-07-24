@@ -28,11 +28,21 @@ public class Extensions {
   public Map<String, Diff> createDiff(Extensions ext) {
     Map<String, Diff> diffs = new HashMap<>();
 
-    diffs.put("ecPointFormats", new Diff(ecPointFormats, ext.ecPointFormats));
-    diffs.put("ellipticCurves", new Diff(ellipticCurves, ext.ellipticCurves));
-    diffs.put("heartbeat", new Diff(heartbeat, ext.heartbeat));
-    diffs.put("signatureAlgorithms", new Diff(signatureAlgorithms, ext.signatureAlgorithms));
-    diffs.put("sni", new Diff(sni, ext.sni));
+    if (ecPointFormats != null && ext.ecPointFormats != null) {
+      diffs.put("ecPointFormats", new Diff(ecPointFormats, ext.ecPointFormats));
+    }
+    if (ellipticCurves != null && ext.ellipticCurves != null) {
+      diffs.put("ellipticCurves", new Diff(ellipticCurves, ext.ellipticCurves));
+    }
+    if (heartbeat != null && ext.heartbeat != null) {
+      diffs.put("heartbeat", new Diff(heartbeat, ext.heartbeat));
+    }
+    if (signatureAlgorithms != null && ext.signatureAlgorithms != null) {
+      diffs.put("signatureAlgorithms", new Diff(signatureAlgorithms, ext.signatureAlgorithms));
+    }
+    if (sni != null && ext.sni != null) {
+      diffs.put("sni", new Diff(sni, ext.sni));
+    }
 
     return diffs;
   }
