@@ -82,15 +82,23 @@ public class TestViewActivity extends AppCompatActivity {
                     final TextView versionView = (TextView) findViewById(R.id.tls_version_client);
                     versionView.setText(version.toString());
 
+                    Diff cipher = diffClientHello.getCiphersDiff();
+                    final TextView cipherView = (TextView) findViewById(R.id.tls_cipher_client);
+                    cipherView.setText(cipher.toString());
+
                     for (final Map.Entry<String, Diff> diff : diffClientHello.getExtensionsDiff().entrySet()) {
                         clientResultView.append(diff.getKey() + ": " + diff.getValue() + "\n");
                     }
 
                     final TlsMessageDiff diffServerHello = analysisResult.getServerHelloDiff();
 
-                    version = diffClientHello.getVersionDiff();
+                    version = diffServerHello.getVersionDiff();
                     final TextView versionViewServer = (TextView) findViewById(R.id.tls_version_server);
                     versionViewServer.setText(version.toString());
+
+                    cipher = diffServerHello.getCiphersDiff();
+                    final TextView cipherViewServer = (TextView) findViewById(R.id.tls_cipher_server);
+                    cipherViewServer.setText(cipher.toString());
 
                     final TextView serverResultView = (TextView) findViewById(R.id.resultServerHello);
                     for (final Map.Entry<String, Diff> diff : diffServerHello.getExtensionsDiff().entrySet()) {
