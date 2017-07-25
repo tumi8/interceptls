@@ -17,3 +17,7 @@ openssl x509 -req -days 730 -in server-cert-ec.csr -CA ca-cert.pem -CAkey ca-key
 #create chains
 cat ca-cert.pem server-cert-rsa.pem > server-cert-rsa.pem.chain
 cat ca-cert.pem server-cert-ec.pem > server-cert-ec.pem.chain
+
+#create keystore
+openssl pkcs12 -export -out tls-rsa.p12 -in server-cert-rsa.pem -inkey server-key-rsa.pem -CAfile ca-cert.pem -chain -password pass:password
+openssl pkcs12 -export -out tls-ec.p12 -in server-cert-ec.pem -inkey server-key-ec.pem -CAfile ca-cert.pem -chain -password pass:password
