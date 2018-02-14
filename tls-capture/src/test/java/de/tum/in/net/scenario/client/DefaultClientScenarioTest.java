@@ -56,4 +56,38 @@ public class DefaultClientScenarioTest {
     }
 
   }
+
+  @Test
+  public void testSniClient() throws Exception {
+    String sessionId = "sessionId";
+    int counter = 6;
+    TestID testID = new TestID(sessionId, counter);
+
+    final MyResultListener listener = new MyResultListener();
+    final ClientHandlerFactory fac =
+        new DefaultClientHandlerFactory(new BcTlsServerFactory(), listener);
+    try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
+      executor.submit(socket);
+      Thread.sleep(20);
+
+      SniTlsClient tlsClient = new SniTlsClient("google.de");
+      final DefaultClientScenario scenario =
+          new DefaultClientScenario(testID, "127.0.0.1", socket.getLocalPort(), tlsClient);
+
+      final ScenarioResult clientResult = scenario.call();
+
+      while (listener.result == null) {
+        Thread.sleep(20);
+      }
+      assertTrue(listener.result.isSuccess());
+
+      // the sent bytes must equal the received bytes
+      assertArrayEquals(clientResult.getReceivedBytesRaw(), listener.result.getSentBytesRaw());
+      assertArrayEquals(clientResult.getSentBytesRaw(), listener.result.getReceivedBytesRaw());
+
+      // received test id's
+      assertEquals(testID, listener.testID);
+    }
+
+  }
 }
