@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    //buildToolsVersion '25.0.1'
     defaultConfig {
         applicationId "de.tum.in.net.demotlsclient"
         minSdkVersion 19
@@ -25,7 +25,7 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-android', version: '1.6.1-RC1'
     compile 'de.tum.in.net:tls-capture:1.0-SNAPSHOT'
     compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'org.bouncycastle:bcprov-jdk15on:1.57'
+    compile 'org.bouncycastle:bcprov-jdk15on:1.59'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'

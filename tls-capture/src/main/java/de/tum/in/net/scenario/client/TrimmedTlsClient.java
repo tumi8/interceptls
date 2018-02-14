@@ -3,11 +3,11 @@ package de.tum.in.net.scenario.client;
 import java.io.IOException;
 import java.security.SecureRandom;
 
-import org.bouncycastle.tls.Certificate;
 import org.bouncycastle.tls.CipherSuite;
 import org.bouncycastle.tls.DefaultTlsClient;
 import org.bouncycastle.tls.ServerOnlyTlsAuthentication;
 import org.bouncycastle.tls.TlsAuthentication;
+import org.bouncycastle.tls.TlsServerCertificate;
 import org.bouncycastle.tls.crypto.TlsCrypto;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 import org.slf4j.Logger;
@@ -44,7 +44,8 @@ public class TrimmedTlsClient extends DefaultTlsClient {
   public TlsAuthentication getAuthentication() throws IOException {
     return new ServerOnlyTlsAuthentication() {
       @Override
-      public void notifyServerCertificate(final Certificate serverCertificate) throws IOException {
+      public void notifyServerCertificate(final TlsServerCertificate serverCertificate)
+          throws IOException {
         log.debug("Notify server certificate.");
       }
     };

@@ -14,6 +14,7 @@ import org.bouncycastle.tls.ServerNameList;
 import org.bouncycastle.tls.ServerOnlyTlsAuthentication;
 import org.bouncycastle.tls.TlsAuthentication;
 import org.bouncycastle.tls.TlsExtensionsUtils;
+import org.bouncycastle.tls.TlsServerCertificate;
 import org.bouncycastle.tls.crypto.TlsCrypto;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class SniTlsClient extends DefaultTlsClient {
   public TlsAuthentication getAuthentication() throws IOException {
     return new ServerOnlyTlsAuthentication() {
       @Override
-      public void notifyServerCertificate(final Certificate serverCertificate) throws IOException {
+      public void notifyServerCertificate(final TlsServerCertificate serverCertificate) throws IOException {
         log.debug("Notify server certificate.");
       }
     };
