@@ -1,24 +1,24 @@
 package de.tum.in.net;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.cert.CertificateException;
-import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tum.in.net.model.ClientHandlerFactory;
-import de.tum.in.net.model.ResultListener;
-import de.tum.in.net.model.TlsServerFactory;
-import de.tum.in.net.scenario.ScenarioResult;
-import de.tum.in.net.scenario.server.BcTlsServerFactory;
-import de.tum.in.net.scenario.server.DefaultClientHandlerFactory;
-import de.tum.in.net.scenario.server.SimpleServerSocket;
-import de.tum.in.net.scenario.server.TlsServerConfig;
+import de.tum.in.net.server.BcTlsServerFactory;
+import de.tum.in.net.server.ClientHandlerFactory;
+import de.tum.in.net.server.DefaultClientHandlerFactory;
 import de.tum.in.net.server.FileTlsServerConfig;
+import de.tum.in.net.server.SimpleServerSocket;
+import de.tum.in.net.server.TlsServerConfig;
+import de.tum.in.net.server.TlsServerFactory;
 
 public class CaptureServer {
 
@@ -34,30 +34,38 @@ public class CaptureServer {
   private final TlsServerFactory prov;
 
   private final ClientHandlerFactory handler;
-  private CaptureServerConfig conf;
+  private final int port;
 
   public CaptureServer() throws CertificateException, IOException {
-    this(CaptureServerConfig.load(CONF_FILE));
+    this(CONF_FILE);
   }
 
-  public CaptureServer(CaptureServerConfig conf) throws IOException, CertificateException {
-    this.conf = Objects.requireNonNull(conf, "conf must not be null");
+  public CaptureServer(int port) throws CertificateException, IOException {
+    this.port = port;
     final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
     prov = new BcTlsServerFactory(config);
+    handler = new DefaultClientHandlerFactory(prov);
+  }
 
-    final ResultListener<ScenarioResult> uploader;
-    switch (conf.getTestSession()) {
-      case LOCAL:
-        uploader = new LogResultListener();
-        break;
-      case ONLINE:
-        uploader = new ResultUploader(conf.getTargetUrl());
-        break;
-      default:
-        throw new IllegalStateException("unknown test session: " + conf.getTestSession());
+  public CaptureServer(File confFile) throws IOException, CertificateException {
+    Properties props = new Properties();
+    try (InputStream in = new FileInputStream(confFile)) {
+      props.load(in);
+      String portString = getNonEmptyProperty(props, "port");
+      port = Integer.parseInt(portString);
     }
 
-    handler = new DefaultClientHandlerFactory(prov, uploader);
+    final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
+    prov = new BcTlsServerFactory(config);
+    handler = new DefaultClientHandlerFactory(prov);
+  }
+
+  private static String getNonEmptyProperty(Properties props, String key) {
+    String value = props.getProperty(key);
+    if (value == null || value.isEmpty()) {
+      throw new IllegalArgumentException("The property " + key + " does not exist or is empty.");
+    }
+    return value.trim();
   }
 
   public static void main(final String[] args) throws Exception {
@@ -66,14 +74,11 @@ public class CaptureServer {
   }
 
   public synchronized void start() throws IllegalStateException {
-    int port = conf.getPort();
     log.debug("Start CaptureServer on port {}", port);
     server = new SimpleServerSocket(port, handler, exec);
     serverThread = new Thread(server, "Server on port " + port);
     serverThread.start();
   }
-
-
 
   public boolean isRunning() {
     return serverThread.isAlive();

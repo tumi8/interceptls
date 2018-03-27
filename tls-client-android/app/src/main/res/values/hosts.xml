@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="hosts_default">
+        <item>192.168.178.68:7623</item>
+    </string-array>
+</resources>

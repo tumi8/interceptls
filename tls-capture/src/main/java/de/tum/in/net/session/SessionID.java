@@ -1,39 +1,36 @@
 package de.tum.in.net.session;
 
 /**
- * TestSessionId is defined as [A-Za-Z0-9]+
+ * SessionId is defined as a long.
  * 
  * @author johannes
  */
 public class SessionID {
 
-  private final String sessionID;
+  private final long id;
 
-  public SessionID(final String id) {
-    this.sessionID = id;
-    if (!id.matches("[A-Za-z0-9]+")) {
-      throw new IllegalArgumentException("id does not match the regex");
-    }
+  public SessionID(long id) {
+    this.id = id;
   }
 
-  public String getID() {
-    return this.sessionID;
+  public long getID() {
+    return this.id;
   }
 
   @Override
   public String toString() {
-    return sessionID;
+    return Long.toString(id);
   }
 
   @Override
   public int hashCode() {
-    return sessionID.hashCode();
+    return Long.hashCode(id);
   }
 
   @Override
   public boolean equals(Object o) {
     if (o instanceof SessionID) {
-      return this.sessionID.equals(((SessionID) o).sessionID);
+      return this.id == ((SessionID) o).id;
     }
     return false;
   }

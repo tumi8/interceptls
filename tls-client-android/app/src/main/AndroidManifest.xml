@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="de.tum.in.net.client">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/label_about"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".TestViewActivity"
+            android:label="@string/title_activity_result_view"
+            android:parentActivityName=".TlsTestResultViewActivity" />
+        <activity
+            android:name=".ProgressActivity"
+            android:label="@string/title_activity_progress" />
+        <activity
+            android:name=".TlsTestResultViewActivity"
+            android:label="@string/title_activity_session_view"
+            android:parentActivityName=".MainActivity" />
+
+        <service
+            android:name=".UploadResultService"
+            android:icon="@drawable/icon"
+            android:label="@string/upload_result_service_name" />
+
+        <service
+            android:name=".TlsJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true" />
+
+    </application>
+
+</manifest>

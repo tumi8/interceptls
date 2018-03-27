@@ -1,17 +1,18 @@
 package de.tum.in.net.model;
 
-import org.bouncycastle.tls.TlsServerProtocol;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
+
+import org.bouncycastle.tls.TlsServerProtocol;
 
 /**
  * Created by johannes on 18.05.17.
  */
 
-public class TlsSocket implements Closeable {
+public class TlsSocket extends Socket implements Closeable {
 
   private final TlsServerProtocol protocol;
 
@@ -19,11 +20,13 @@ public class TlsSocket implements Closeable {
     this.protocol = protocol;
   }
 
+  @Override
   public InputStream getInputStream() {
     return protocol.getInputStream();
   }
 
-  public OutputStream getOut() {
+  @Override
+  public OutputStream getOutputStream() {
     return protocol.getOutputStream();
   }
 

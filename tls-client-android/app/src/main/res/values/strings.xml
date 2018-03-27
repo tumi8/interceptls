@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">TLS Client</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="hosts_default">hosts_default</string>
+    <string name="hosts_additional">hosts_additional</string>
+    <string name="result">Results</string>
+    <string name="target">Target Host</string>
+    <string name="analysis_server_url_default">https://192.168.178.68:3000</string>
+    <string name="hosts_default_title">Default hosts</string>
+    <string name="hosts_default_description">Which hosts do we probe?</string>
+    <string name="hosts_additional_title">Additional hosts</string>
+    <string name="hosts_additional_description">Additional hosts for probing can be specified here. Each host must be specified in a new line.</string>
+    <string name="title_activity_result_view">Test report</string>
+    <string name="text_no_results">No results yet.</string>
+    <string name="title_activity_progress">Test in progress</string>
+    <string name="title_activity_session_view">Test overview</string>
+    <string name="tls_version">TLS-Version:</string>
+    <string name="tls_service_name">TLS Background Service</string>
+    <string name="upload_result_service_name">Result Upload Service</string>
+    <string name="analysis_server_url">Analysis Server URL</string>
+    <string name="OK">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="background_service">Background Service</string>
+    <string name="label_about">About TLS Client</string>
+    <string name="about_text">This application is part of a Master\'s Thesis created in SS2018. For more information visit TODO.</string>
+</resources>

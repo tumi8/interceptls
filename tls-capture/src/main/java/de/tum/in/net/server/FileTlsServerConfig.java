@@ -30,7 +30,6 @@ import org.bouncycastle.tls.crypto.impl.bc.BcDefaultTlsCredentialedSigner;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCertificate;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 
-import de.tum.in.net.scenario.server.TlsServerConfig;
 import de.tum.in.net.util.CertificateUtil;
 
 /**

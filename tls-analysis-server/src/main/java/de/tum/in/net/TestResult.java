@@ -1,13 +1,13 @@
 package de.tum.in.net;
 
-import de.tum.in.net.scenario.ScenarioResult;
+import de.tum.in.net.model.TlsResult;
 
 public class TestResult {
 
-  private ScenarioResult clientResult;
-  private ScenarioResult serverResult;
+  private TlsResult clientResult;
+  private TlsResult serverResult;
 
-  public TestResult(ScenarioResult client, ScenarioResult server) {
+  public TestResult(TlsResult client, TlsResult server) {
     this.clientResult = client;
     this.serverResult = server;
   }
@@ -20,11 +20,11 @@ public class TestResult {
     return serverResult != null;
   }
 
-  public ScenarioResult getClientResult() {
+  public TlsResult getClientResult() {
     return clientResult;
   }
 
-  public ScenarioResult getServerResult() {
+  public TlsResult getServerResult() {
     return serverResult;
   }
 

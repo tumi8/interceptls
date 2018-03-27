@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="@string/background_service"
+        android:title="@string/background_service"
+        android:entries="@array/service_times"
+        android:entryValues="@array/service_times_values"
+        android:defaultValue="720"
+        android:summary="Set the time interval in which the TLS tests run automatically in the background." />
+    <MultiSelectListPreference
+        android:defaultValue="@array/hosts_default"
+        android:entries="@array/hosts_default"
+        android:entryValues="@array/hosts_default"
+        android:key="@string/hosts_default"
+        android:summary="@string/hosts_default_description"
+        android:title="@string/hosts_default_title" />
+    <EditTextPreference
+        android:key="@string/hosts_additional"
+        android:summary="@string/hosts_additional_description"
+        android:title="@string/hosts_additional_title" />
+    <EditTextPreference
+        android:key="@string/analysis_server_url"
+        android:title="@string/analysis_server_url"
+        android:defaultValue="@string/analysis_server_url_default" />
+</PreferenceScreen>

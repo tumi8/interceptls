@@ -1,14 +1,15 @@
 package de.tum.in.net.session;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.tum.in.net.model.AnalysisResult;
-import de.tum.in.net.model.TestID;
+import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.model.TestSession;
-import de.tum.in.net.scenario.ScenarioResult;
+import de.tum.in.net.model.TlsTestResult;
 
 /**
  * Created by johannes on 04.04.17.
@@ -17,22 +18,18 @@ import de.tum.in.net.scenario.ScenarioResult;
 public class LoggingTestSession implements TestSession {
 
   private static final Logger log = LoggerFactory.getLogger(LoggingTestSession.class);
-  private static final String ID = "LocalTestSession";
 
   @Override
-  public SessionID getSessionID() {
-    return new SessionID(ID);
+  public SessionID uploadResult(TlsTestResult result) throws IOException {
+    log.info("upload: {}", result);
+    return new SessionID(1);
   }
 
   @Override
-  public void uploadHandshake(int testCounter, ScenarioResult result) throws IOException {
-    log.info("testID: {}, result: {}", new TestID(ID, testCounter), result);
+  public List<AnalysisResult> getAnalysisResult(SessionID id) throws IOException {
+    log.info("getAnalysis: {}", id);
+    return Arrays.asList(AnalysisResult.noInterception());
   }
 
-  @Override
-  public AnalysisResult getAnalysisResult(int testCounter) throws IOException {
-    log.info("testID: {}", new TestID(ID, testCounter));
-    return AnalysisResult.noInterception();
 
-  }
 }

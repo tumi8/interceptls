@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -19,14 +22,18 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-import de.tum.in.net.model.AnalysisResult;
-import de.tum.in.net.model.AnalysisResultType;
-import de.tum.in.net.scenario.Node;
-import de.tum.in.net.scenario.ScenarioResult;
-import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
-import de.tum.in.net.services.MapDBDatabaseService;
+import de.tum.in.net.analysis.AnalysisResult;
+import de.tum.in.net.analysis.TlsState;
+import de.tum.in.net.client.HostAndPort;
+import de.tum.in.net.model.NetworkId;
+import de.tum.in.net.model.TlsClientServerResult;
+import de.tum.in.net.model.TlsResult;
+import de.tum.in.net.model.TlsTestResult;
+import de.tum.in.net.services.MemoryOnlyDatabaseService;
+import de.tum.in.net.session.SessionID;
 import de.tum.in.net.util.ClientUtil;
 
 public class AnalysisResourceTest {
@@ -60,7 +67,7 @@ public class AnalysisResourceTest {
   @Before
   public void setUp() throws Exception {
     AnalysisServerConfig conf = AnalysisServerConfig.loadDefault();
-    server = Main.startServer(conf, new MapDBDatabaseService(false));
+    server = AnalysisServerMain.startServer(conf, new MemoryOnlyDatabaseService());
     Client c = ClientUtil.createDefaultTLSClient(conf);
 
     // uncomment the following line if you want to enable
@@ -80,103 +87,71 @@ public class AnalysisResourceTest {
 
   @Test
   public void analysis() {
-    ScenarioResult clientResult = new ScenarioResultBuilder(Node.CLIENT, "source", "dst")
-        .sent(golemClient).received(golemServer).connected();
-    ScenarioResult serverResult = new ScenarioResultBuilder(Node.SERVER, "source", "dst")
-        .sent(golemServer).received(golemClient).connected();
+    TlsResult clientResult = new TlsResult("dst", golemServer, golemClient);
+    TlsResult serverResult = new TlsResult("dst", golemClient, golemServer);
+
+    HostAndPort hostAndPort = new HostAndPort("junit.org.xy");
+    List<TlsClientServerResult> results =
+        Arrays.asList(TlsClientServerResult.connected(hostAndPort, clientResult, serverResult));
+    TlsTestResult testResult = new TlsTestResult(new NetworkId(), results);
 
     Response response =
-        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(clientResult)));
-    assertEquals(204, response.getStatus());
-    response =
-        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(serverResult)));
-    assertEquals(204, response.getStatus());
+        target.path("result").request().post(Entity.json(new Gson().toJson(testResult)));
+    assertEquals(200, response.getStatus());
+
+    String content = response.readEntity(String.class);
+    SessionID id = new Gson().fromJson(content, SessionID.class);
 
 
-    Response response2 = target.path("analysis/a-1").request().get();
+    Response response2 = target.path("analysis/" + id.getID()).request().get();
     assertEquals(200, response2.getStatus());
 
-    AnalysisResult result = getResult(response2);
-    assertNotNull(result);
-    assertEquals(AnalysisResultType.NO_INTERCEPTION, result.getType());
+    List<AnalysisResult> analysisResults = getResult(response2);
+    assertNotNull(analysisResults);
+    assertEquals(1, analysisResults.size());
 
+    assertEquals(TlsState.NO_INTERCEPTION, analysisResults.get(0).getTlsState());
   }
 
   @Test
   public void interception() {
-    ScenarioResult clientResult = new ScenarioResultBuilder(Node.CLIENT, "source", "dst")
-        .sent(sslSplitClientSent).received(sslSplitClientReceived).connected();
-    ScenarioResult serverResult = new ScenarioResultBuilder(Node.SERVER, "source", "dst")
-        .sent(sslSplitServerSent).received(sslSplitServerReceived).connected();
+    TlsResult clientResult = new TlsResult("dst", sslSplitClientReceived, sslSplitClientSent);
+    TlsResult serverResult = new TlsResult("dst", sslSplitServerReceived, sslSplitServerSent);
+
+    HostAndPort hostAndPort = new HostAndPort("junit.org.xy");
+    List<TlsClientServerResult> results =
+        Arrays.asList(TlsClientServerResult.connected(hostAndPort, clientResult, serverResult));
+    TlsTestResult testResult = new TlsTestResult(new NetworkId(), results);
 
     Response response =
-        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(clientResult)));
-    assertEquals(204, response.getStatus());
-    response =
-        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(serverResult)));
-    assertEquals(204, response.getStatus());
+        target.path("result").request().post(Entity.json(new Gson().toJson(testResult)));
+    assertEquals(200, response.getStatus());
 
+    String content = response.readEntity(String.class);
+    SessionID id = new Gson().fromJson(content, SessionID.class);
 
-    Response response2 = target.path("analysis/a-1").request().get();
+    Response response2 = target.path("analysis/" + id).request().get();
     assertEquals(200, response2.getStatus());
 
-    AnalysisResult result = getResult(response2);
-    assertNotNull(result);
-    assertEquals(AnalysisResultType.INTERCEPTION, result.getType());
+    List<AnalysisResult> analysisResults = getResult(response2);
+    assertNotNull(analysisResults);
+    assertEquals(1, analysisResults.size());
+
+    assertEquals(TlsState.INTERCEPTION, analysisResults.get(0).getTlsState());
 
   }
 
-  @Test
-  public void noServerData() {
-    ScenarioResult clientResult = new ScenarioResultBuilder(Node.CLIENT, "source", "dst")
-        .sent(golemClient).received(golemServer).connected();
 
-    Response response =
-        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(clientResult)));
-    assertEquals(204, response.getStatus());
-
-
-    Response response2 = target.path("analysis/a-1").request().get();
-    assertEquals(200, response2.getStatus());
-
-    AnalysisResult result = getResult(response2);
-    assertNotNull(result);
-    assertEquals(AnalysisResultType.NO_SERVER_RESULT, result.getType());
-
-  }
-
-  @Test
-  public void noClientData() {
-    ScenarioResult serverResult = new ScenarioResultBuilder(Node.SERVER, "source", "dst")
-        .sent(golemServer).received(golemClient).connected();
-
-    Response response =
-        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(serverResult)));
-    assertEquals(204, response.getStatus());
-
-    Response response2 = target.path("analysis/a-1").request().get();
-    assertEquals(200, response2.getStatus());
-
-    AnalysisResult result = getResult(response2);
-    assertNotNull(result);
-    assertEquals(AnalysisResultType.NO_CLIENT_RESULT, result.getType());
-
-  }
 
   @Test
   public void noDataAtAll() {
-
-    Response response = target.path("analysis/a-1").request().get();
-    assertEquals(200, response.getStatus());
-
-    AnalysisResult result = getResult(response);
-    assertNotNull(result);
-    assertEquals(AnalysisResultType.NO_CLIENT_NO_SERVER_RESULT, result.getType());
-
+    Response response = target.path("analysis/7623").request().get();
+    assertEquals(404, response.getStatus());
   }
 
-  private AnalysisResult getResult(Response response) {
+  private List<AnalysisResult> getResult(Response response) {
     String content = response.readEntity(String.class);
-    return new Gson().fromJson(content, AnalysisResult.class);
+    Type listType = new TypeToken<List<AnalysisResult>>() {}.getType();
+    return new Gson().fromJson(content, listType);
   }
 }

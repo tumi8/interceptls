@@ -2,7 +2,10 @@ package de.tum.in.net;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -16,10 +19,13 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
-import de.tum.in.net.scenario.Node;
-import de.tum.in.net.scenario.ScenarioResult;
-import de.tum.in.net.scenario.ScenarioResult.ScenarioResultBuilder;
-import de.tum.in.net.services.MapDBDatabaseService;
+import de.tum.in.net.client.HostAndPort;
+import de.tum.in.net.model.NetworkId;
+import de.tum.in.net.model.TlsClientServerResult;
+import de.tum.in.net.model.TlsResult;
+import de.tum.in.net.model.TlsTestResult;
+import de.tum.in.net.services.MemoryOnlyDatabaseService;
+import de.tum.in.net.session.SessionID;
 import de.tum.in.net.util.ClientUtil;
 
 public class ResultResourceTest {
@@ -30,7 +36,7 @@ public class ResultResourceTest {
   @Before
   public void setUp() throws Exception {
     AnalysisServerConfig conf = AnalysisServerConfig.loadDefault();
-    server = Main.startServer(conf, new MapDBDatabaseService(false));
+    server = AnalysisServerMain.startServer(conf, new MemoryOnlyDatabaseService());
 
     Client c = ClientUtil.createDefaultTLSClient(conf);
 
@@ -51,20 +57,21 @@ public class ResultResourceTest {
 
   @Test
   public void uploadAndGetResult() {
-    ScenarioResult result = new ScenarioResultBuilder(Node.CLIENT, "source", "dst")
-        .sent(new byte[1]).received(new byte[1]).connected();
+    TlsResult client = new TlsResult("dst", new byte[1], new byte[1]);
+    TlsResult server = new TlsResult("dst", new byte[1], new byte[1]);
+
+    HostAndPort hostAndPort = new HostAndPort("junit.org.xy");
+    List<TlsClientServerResult> results =
+        Arrays.asList(TlsClientServerResult.connected(hostAndPort, client, server));
+    TlsTestResult testResult = new TlsTestResult(new NetworkId(), results);
 
     Response response =
-        target.path("result/a-1").request().put(Entity.json(new Gson().toJson(result)));
-    assertEquals(204, response.getStatus());
+        target.path("result").request().post(Entity.json(new Gson().toJson(testResult)));
+    assertEquals(200, response.getStatus());
 
-    Response response2 = target.path("result/a-1").request().get();
-    assertEquals(200, response2.getStatus());
-
-    TestResult result2 = new Gson().fromJson(response2.readEntity(String.class), TestResult.class);
-    assertTrue(result2.hasClientResult());
-    assertEquals(result.getSource(), result2.getClientResult().getSource());
-    assertEquals(result.isSuccess(), result2.getClientResult().isSuccess());
+    String content = response.readEntity(String.class);
+    SessionID id = new Gson().fromJson(content, SessionID.class);
+    assertNotNull(id);
 
 
   }

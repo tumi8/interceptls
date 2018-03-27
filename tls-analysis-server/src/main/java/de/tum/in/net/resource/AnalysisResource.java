@@ -2,10 +2,12 @@ package de.tum.in.net.resource;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -19,19 +21,20 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-import de.tum.in.net.TestResult;
-import de.tum.in.net.model.AnalysisResult;
+import de.tum.in.net.analysis.AnalysisResult;
+import de.tum.in.net.analysis.TLSHandshake;
+import de.tum.in.net.analysis.TlsMessageDiff;
+import de.tum.in.net.analysis.TlsMessageType;
 import de.tum.in.net.model.DatabaseService;
 import de.tum.in.net.model.HandshakeParser;
-import de.tum.in.net.model.TLSHandshake;
-import de.tum.in.net.model.TestID;
-import de.tum.in.net.model.TlsMessageDiff;
-import de.tum.in.net.model.TlsMessageType;
+import de.tum.in.net.model.TlsClientServerResult;
+import de.tum.in.net.model.TlsTestResult;
+import de.tum.in.net.session.SessionID;
 
 /**
  * Session resource.
  */
-@Path("analysis/{testID}")
+@Path("analysis/{sessionID}")
 public class AnalysisResource {
 
   private static final Logger log = LogManager.getLogger();
@@ -49,47 +52,38 @@ public class AnalysisResource {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public String getAnalysis(@PathParam("testID") String testID) {
-    if (!TestID.isTestID(testID)) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
+  public String getAnalysis(@PathParam("sessionID") String sessionID) {
+
+    SessionID id = new SessionID(Long.parseLong(sessionID));
+    TlsTestResult result = db.getResult(id);
+    if (result == null) {
+      throw new NotFoundException();
     }
 
-    TestResult result = db.getResult(TestID.parse(testID));
+    List<AnalysisResult> analysisResult = new ArrayList<>();
 
-    AnalysisResult analysisResult;
-    if (result.hasClientResult()) {
-      if (result.hasServerResult()) {
-        // all data available
-        try {
-          analysisResult = createDiff(result);
-        } catch (IOException e) {
-          log.error("Could not parse handshake", e);
-          throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (IllegalStateException e) {
-          log.error("Unexpected error in handshake bytes", e);
-          throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-          log.error("Unknwon error", e);
-          throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        }
-      } else {
-        // server data missing
-        analysisResult = AnalysisResult.noServerResult();
+
+    try {
+      for (TlsClientServerResult r : result.getClientServerResults()) {
+        analysisResult.add(createDiff(r));
       }
-    } else {
-      if (result.hasServerResult()) {
-        // client data missing
-        analysisResult = AnalysisResult.noClientResult();
-      } else {
-        // no client and no server data available
-        analysisResult = AnalysisResult.noClientNoServerResult();
-      }
+
+    } catch (IOException e) {
+      log.error("Could not parse handshake", e);
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    } catch (IllegalStateException e) {
+      log.error("Unexpected error in handshake bytes", e);
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+    } catch (Exception e) {
+      log.error("Unknwon exception", e);
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
+
 
     return new Gson().toJson(analysisResult);
   }
 
-  private AnalysisResult createDiff(TestResult result) throws IOException {
+  private AnalysisResult createDiff(TlsClientServerResult result) throws IOException {
     String rec_client = parser.parse(result.getClientResult().getReceivedBytes());
     String sent_client = parser.parse(result.getClientResult().getSentBytes());
 

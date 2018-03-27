@@ -1,8 +1,9 @@
 package de.tum.in.net.model;
 
 import java.io.IOException;
+import java.util.List;
 
-import de.tum.in.net.scenario.ScenarioResult;
+import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.session.SessionID;
 
 /**
@@ -11,12 +12,7 @@ import de.tum.in.net.session.SessionID;
 
 public interface TestSession {
 
-  /**
-   * @return the sessionID which is [A-Za-z0-9]+
-   */
-  SessionID getSessionID();
+  SessionID uploadResult(TlsTestResult result) throws IOException;
 
-  void uploadHandshake(int testCounter, ScenarioResult result) throws IOException;
-
-  AnalysisResult getAnalysisResult(int testCounter) throws IOException;
+  List<AnalysisResult> getAnalysisResult(SessionID id) throws IOException;
 }

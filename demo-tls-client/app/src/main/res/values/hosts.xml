@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="hosts_default">
-        <item>www.heise.de</item>
-        <item>www.wikipedia.org</item>
-        <item>www.golem.de</item>
-        <item>www.ssllabs.com</item>
-    </string-array>
-</resources>

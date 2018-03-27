@@ -8,15 +8,15 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import de.tum.in.net.AnalysisServerConfig;
-import de.tum.in.net.CaptureTLSContext;
+import de.tum.in.net.session.AnalysisTlsContext;
 
 public class ClientUtil {
 
   public static Client createDefaultTLSClient(AnalysisServerConfig conf)
       throws KeyManagementException, NoSuchAlgorithmException {
-    SSLContext ctx = CaptureTLSContext.createContext();
+    SSLContext ctx = AnalysisTlsContext.createContext();
 
-    return ClientBuilder.newBuilder().hostnameVerifier(CaptureTLSContext.getHostnameVerifier())
+    return ClientBuilder.newBuilder().hostnameVerifier(AnalysisTlsContext.getHostnameVerifier())
         .sslContext(ctx).build();
 
   }

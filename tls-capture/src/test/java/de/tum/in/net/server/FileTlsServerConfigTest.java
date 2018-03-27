@@ -8,8 +8,6 @@ import org.bouncycastle.tls.CipherSuite;
 import org.bouncycastle.util.Arrays;
 import org.junit.Test;
 
-import de.tum.in.net.scenario.server.TlsServerConfig;
-
 /**
  * Created by johannes on 19.05.17.
  */

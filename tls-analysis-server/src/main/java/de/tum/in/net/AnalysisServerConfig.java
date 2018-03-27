@@ -16,17 +16,31 @@ public class AnalysisServerConfig {
   private static final String PORT = "port";
   private static final String TLS_KEYSTORE_PASSWORD = "tls.keystore.password";
 
+  private static final String DB_USER = "db.user";
+  private static final String DB_PASSWORD = "db.password";
+  private static final String DB_TARGET = "db.target";
+
   private final int port;
   private final String keystorePassword;
+  private final String dbUser;
+  private final String dbPassword;
+  private final String dbTarget;
 
-  public AnalysisServerConfig(int port, String keystorePassword) {
+  public AnalysisServerConfig(int port, String keystorePassword, String dbUser, String dbPassword,
+      String dbTarget) {
     this.port = port;
     this.keystorePassword = keystorePassword;
+    this.dbUser = dbUser;
+    this.dbPassword = dbPassword;
+    this.dbTarget = dbTarget;
   }
 
   public AnalysisServerConfig(Properties props) {
     this.port = Integer.parseInt(getNonEmptyProperty(props, PORT));
     this.keystorePassword = getNonEmptyProperty(props, TLS_KEYSTORE_PASSWORD);
+    this.dbUser = getNonEmptyProperty(props, DB_USER);
+    this.dbPassword = props.getProperty(DB_PASSWORD, "");
+    this.dbTarget = getNonEmptyProperty(props, DB_TARGET);
   }
 
 
@@ -64,6 +78,18 @@ public class AnalysisServerConfig {
       throw new IllegalArgumentException("The property " + key + " does not exist or is empty.");
     }
     return value.trim();
+  }
+
+  public String getDbUser() {
+    return dbUser;
+  }
+
+  public String getDbPassword() {
+    return dbPassword;
+  }
+
+  public String getDbTarget() {
+    return dbTarget;
   }
 
 }

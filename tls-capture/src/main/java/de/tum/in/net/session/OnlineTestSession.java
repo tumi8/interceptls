@@ -1,13 +1,12 @@
 package de.tum.in.net.session;
 
 import java.io.IOException;
+import java.util.List;
 
-import de.tum.in.net.model.AnalysisAPI;
-import de.tum.in.net.model.AnalysisResult;
-import de.tum.in.net.model.TestID;
+import de.tum.in.net.analysis.AnalysisAPI;
+import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.model.TestSession;
-import de.tum.in.net.scenario.ScenarioResult;
-import retrofit2.Response;
+import de.tum.in.net.model.TlsTestResult;
 
 /**
  * Created by johannes on 04.04.17.
@@ -15,28 +14,20 @@ import retrofit2.Response;
 
 public class OnlineTestSession implements TestSession {
 
-  private final SessionID sessionId;
   private final AnalysisAPI analysisAPI;
 
-  public OnlineTestSession(final String ip) throws IOException {
+  public OnlineTestSession(final String ip) {
     this.analysisAPI = APIClient.createClient(ip).create(AnalysisAPI.class);
-    final Response<SessionID> res = analysisAPI.newSessionID().execute();
-    this.sessionId = res.body();
   }
 
   @Override
-  public SessionID getSessionID() {
-    return this.sessionId;
-  }
-
-
-  @Override
-  public void uploadHandshake(int testCounter, ScenarioResult result) throws IOException {
-    analysisAPI.uploadHandshake(new TestID(sessionId, testCounter), result).execute();
+  public SessionID uploadResult(TlsTestResult result) throws IOException {
+    return analysisAPI.uploadResult(result).execute().body();
   }
 
   @Override
-  public AnalysisResult getAnalysisResult(int testCounter) throws IOException {
-    return analysisAPI.getAnalysis(new TestID(sessionId, testCounter)).execute().body();
+  public List<AnalysisResult> getAnalysisResult(SessionID id) throws IOException {
+    return analysisAPI.getAnalysis(id).execute().body();
   }
+
 }
