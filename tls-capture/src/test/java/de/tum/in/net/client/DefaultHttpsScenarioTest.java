@@ -47,29 +47,4 @@ public class DefaultHttpsScenarioTest {
 
   }
 
-  @Test
-  public void testSniClient() throws Exception {
-
-    final ClientHandlerFactory fac = new DefaultClientHandlerFactory(new BcTlsServerFactory());
-    try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
-      executor.submit(socket);
-      Thread.sleep(10);
-
-      SniTlsClient tlsClient = new SniTlsClient("google.de");
-      HostAndPort target = new HostAndPort("127.0.0.1", socket.getLocalPort());
-      final DefaultHttpsScenario scenario = new DefaultHttpsScenario(target, tlsClient);
-
-      final TlsClientServerResult result = scenario.call();
-      TlsResult clientResult = result.getClientResult();
-      TlsResult serverResult = result.getServerResult();
-
-      assertTrue(result.isSuccess());
-
-      // the sent bytes must equal the received bytes
-      assertArrayEquals(clientResult.getReceivedBytesRaw(), serverResult.getSentBytesRaw());
-      assertArrayEquals(clientResult.getSentBytesRaw(), serverResult.getReceivedBytesRaw());
-
-    }
-
-  }
 }

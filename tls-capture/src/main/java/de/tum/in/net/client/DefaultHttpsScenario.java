@@ -18,7 +18,7 @@ public class DefaultHttpsScenario extends AbstractScenario {
   private final TlsClient client;
 
   public DefaultHttpsScenario(HostAndPort target) {
-    this(target, new TlsDetectionClient());
+    this(target, new TlsDetectionClient(target.getHost()));
   }
 
   public DefaultHttpsScenario(HostAndPort target, TlsClient client) {

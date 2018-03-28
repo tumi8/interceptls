@@ -76,8 +76,9 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
 
     Map<TlsTestType, TlsClientServerResult> detailedResults = new HashMap<>();
 
-    // test if middlebox use SNI to
-    Scenario sni = new DefaultHttpsScenario(target, new SniTlsClient("not.existent.net.in.tum.de"));
+    // test if middlebox uses SNI to connect to host
+    Scenario sni = new DefaultHttpsScenario(target,
+        new TlsDetectionClient("definitely.not.existent." + target.getHost()));
     detailedResults.put(TlsTestType.SNI, sni.call());
 
     Scenario proxy = new DefaultProxyScenario(target);

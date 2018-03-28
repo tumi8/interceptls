@@ -2,10 +2,13 @@ package de.tum.in.net.client;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Vector;
 
 import org.bouncycastle.tls.CipherSuite;
 import org.bouncycastle.tls.DefaultTlsClient;
+import org.bouncycastle.tls.NameType;
 import org.bouncycastle.tls.ProtocolVersion;
+import org.bouncycastle.tls.ServerName;
 import org.bouncycastle.tls.TlsAuthentication;
 import org.bouncycastle.tls.crypto.TlsCrypto;
 import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
@@ -13,11 +16,13 @@ import org.bouncycastle.tls.crypto.impl.bc.BcTlsCrypto;
 public class TlsDetectionClient extends DefaultTlsClient {
 
   private static final TlsCrypto crypto = new BcTlsCrypto(new SecureRandom());
+  private final String sni;
 
   // for the detection we support old TLS versions and old ciphersuites, otherwise we might not
   // detect legacy middleboxes
-  public TlsDetectionClient() {
+  public TlsDetectionClient(String sni) {
     super(crypto);
+    this.sni = sni;
     /*
      * Use modern cipher suites from https://wiki.mozilla.org/Security/Server_Side_TLS as of
      * 28.03.2018
@@ -66,6 +71,17 @@ public class TlsDetectionClient extends DefaultTlsClient {
   @Override
   public TlsAuthentication getAuthentication() throws IOException {
     return new IgnoreServerCertAuthentication();
+  }
+
+  @Override
+  protected Vector<?> getSNIServerNames() {
+    if (sni == null) {
+      return null;
+    }
+    final ServerName sn = new ServerName(NameType.host_name, sni);
+    final Vector<ServerName> vlist = new Vector<>(1);
+    vlist.add(sn);
+    return vlist;
   }
 
 }

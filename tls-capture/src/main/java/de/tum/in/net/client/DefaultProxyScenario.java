@@ -18,7 +18,7 @@ public class DefaultProxyScenario extends AbstractScenario {
   private final TlsClient client;
 
   public DefaultProxyScenario(HostAndPort target) {
-    this(target, new TlsDetectionClient());
+    this(target, new TlsDetectionClient(target.getHost()));
   }
 
   public DefaultProxyScenario(HostAndPort target, TlsClient client) {
