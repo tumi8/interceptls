@@ -90,7 +90,7 @@ public class AnalysisResourceTest {
     TlsResult clientResult = new TlsResult("dst", golemServer, golemClient);
     TlsResult serverResult = new TlsResult("dst", golemClient, golemServer);
 
-    HostAndPort hostAndPort = new HostAndPort("junit.org.xy");
+    HostAndPort hostAndPort = HostAndPort.parse("junit.org.xy");
     List<TlsClientServerResult> results =
         Arrays.asList(TlsClientServerResult.connected(hostAndPort, clientResult, serverResult));
     TlsTestResult testResult = new TlsTestResult(new NetworkId(), results);
@@ -118,7 +118,7 @@ public class AnalysisResourceTest {
     TlsResult clientResult = new TlsResult("dst", sslSplitClientReceived, sslSplitClientSent);
     TlsResult serverResult = new TlsResult("dst", sslSplitServerReceived, sslSplitServerSent);
 
-    HostAndPort hostAndPort = new HostAndPort("junit.org.xy");
+    HostAndPort hostAndPort = HostAndPort.parse("junit.org.xy");
     List<TlsClientServerResult> results =
         Arrays.asList(TlsClientServerResult.connected(hostAndPort, clientResult, serverResult));
     TlsTestResult testResult = new TlsTestResult(new NetworkId(), results);

@@ -60,7 +60,7 @@ public class ResultResourceTest {
     TlsResult client = new TlsResult("dst", new byte[1], new byte[1]);
     TlsResult server = new TlsResult("dst", new byte[1], new byte[1]);
 
-    HostAndPort hostAndPort = new HostAndPort("junit.org.xy");
+    HostAndPort hostAndPort = HostAndPort.parse("junit.org.xy");
     List<TlsClientServerResult> results =
         Arrays.asList(TlsClientServerResult.connected(hostAndPort, client, server));
     TlsTestResult testResult = new TlsTestResult(new NetworkId(), results);

@@ -21,7 +21,7 @@ public class PostgreSQLDatabaseServiceTest {
     TlsResult client = new TlsResult("192.168.0.1", new byte[1], new byte[1]);
     TlsResult server = new TlsResult("192.168.0.1", new byte[1], new byte[1]);
 
-    HostAndPort hostAndPort = new HostAndPort("junit.org.xy");
+    HostAndPort hostAndPort = HostAndPort.parse("junit.org.xy");
     List<TlsClientServerResult> results =
         Arrays.asList(TlsClientServerResult.connected(hostAndPort, client, server));
     TlsTestResult result = new TlsTestResult(new NetworkId(), results);

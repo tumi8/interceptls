@@ -12,14 +12,7 @@ public class HostAndPort implements Serializable {
   private final String host;
   private final int port;
 
-  /**
-   * Create a new target with default port 443 (HTTPS).
-   * 
-   * @param host
-   */
-  public HostAndPort(String host) {
-    this(host, 443);
-  }
+
 
   public HostAndPort(String host, int port) {
     this.host = Objects.requireNonNull(host);
@@ -27,6 +20,32 @@ public class HostAndPort implements Serializable {
       throw new IllegalArgumentException("port must be between 0 and 65535");
     }
     this.port = port;
+  }
+
+  /**
+   * Parse a string to {@link HostAndPort}. A string is valid if it is <host> or <host>:<port>.
+   * 
+   * @param hostAndPort
+   * @throws IllegalArgumentException - if the provided string is not a valid host and port.
+   * @return
+   */
+  public static HostAndPort parse(String hostAndPort) {
+    String splitted[] = hostAndPort.split(":", 2);
+    if (splitted.length == 1) {
+      // we only have host
+      return new HostAndPort(splitted[0], 443);
+    } else if (splitted.length == 2) {
+      // we have host and port
+      try {
+        int port = Integer.parseInt(splitted[1]);
+        return new HostAndPort(splitted[0], port);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Port must be a number", e);
+      }
+    } else {
+      throw new IllegalArgumentException("HostAndPort must be <host> or <host>:<port>");
+    }
+
   }
 
   public String getHost() {
