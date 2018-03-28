@@ -24,9 +24,6 @@ public class TlsClientServerResult implements Serializable {
     // some results are only required depending on the state
     switch (state) {
       case CONNECTED:
-        Objects.requireNonNull(client);
-        Objects.requireNonNull(server);
-
       case ERROR:
         Objects.requireNonNull(client);
         break;

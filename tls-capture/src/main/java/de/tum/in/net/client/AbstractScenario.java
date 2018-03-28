@@ -3,6 +3,7 @@ package de.tum.in.net.client;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public abstract class AbstractScenario implements Scenario {
   private final HostAndPort target;
 
   public AbstractScenario(HostAndPort target) {
-    this.target = target;
+    this.target = Objects.requireNonNull(target);
   }
 
   public abstract List<Step> getSteps();

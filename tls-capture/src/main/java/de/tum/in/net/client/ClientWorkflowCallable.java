@@ -2,7 +2,9 @@ package de.tum.in.net.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -10,6 +12,7 @@ import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.Scenario;
 import de.tum.in.net.model.TlsClientServerResult;
 import de.tum.in.net.model.TlsTestResult;
+import de.tum.in.net.model.TlsTestType;
 
 /**
  * 
@@ -39,7 +42,18 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
     // classify network
     NetworkId network = networkIdentifier.identifyNetwork();
 
-    return new TlsTestResult(network, results);
+    TlsTestResult result = new TlsTestResult(network, results);
+    if (result.anyInterception()) {
+      // conduct detailed measurements for one host
+      TlsClientServerResult r = result.getInterceptedTarget();
+      HostAndPort target = r.getHostAndPort();
+
+      Map<TlsTestType, TlsClientServerResult> detailedResults = detailedMeasurements(target);
+      result.setDetailedResults(detailedResults);
+    }
+
+    return result;
+
   }
 
   private static List<TlsClientServerResult> connectToHosts(List<HostAndPort> targets)
@@ -55,6 +69,21 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
     }
 
     return results;
+  }
+
+  private static Map<TlsTestType, TlsClientServerResult> detailedMeasurements(HostAndPort target)
+      throws Exception {
+
+    Map<TlsTestType, TlsClientServerResult> detailedResults = new HashMap<>();
+
+    // test if middlebox use SNI to
+    Scenario sni = new DefaultHttpsScenario(target, new SniTlsClient("not.existent.net.in.tum.de"));
+    detailedResults.put(TlsTestType.SNI, sni.call());
+
+    Scenario proxy = new DefaultProxyScenario(target);
+    detailedResults.put(TlsTestType.PROXY, proxy.call());
+
+    return detailedResults;
   }
 
 

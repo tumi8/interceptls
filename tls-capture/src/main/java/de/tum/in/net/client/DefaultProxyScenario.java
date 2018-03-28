@@ -13,26 +13,26 @@ import de.tum.in.net.model.Step;
  * Created by johannes on 31.03.17.
  */
 
-public class DefaultHttpsScenario extends AbstractScenario {
+public class DefaultProxyScenario extends AbstractScenario {
 
   private final TlsClient client;
 
-  public DefaultHttpsScenario(HostAndPort target) {
+  public DefaultProxyScenario(HostAndPort target) {
     this(target, new TlsDetectionClient());
   }
 
-  public DefaultHttpsScenario(HostAndPort target, TlsClient client) {
+  public DefaultProxyScenario(HostAndPort target, TlsClient client) {
     super(target);
     this.client = Objects.requireNonNull(client, "client must not be null");
   }
 
   @Override
   public String toString() {
-    return DefaultHttpsScenario.class.getName();
+    return DefaultProxyScenario.class.getName();
   }
 
   @Override
   public List<Step> getSteps() {
-    return Arrays.asList(new TlsStep(client), new HttpStep());
+    return Arrays.asList((Step) new TlsStep(client));
   }
 }
