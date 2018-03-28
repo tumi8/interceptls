@@ -30,19 +30,24 @@ public abstract class AbstractScenario implements Scenario {
 
     try (Socket s = new Socket(target.getHost(), target.getPort())) {
       TestContext ctx = new TestContext(s);
+      try {
+        for (Step step : getSteps()) {
+          step.process(target, ctx);
+        }
 
-      for (Step step : getSteps()) {
-        step.process(target, ctx);
+        // sucessfully connected
+        return TlsClientServerResult.connected(target, ctx.getClientResult(),
+            ctx.getServerResult());
+      } catch (IOException e) {
+        log.error("Unexpected exception during test", e);
+        return TlsClientServerResult.error(target, ctx.getClientResult());
       }
-
-      // sucessfully connected
-      return TlsClientServerResult.connected(target, ctx.getClientResult(), ctx.getServerResult());
 
     } catch (TlsAbortException e) {
       log.error("Exception during TLS negotiation", e);
       return TlsClientServerResult.error(target, e.getTlsResult());
     } catch (IOException e) {
-      log.error("Unexpected exception during test", e);
+      log.warn("Could not connect to {}", target);
       return TlsClientServerResult.noConnection(target);
     }
 

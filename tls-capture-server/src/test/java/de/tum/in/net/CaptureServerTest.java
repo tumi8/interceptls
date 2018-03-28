@@ -30,10 +30,10 @@ public class CaptureServerTest {
 
     server.start();
     assertTrue(server.isRunning());
-    Thread.sleep(10);
+    Thread.sleep(20);
 
     server.stop();
-    Thread.sleep(10);
+    Thread.sleep(20);
     assertFalse(server.isRunning());
   }
 
@@ -43,7 +43,7 @@ public class CaptureServerTest {
 
     server.start();
     assertTrue(server.isRunning());
-    Thread.sleep(10);
+    Thread.sleep(20);
 
     HostAndPort target = new HostAndPort("127.0.0.1", port);
     DefaultHttpsScenario client = new DefaultHttpsScenario(target);
@@ -51,7 +51,7 @@ public class CaptureServerTest {
     assertTrue(result.isSuccess());
 
     server.stop();
-    Thread.sleep(10);
+    Thread.sleep(20);
     assertFalse(server.isRunning());
   }
 
@@ -62,7 +62,7 @@ public class CaptureServerTest {
 
     server.start();
     assertTrue(server.isRunning());
-    Thread.sleep(10);
+    Thread.sleep(20);
 
     ExecutorService exec = Executors.newFixedThreadPool(numberOfClients / 2);
     List<Callable<TlsClientServerResult>> clients = new ArrayList<>();
@@ -78,7 +78,7 @@ public class CaptureServerTest {
     }
 
     server.stop();
-    Thread.sleep(10);
+    Thread.sleep(20);
     assertFalse(server.isRunning());
   }
 
