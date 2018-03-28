@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import de.tum.in.net.session.SessionID;
 
 public class ConfigurationReader {
 
+    private static final Logger log = LoggerFactory.getLogger(ConfigurationReader.class);
     /**
      * Reads the configuration for the target hosts.
      *
@@ -32,10 +34,7 @@ public class ConfigurationReader {
         //we need to create a copy, otherwise we modify the original settings
         final Set<String> targetStrings = new HashSet<>(prefs.getStringSet(context.getString(R.string.hosts_default), null));
 
-        LoggerFactory.getLogger("blubbbb").error("targets: {}", targetStrings);
-
         final String additionalHosts = prefs.getString(context.getString(R.string.hosts_additional), null);
-        LoggerFactory.getLogger("blubbbb").error("additional targets: {}", additionalHosts);
 
         if (additionalHosts != null) {
             final String[] hosts = additionalHosts.split("\n");
@@ -49,20 +48,12 @@ public class ConfigurationReader {
 
         final List<HostAndPort> targets = new ArrayList<>();
         for (final String target : targetStrings) {
-            if (target.contains(":")) {
-                final String[] splittedTarget = target.split(":");
-                if (splittedTarget.length == 2) {
-                    try {
-                        final int port = Integer.parseInt(splittedTarget[1]);
-                        targets.add(new HostAndPort(splittedTarget[0], port));
-                    } catch (final NumberFormatException e) {
-                        //silently ignore
-                    }
 
-                }
-
-            } else {
-                targets.add(new HostAndPort(target));
+            try{
+                HostAndPort t = HostAndPort.parse(target);
+                targets.add(t);
+            }catch(IllegalArgumentException e){
+                log.warn("Illegal host and port string found in settings: {}", target);
             }
         }
 
