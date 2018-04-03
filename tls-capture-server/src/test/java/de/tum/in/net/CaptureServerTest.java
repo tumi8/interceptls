@@ -71,7 +71,7 @@ public class CaptureServerTest {
       clients.add(new DefaultHttpsScenario(target));
     }
 
-    List<Future<TlsClientServerResult>> results = exec.invokeAll(clients, 5, TimeUnit.SECONDS);
+    List<Future<TlsClientServerResult>> results = exec.invokeAll(clients, 20, TimeUnit.SECONDS);
     for (Future<TlsClientServerResult> result : results) {
       assertFalse(result.isCancelled());
       assertTrue(result.get().isSuccess());
