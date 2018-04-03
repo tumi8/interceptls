@@ -10,6 +10,7 @@ public class NetworkId implements Serializable {
   private transient static final long serialVersionUID = -6305117111504240243L;
 
   private NetworkType type;
+  private String publicIp;
   private String dnsIp;
   private String dnsMac;
 
@@ -53,7 +54,7 @@ public class NetworkId implements Serializable {
   @Override
   public String toString() {
     return "NetworkId [ssid=" + ssid + ",bssid=" + bssid + ",dnsIp=" + dnsIp + ",dnsMac=" + dnsMac
-        + "]";
+        + ",publicIp=" + publicIp + "]";
   }
 
   public NetworkType getType() {
@@ -62,6 +63,14 @@ public class NetworkId implements Serializable {
 
   public void setType(NetworkType type) {
     this.type = type;
+  }
+
+  public String getPublicIp() {
+    return publicIp;
+  }
+
+  public void setPublicIp(String publicIp) {
+    this.publicIp = publicIp;
   }
 
 }
