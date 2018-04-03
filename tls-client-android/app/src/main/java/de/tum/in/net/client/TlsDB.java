@@ -12,7 +12,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import de.tum.in.net.model.TlsTestResult;
@@ -105,6 +107,42 @@ public class TlsDB extends SQLiteOpenHelper {
     public void deleteResult(String timestamp) {
         try(SQLiteDatabase db = this.getWritableDatabase()){
             db.delete(RESULTS_TABLE, TIMESTAMP_COLUMN +"=?", new String[]{timestamp});
+        }
+    }
+
+    public List<AndroidTlsResult> getTestResults() {
+        try(SQLiteDatabase db = this.getReadableDatabase()){
+            Cursor cursor =db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, UPLOADED_COLUMN, DATA_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN, "50");
+
+            List<AndroidTlsResult> results = new ArrayList<>();
+
+            while(cursor.moveToNext()){
+                String timestamp = cursor.getString(cursor.getColumnIndex(TIMESTAMP_COLUMN));
+                boolean uploaded = cursor.getInt(cursor.getColumnIndex(UPLOADED_COLUMN)) > 0;
+                String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
+                TlsTestResult r = new Gson().fromJson(data, TlsTestResult.class);
+
+                AndroidTlsResult result = new AndroidTlsResult(timestamp, uploaded, r);
+                results.add(result);
+            }
+
+            return results;
+        }
+    }
+
+    public List<TlsTestResult> getNotUploadedResults() {
+        try(SQLiteDatabase db = this.getReadableDatabase()){
+            Cursor cursor =db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, UPLOADED_COLUMN+"=0", null, null, null, null);
+
+            List<TlsTestResult> results = new ArrayList<>();
+
+            while(cursor.moveToNext()){
+                String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
+                TlsTestResult r = new Gson().fromJson(data, TlsTestResult.class);
+                results.add(r);
+            }
+
+            return results;
         }
     }
 }

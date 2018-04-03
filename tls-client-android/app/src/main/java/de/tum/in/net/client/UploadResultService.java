@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsTestResult;
@@ -28,19 +29,19 @@ public class UploadResultService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
+        TlsDB db = new TlsDB(this);
 
-        String timestamp = intent.getStringExtra("timestamp");
-        final TlsTestResult result = new TlsDB(this).read(timestamp);
+        final List<TlsTestResult> results = db.getNotUploadedResults();
 
         final String url = ConfigurationReader.getAnalysisHostUrl(this);
 
         final TestSession s = new OnlineTestSession(url);
         try {
-            s.uploadResult(result);
-
-            TlsDB db = new TlsDB(this);
-            db.uploadedResult(result.getTimestamp());
-            log.debug("Result successfully uploaded to analysis server");
+            for(TlsTestResult result : results){
+                s.uploadResult(result);
+                db.uploadedResult(result.getTimestamp());
+            }
+            log.debug("All results successfully uploaded to analysis server");
         } catch (final IOException e) {
             log.debug("Could not connect to analysis server, save result temporarily", e);
         }

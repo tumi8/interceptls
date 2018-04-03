@@ -60,13 +60,12 @@ public class TlsTestTask extends AsyncTask<Void, String, TlsTestResult> {
             db.saveResultTemp(result);
 
             final Intent i = new Intent(ctx, UploadResultService.class);
-            i.putExtra("timestamp", result.getTimestamp());
             ctx.startService(i);
 
             //inform user
             if(result.anyInterception()){
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ctx, "")
-                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                        .setSmallIcon(R.drawable.ic_interception)
                         .setContentTitle(ctx.getString(R.string.interception_title))
                         .setContentText("Your connection is intercepted!")
                         .setPriority(NotificationCompat.PRIORITY_HIGH);

@@ -41,7 +41,7 @@
 
         <service
             android:name=".UploadResultService"
-            android:icon="@drawable/icon"
+            android:icon="@drawable/ic_upload"
             android:label="@string/upload_result_service_name" />
 
         <service
