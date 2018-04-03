@@ -19,7 +19,7 @@ public class TlsJobService extends JobService {
 
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
-        log.error("call start job tls service");
+        log.debug("onStartJob TLS Job Service");
 
         task = new TlsTestTask(this, new AsyncResult<TlsTestResult>() {
             @Override
