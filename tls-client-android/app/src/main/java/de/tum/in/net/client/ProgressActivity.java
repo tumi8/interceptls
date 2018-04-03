@@ -32,7 +32,7 @@ public class ProgressActivity extends AppCompatActivity {
                 progressActivity.finish();
                 if (result != null && result.anySuccessfulConnection()) {
                     final Intent intent = new Intent(progressActivity, TlsTestResultViewActivity.class);
-                    intent.putExtra("testResult", result);
+                    intent.putExtra("timestamp", result.getTimestamp());
                     progressActivity.startActivity(intent);
                 } else {
                     Toast.makeText(progressActivity, "Connection error", Toast.LENGTH_LONG).show();

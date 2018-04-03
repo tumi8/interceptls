@@ -29,18 +29,20 @@ public class UploadResultService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
 
-        final TlsTestResult result = (TlsTestResult) intent.getSerializableExtra(INTENT_TEST_RESULT);
+        String timestamp = intent.getStringExtra("timestamp");
+        final TlsTestResult result = new TlsDB(this).read(timestamp);
 
         final String url = ConfigurationReader.getAnalysisHostUrl(this);
 
         final TestSession s = new OnlineTestSession(url);
         try {
             s.uploadResult(result);
-            ResultStorage.saveFinal(this, result);
+
+            TlsDB db = new TlsDB(this);
+            db.uploadedResult(result.getTimestamp());
             log.debug("Result successfully uploaded to analysis server");
         } catch (final IOException e) {
             log.debug("Could not connect to analysis server, save result temporarily", e);
-            ResultStorage.saveTemp(this, result);
         }
 
     }

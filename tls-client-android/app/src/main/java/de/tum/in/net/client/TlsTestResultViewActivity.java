@@ -24,26 +24,22 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_tls_test_result_view);
 
-        final String sessionID = getIntent().getStringExtra("sessionID");
-        final TlsTestResult testResult;
-        if (sessionID == null) {
-            testResult = (TlsTestResult) getIntent().getSerializableExtra("testResult");
-        } else {
-            testResult = ResultStorage.read(this, sessionID);
+        final String timestamp = getIntent().getStringExtra("timestamp");
+        final TlsTestResult testResult = new TlsDB(this).read(timestamp);
+
+        if(testResult!=null){
+            final TextView targets = findViewById(R.id.targets);
+            targets.setText(String.valueOf(testResult.getClientServerResults().size()));
+
+            final TextView connections = findViewById(R.id.connections);
+            connections.setText(String.valueOf(testResult.successfulConnections()));
+
+            final TextView interceptions = findViewById(R.id.interceptions);
+            interceptions.setText(String.valueOf(testResult.interceptions()));
+
+            final TextView content = findViewById(R.id.content);
+            content.setText(new Gson().toJson(testResult));
         }
-
-
-        final TextView targets = findViewById(R.id.targets);
-        targets.setText(String.valueOf(testResult.getClientServerResults().size()));
-
-        final TextView connections = findViewById(R.id.connections);
-        connections.setText(String.valueOf(testResult.successfulConnections()));
-
-        final TextView interceptions = findViewById(R.id.interceptions);
-        interceptions.setText(String.valueOf(testResult.interceptions()));
-
-        final TextView content = findViewById(R.id.content);
-        content.setText(new Gson().toJson(testResult));
 
     }
 

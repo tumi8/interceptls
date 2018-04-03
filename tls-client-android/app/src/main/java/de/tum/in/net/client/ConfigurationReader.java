@@ -65,36 +65,6 @@ public class ConfigurationReader {
         return prefs.getString(context.getString(R.string.analysis_server_url), null);
     }
 
-    public static void addSessionID(final Context ctx, final SessionID id) {
-        final SharedPreferences tls = ctx.getSharedPreferences("tls", 0);
-        Set<String> sessionIDs = tls.getStringSet("sessionIDs", null);
-        final SharedPreferences.Editor edit = tls.edit();
-        if (sessionIDs == null) sessionIDs = new HashSet<>();
-        sessionIDs.add(id.toString());
-        edit.putStringSet("sessionIDs", sessionIDs);
-        edit.apply();
-    }
-
-    public static Set<String> getSessionIDs(final Context ctx) {
-        final SharedPreferences tls = ctx.getSharedPreferences("tls", 0);
-        return tls.getStringSet("sessionIDs", new HashSet<String>());
-    }
-
-//    public static void addTestID(final Context ctx, final TestID testID) {
-//        final SharedPreferences tls = ctx.getSharedPreferences("tls", 0);
-//        Set<String> mapping = tls.getStringSet(testID.getSessionID().toString(), null);
-//        final SharedPreferences.Editor edit = tls.edit();
-//        if (mapping == null) mapping = new HashSet<>();
-//        mapping.add(testID.toString());
-//        edit.putStringSet(testID.getSessionID().toString(), mapping);
-//        edit.apply();
-//    }
-
-    public static Set<String> getTestIDs(final Context ctx, final String sessionID) {
-        final SharedPreferences tls = ctx.getSharedPreferences("tls", 0);
-        return tls.getStringSet(sessionID, new HashSet<String>());
-    }
-
     public static int readServiceTime(final Context ctx) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         final String serviceTime = prefs.getString(ctx.getString(R.string.background_service), null);

@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         testList.clear();
-        final Set<String> sessionIDs = ResultStorage.getSessions(this);
-        testList.addAll(sessionIDs);
+        final Set<String> timestamps = new TlsDB(this).getTestTimestamps();
+        testList.addAll(timestamps);
         Collections.sort(testList);
 
         rAdapter.notifyDataSetChanged();
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view, final int position) {
                 final Intent intent = new Intent(ctx, TlsTestResultViewActivity.class);
-                intent.putExtra("sessionID", testList.get(position));
+                intent.putExtra("timestamp", testList.get(position));
                 startActivity(intent);
             }
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(final DialogInterface dialog, final int id) {
                                 final String sessionID = testList.remove(position);
-                                ResultStorage.delete(ctx, sessionID);
+                                new TlsDB(ctx).deleteResult(sessionID);
                                 rAdapter.notifyDataSetChanged();
                             }
                         })

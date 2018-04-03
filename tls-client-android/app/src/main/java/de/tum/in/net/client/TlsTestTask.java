@@ -3,6 +3,8 @@ package de.tum.in.net.client;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,11 +56,27 @@ public class TlsTestTask extends AsyncTask<Void, String, TlsTestResult> {
         super.onPostExecute(result);
 
         if (result != null && result.anySuccessfulConnection()) {
-            ResultStorage.saveTemp(ctx, result);
+            TlsDB db = new TlsDB(ctx);
+            db.saveResultTemp(result);
 
             final Intent i = new Intent(ctx, UploadResultService.class);
-            i.putExtra("testResult", result);
+            i.putExtra("timestamp", result.getTimestamp());
             ctx.startService(i);
+
+            //inform user
+            if(result.anyInterception()){
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ctx, "")
+                        .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                        .setContentTitle(ctx.getString(R.string.interception_title))
+                        .setContentText("Your connection is intercepted!")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(ctx);
+
+                // notificationId is a unique int for each notification that you must define
+                notificationManager.notify(0, mBuilder.build());
+            }
+
+
         }
 
         listener.publishResult(result);
