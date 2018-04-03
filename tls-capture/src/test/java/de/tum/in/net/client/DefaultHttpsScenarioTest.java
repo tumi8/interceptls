@@ -14,6 +14,7 @@ import de.tum.in.net.server.BcTlsServerFactory;
 import de.tum.in.net.server.ClientHandlerFactory;
 import de.tum.in.net.server.DefaultClientHandlerFactory;
 import de.tum.in.net.server.SimpleServerSocket;
+import de.tum.in.net.util.ServerUtil;
 
 /**
  * Created by johannes on 31.03.17.
@@ -27,7 +28,7 @@ public class DefaultHttpsScenarioTest {
     final ClientHandlerFactory fac = new DefaultClientHandlerFactory(new BcTlsServerFactory());
     try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
       executor.submit(socket);
-      Thread.sleep(10);
+      ServerUtil.waitForRunning(socket);
 
       HostAndPort target = new HostAndPort("127.0.0.1", socket.getLocalPort());
       final DefaultHttpsScenario scenario = new DefaultHttpsScenario(target);

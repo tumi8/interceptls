@@ -26,6 +26,7 @@ import de.tum.in.net.server.DefaultClientHandlerFactory;
 import de.tum.in.net.server.FileTlsServerConfig;
 import de.tum.in.net.server.SimpleServerSocket;
 import de.tum.in.net.util.CertificateUtil;
+import de.tum.in.net.util.ServerUtil;
 
 /**
  * Created by johannes on 31.05.17.
@@ -50,7 +51,7 @@ public class CaClientScenarioTest {
     final ClientHandlerFactory fac = new DefaultClientHandlerFactory(new BcTlsServerFactory());
     try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
       executor.submit(socket);
-      Thread.sleep(20);
+      ServerUtil.waitForRunning(socket);
 
       HostAndPort target = new HostAndPort("127.0.0.1", socket.getLocalPort());
       final CaClientScenario scenario = new CaClientScenario(target, trustAnchors);
@@ -70,7 +71,7 @@ public class CaClientScenarioTest {
     final ClientHandlerFactory fac = new DefaultClientHandlerFactory(tlsFac);
     try (final SimpleServerSocket socket = new SimpleServerSocket(0, fac, executor)) {
       executor.submit(socket);
-      Thread.sleep(20);
+      ServerUtil.waitForRunning(socket);
 
       HostAndPort target = new HostAndPort("127.0.0.1", socket.getLocalPort());
       final CaClientScenario scenario = new CaClientScenario(target, trustAnchors);

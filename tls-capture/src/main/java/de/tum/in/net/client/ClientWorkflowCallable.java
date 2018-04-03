@@ -2,17 +2,15 @@ package de.tum.in.net.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
+import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.Scenario;
 import de.tum.in.net.model.TlsClientServerResult;
 import de.tum.in.net.model.TlsTestResult;
-import de.tum.in.net.model.TlsTestType;
 
 /**
  * 
@@ -43,13 +41,14 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
     NetworkId network = networkIdentifier.identifyNetwork();
 
     TlsTestResult result = new TlsTestResult(network, results);
+    // if there was an interception try to characterize the middlebox
     if (result.anyInterception()) {
       // conduct detailed measurements for one host
       TlsClientServerResult r = result.getInterceptedTarget();
       HostAndPort target = r.getHostAndPort();
 
-      Map<TlsTestType, TlsClientServerResult> detailedResults = detailedMeasurements(target);
-      result.setDetailedResults(detailedResults);
+      MiddleboxCharacterization middlebox = characterizeMiddlebox(target);
+      result.setDetailedResults(middlebox);
     }
 
     return result;
@@ -71,20 +70,23 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
     return results;
   }
 
-  private static Map<TlsTestType, TlsClientServerResult> detailedMeasurements(HostAndPort target)
+  private static MiddleboxCharacterization characterizeMiddlebox(HostAndPort target)
       throws Exception {
 
-    Map<TlsTestType, TlsClientServerResult> detailedResults = new HashMap<>();
+    MiddleboxCharacterization.Builder b = new MiddleboxCharacterization.Builder();
 
     // test if middlebox uses SNI to connect to host
     Scenario sni = new DefaultHttpsScenario(target,
         new TlsDetectionClient("definitely.not.existent." + target.getHost()));
-    detailedResults.put(TlsTestType.SNI, sni.call());
+    TlsClientServerResult r = sni.call();
+    b.setUsesSniToResolveHost(!r.isSuccess());
 
-    Scenario proxy = new DefaultProxyScenario(target);
-    detailedResults.put(TlsTestType.PROXY, proxy.call());
+    Scenario fakeHttpHost =
+        new FakeHostHttpsScenario(target, "definitely.not.existent." + target.getHost());
+    r = fakeHttpHost.call();
+    b.setUsesHttpHostToResolveHost(!r.isSuccess());
 
-    return detailedResults;
+    return b.build();
   }
 
 

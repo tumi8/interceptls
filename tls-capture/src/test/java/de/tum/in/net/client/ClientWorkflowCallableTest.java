@@ -17,6 +17,7 @@ import de.tum.in.net.server.BcTlsServerFactory;
 import de.tum.in.net.server.ClientHandlerFactory;
 import de.tum.in.net.server.DefaultClientHandlerFactory;
 import de.tum.in.net.server.SimpleServerSocket;
+import de.tum.in.net.util.ServerUtil;
 
 public class ClientWorkflowCallableTest {
 
@@ -32,6 +33,8 @@ public class ClientWorkflowCallableTest {
     srv = new SimpleServerSocket(port, fac, exec);
     final Thread t = new Thread(srv);
     t.start();
+
+    ServerUtil.waitForRunning(srv);
   }
 
   @After

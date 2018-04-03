@@ -12,6 +12,7 @@ import org.junit.Test;
 import de.tum.in.net.client.DefaultHttpsScenario;
 import de.tum.in.net.client.HostAndPort;
 import de.tum.in.net.model.TlsClientServerResult;
+import de.tum.in.net.util.ServerUtil;
 
 /**
  * Created by johannes on 17.05.17.
@@ -36,7 +37,7 @@ public class SimpleServerSocketTest {
 
     final Thread srvThread = new Thread(srv);
     srvThread.start();
-    Thread.sleep(20);
+    ServerUtil.waitForRunning(srv);
 
     assertTrue(srv.isRunning());
 
@@ -53,7 +54,7 @@ public class SimpleServerSocketTest {
       final Thread t = new Thread(srv);
       t.start();
 
-      Thread.sleep(20);
+      ServerUtil.waitForRunning(srv);
       assertTrue(srv.isRunning());
 
 

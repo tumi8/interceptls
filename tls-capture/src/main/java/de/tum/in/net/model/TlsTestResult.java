@@ -3,7 +3,6 @@ package de.tum.in.net.model;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.joda.time.LocalDateTime;
@@ -15,10 +14,10 @@ public class TlsTestResult implements Serializable {
    */
   private transient static final long serialVersionUID = 5955734350476053070L;
 
-  private String timestamp = LocalDateTime.now().toString();
-  private NetworkId network;
-  private List<TlsClientServerResult> results;
-  private Map<TlsTestType, TlsClientServerResult> detailedResults;
+  private final String timestamp = LocalDateTime.now().toString();
+  private final NetworkId network;
+  private final List<TlsClientServerResult> results;
+  private MiddleboxCharacterization detailedResults;
 
   public TlsTestResult(NetworkId network, List<TlsClientServerResult> results) {
     this.network = Objects.requireNonNull(network);
@@ -65,6 +64,11 @@ public class TlsTestResult implements Serializable {
     return timestamp;
   }
 
+  /**
+   * 
+   * @throws IllegalStateException - if no interception occured
+   * @return the first target for which an interception is detected.
+   */
   public TlsClientServerResult getInterceptedTarget() {
     for (TlsClientServerResult result : results) {
       if (result.isSuccess() && result.isIntercepted()) {
@@ -74,12 +78,12 @@ public class TlsTestResult implements Serializable {
     throw new IllegalStateException("No intercepted connection found.");
   }
 
-  public void setDetailedResults(Map<TlsTestType, TlsClientServerResult> results) {
+  public void setDetailedResults(MiddleboxCharacterization results) {
     this.detailedResults = results;
   }
 
-  public Map<TlsTestType, TlsClientServerResult> getDetailedResults() {
-    return detailedResults == null ? null : Collections.unmodifiableMap(detailedResults);
+  public MiddleboxCharacterization getDetailedResults() {
+    return detailedResults;
   }
 
 }

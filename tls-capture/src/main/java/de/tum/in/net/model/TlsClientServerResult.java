@@ -49,6 +49,10 @@ public class TlsClientServerResult implements Serializable {
     return state;
   }
 
+  /**
+   * 
+   * @return true if a connection was successfully established
+   */
   public boolean isSuccess() {
     return State.CONNECTED.equals(state);
   }
