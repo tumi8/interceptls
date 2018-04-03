@@ -31,7 +31,8 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
-
+    private final List<String> testList = new ArrayList<>();
+    final ResultsAdapter rAdapter = new ResultsAdapter(testList);
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -59,18 +60,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        //updateListView();
+
+        testList.clear();
+        final Set<String> sessionIDs = ResultStorage.getSessions(this);
+        testList.addAll(sessionIDs);
+        Collections.sort(testList);
+
+        rAdapter.notifyDataSetChanged();
+
     }
 
     private void updateListView() {
-
-        final Set<String> sessionIDs = ResultStorage.getSessions(this);
-        final List<String> testList = new ArrayList<>(sessionIDs);
-        Collections.sort(testList);
-
         final Context ctx = this;
         final RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        final ResultsAdapter rAdapter = new ResultsAdapter(testList);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, recyclerView, new ClickListener() {
             @Override
             public void onClick(final View view, final int position) {

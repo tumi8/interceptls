@@ -1,7 +1,9 @@
 package de.tum.in.net.client;
 
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -19,6 +21,7 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_tls_test_result_view);
 
         final String sessionID = getIntent().getStringExtra("sessionID");
@@ -42,6 +45,18 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
         final TextView content = findViewById(R.id.content);
         content.setText(new Gson().toJson(testResult));
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                //NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
