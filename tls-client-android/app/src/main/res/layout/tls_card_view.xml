@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:layout_gravity="center"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/margin_default"
         card_view:cardElevation="3dp"
         card_view:cardCornerRadius="8dp"
         card_view:contentPadding="10dp">
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:layout_margin="8dp">
+            android:layout_margin="@dimen/margin_default">
 
             <ImageView
                 android:id="@+id/interception_icon"
@@ -32,9 +32,9 @@
                 android:id="@+id/timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/interception_icon"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="@dimen/margin_default"
                 android:textStyle="bold"
                 android:textSize="16sp"/>
 
