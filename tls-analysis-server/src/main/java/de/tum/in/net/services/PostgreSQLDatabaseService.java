@@ -21,7 +21,8 @@ public class PostgreSQLDatabaseService implements DatabaseService {
 
   private static final Logger log = LoggerFactory.getLogger(PostgreSQLDatabaseService.class);
   private final String NEW_SESSION =
-      "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, dns_ip, dns_mac, bssid, ssid) VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::macaddr, ?)";
+      "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, dns_ip, dns_mac, bssid, ssid) "
+          + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::INET, ?::macaddr, ?::macaddr, ?)";
   private final String INSERT_RESULT =
       "INSERT INTO RESULTS (session_id, test_id, client_ip, server_ip, client_sent, client_rec, server_sent, server_rec, target, target_port)"
           + " VALUES (?, ?, ?::INET, ?::INET, ?, ?, ?, ?, ?, ?)";
@@ -88,10 +89,12 @@ public class PostgreSQLDatabaseService implements DatabaseService {
         NetworkId network = result.getNetworkId();
         s.setString(2, network.getType().toString());
         s.setString(3, network.getPublicIp());
-        s.setString(4, network.getDnsIp());
-        s.setString(5, network.getDnsMac());
-        s.setString(6, network.getBssid());
-        s.setString(7, network.getSsid());
+        s.setString(4, network.getDefaultGatewayIp());
+        s.setString(5, network.getDefaultGatewayMac());
+        s.setString(6, network.getDnsIp());
+        s.setString(7, network.getDnsMac());
+        s.setString(8, network.getBssid());
+        s.setString(9, network.getSsid());
         s.executeUpdate();
         ResultSet set = s.getGeneratedKeys();
         set.next();

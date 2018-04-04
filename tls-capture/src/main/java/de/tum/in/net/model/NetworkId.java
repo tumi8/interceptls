@@ -13,6 +13,8 @@ public class NetworkId implements Serializable {
   private String publicIp;
   private String dnsIp;
   private String dnsMac;
+  private String defaultGatewayIp;
+  private String defaultGatewayMac;
 
   // wifi specific
   private String ssid;
@@ -53,7 +55,8 @@ public class NetworkId implements Serializable {
 
   @Override
   public String toString() {
-    return "NetworkId [ssid=" + ssid + ",bssid=" + bssid + ",dnsIp=" + dnsIp + ",dnsMac=" + dnsMac
+    return "NetworkId [ssid=" + ssid + ",bssid=" + bssid + ",defaultGatewayIp=" + defaultGatewayIp
+        + ",defaultGatewayMac=" + defaultGatewayMac + ",dnsIp=" + dnsIp + ",dnsMac=" + dnsMac
         + ",publicIp=" + publicIp + "]";
   }
 
@@ -71,6 +74,22 @@ public class NetworkId implements Serializable {
 
   public void setPublicIp(String publicIp) {
     this.publicIp = publicIp;
+  }
+
+  public String getDefaultGatewayIp() {
+    return defaultGatewayIp;
+  }
+
+  public void setDefaultGatewayIp(String defaultGatewayIp) {
+    this.defaultGatewayIp = defaultGatewayIp;
+  }
+
+  public String getDefaultGatewayMac() {
+    return defaultGatewayMac;
+  }
+
+  public void setDefaultGatewayMac(String defaultGatewayMac) {
+    this.defaultGatewayMac = defaultGatewayMac;
   }
 
 }

@@ -35,6 +35,7 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
     public boolean isConnected() {
         final ConnectivityManager cm =
                 (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+
         return cm.getActiveNetworkInfo().isConnected();
     }
 
@@ -44,8 +45,9 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
 
         setNetworkState(id);
         setDns(id);
+        setDefaultGateway(id);
 
-        log.debug("Identified network: {}", id);
+        log.error("Identified network: {}", id);
         return id;
     }
 
@@ -90,7 +92,7 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
             }
 
         } catch (final IOException e) {
-            log.warn("Could not determine the default gateway ip", e);
+            log.warn("Could not determine the dns ip", e);
         }
     }
 
@@ -107,4 +109,21 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
     }
 
 
+    public void setDefaultGateway(NetworkId id) {
+        try {
+            final List<String> ip = execProcess("ip route get 1.1.1.1 | cut -d \\  -f 3");
+            final String gwIp = ip.get(0);
+            if (gwIp != null && !gwIp.isEmpty()) {
+                id.setDefaultGatewayIp(gwIp);
+                //extract the mac address of the given gateway
+                final List<String> neighborList = execProcess("ip neighbor | grep " + gwIp + " | cut -d \\  -f 5");
+                if (neighborList.size() > 0) {
+                    id.setDefaultGatewayMac(neighborList.get(0));
+                }
+            }
+
+        } catch (final IOException e) {
+            log.warn("Could not determine the default gateway ip", e);
+        }
+    }
 }
