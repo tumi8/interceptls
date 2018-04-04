@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="@string/data_collection"
+        android:title="@string/data_collection"
+        android:summaryOn="Your TLS results are sent to the analysis server. Thank you for supporting science."
+        android:summaryOff="Your TLS results are not sent to the analysis server."
+        android:defaultValue="true"
+        />
     <ListPreference
         android:key="@string/background_service"
         android:title="@string/background_service"

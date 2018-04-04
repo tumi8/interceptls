@@ -25,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
+
     }
 
     @Override

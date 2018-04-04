@@ -12,9 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.tum.in.net.client.HostAndPort;
-import de.tum.in.net.session.SessionID;
-
 /**
  * Created by johannes on 07.04.17.
  */
@@ -22,6 +19,7 @@ import de.tum.in.net.session.SessionID;
 public class ConfigurationReader {
 
     private static final Logger log = LoggerFactory.getLogger(ConfigurationReader.class);
+
     /**
      * Reads the configuration for the target hosts.
      *
@@ -49,15 +47,20 @@ public class ConfigurationReader {
         final List<HostAndPort> targets = new ArrayList<>();
         for (final String target : targetStrings) {
 
-            try{
-                HostAndPort t = HostAndPort.parse(target);
+            try {
+                final HostAndPort t = HostAndPort.parse(target);
                 targets.add(t);
-            }catch(IllegalArgumentException e){
+            } catch (final IllegalArgumentException e) {
                 log.warn("Illegal host and port string found in settings: {}", target);
             }
         }
 
         return targets;
+    }
+
+    public static boolean isDataCollectionAllowed(final Context context) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(context.getString(R.string.data_collection), false);
     }
 
     public static String getAnalysisHostUrl(final Context context) {
@@ -70,4 +73,5 @@ public class ConfigurationReader {
         final String serviceTime = prefs.getString(ctx.getString(R.string.background_service), null);
         return Integer.parseInt(serviceTime);
     }
+
 }

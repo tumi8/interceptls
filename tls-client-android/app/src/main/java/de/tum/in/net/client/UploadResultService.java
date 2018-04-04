@@ -29,6 +29,11 @@ public class UploadResultService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
+        if (!ConfigurationReader.isDataCollectionAllowed(this)){
+            log.info("Won't upload the data because the user has not given his permission.");
+            return;
+        }
+
         TlsDB db = new TlsDB(this);
 
         final List<TlsTestResult> results = db.getNotUploadedResults();
@@ -43,7 +48,7 @@ public class UploadResultService extends IntentService {
             }
             log.debug("All results successfully uploaded to analysis server");
         } catch (final IOException e) {
-            log.debug("Could not connect to analysis server, save result temporarily", e);
+            log.debug("Could not upload results to analysis server", e);
         }
 
     }

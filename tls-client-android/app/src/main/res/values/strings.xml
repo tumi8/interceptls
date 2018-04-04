@@ -25,4 +25,5 @@
     <string name="label_about">About TLS Client</string>
     <string name="about_text">This application is part of a Master\'s Thesis created in SS2018. For more information visit TODO.</string>
     <string name="interception_title">Interception detected</string>
+    <string name="data_collection">Data collection</string>
 </resources>
