@@ -13,7 +13,7 @@
         android:layout_margin="@dimen/margin_default"
         card_view:cardElevation="3dp"
         card_view:cardCornerRadius="8dp"
-        card_view:contentPadding="10dp">
+        card_view:contentPadding="@dimen/padding_default">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true" />
+                android:layout_centerVertical="true" />
 
         </RelativeLayout>
 

@@ -10,7 +10,8 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
+        android:paddingTop="@dimen/padding_default"
+        android:paddingBottom="80dp"
         android:clipToPadding="false"
         android:scrollbars="vertical" />
 
