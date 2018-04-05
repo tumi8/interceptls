@@ -49,12 +49,11 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
         final JobScheduler js = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
         if (getString(R.string.background_service).equals(key)) {
-            final String pref = sharedPreferences.getString(key, null);
+            final int timeInMinutes = ConfigurationReader.readServiceTime(this);
 
-            if ("0".equals(pref)) {
+            if (timeInMinutes == 0) {
                 js.cancel(uniqueJobId);
             } else {
-                final int timeInMinutes = ConfigurationReader.readServiceTime(this);
                 final long timeInMillis = timeInMinutes * 60 * 1000;
                 log.error("Set TlsJobService service time in min: {}", timeInMinutes);
 
