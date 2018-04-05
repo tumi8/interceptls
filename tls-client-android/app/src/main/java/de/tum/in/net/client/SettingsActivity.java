@@ -1,9 +1,5 @@
 package de.tum.in.net.client;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
@@ -44,29 +40,9 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
 
     @Override
     public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
-        final int uniqueJobId = 1;
-
-        final JobScheduler js = (JobScheduler) this.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
         if (getString(R.string.background_service).equals(key)) {
-            final int timeInMinutes = ConfigurationReader.readServiceTime(this);
-
-            if (timeInMinutes == 0) {
-                js.cancel(uniqueJobId);
-            } else {
-                final long timeInMillis = timeInMinutes * 60 * 1000;
-                log.error("Set TlsJobService service time in min: {}", timeInMinutes);
-
-                final JobInfo job = new JobInfo.Builder(
-                        uniqueJobId,
-                        new ComponentName(this, TlsJobService.class))
-                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-                        .setPeriodic(timeInMillis)
-                        //.setBackoffCriteria(5 * 60 * 1000, JobInfo.BACKOFF_POLICY_EXPONENTIAL)
-                        .build();
-                js.schedule(job);
-            }
-
+            TlsJobService.init(this);
         }
 
     }

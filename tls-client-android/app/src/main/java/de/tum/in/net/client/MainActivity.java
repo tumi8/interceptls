@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -25,9 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-
-import de.tum.in.net.model.TlsTestResult;
 
 /**
  * Created by wohlfart on 11.08.16.
@@ -44,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         setContentView(R.layout.activity_main);
+
+        DbCleanJobService.init(this);
 
         final Context ctx = this;
         recyclerView = findViewById(R.id.recycler_view);
@@ -112,12 +110,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(rAdapter);
         Collections.sort(testList, new Comparator<AndroidTlsResult>() {
             @Override
-            public int compare(AndroidTlsResult r1, AndroidTlsResult r2) {
+            public int compare(final AndroidTlsResult r1, final AndroidTlsResult r2) {
                 return r1.getTimestamp().compareTo(r2.getTimestamp());
             }
         });
     }
-
 
 
     @Override
