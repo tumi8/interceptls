@@ -137,6 +137,7 @@ public class AnalysisResourceTest {
     assertNotNull(analysisResults);
     assertEquals(1, analysisResults.size());
 
+    assertEquals(hostAndPort.toString(), analysisResults.get(0).getTarget().toString());
     assertEquals(TlsState.INTERCEPTION, analysisResults.get(0).getTlsState());
 
   }

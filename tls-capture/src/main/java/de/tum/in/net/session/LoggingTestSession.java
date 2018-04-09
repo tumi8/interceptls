@@ -28,7 +28,7 @@ public class LoggingTestSession implements TestSession {
   @Override
   public List<AnalysisResult> getAnalysisResult(SessionID id) throws IOException {
     log.info("getAnalysis: {}", id);
-    return Arrays.asList(AnalysisResult.noInterception());
+    return Arrays.asList(AnalysisResult.noInterception("junit.org"));
   }
 
 

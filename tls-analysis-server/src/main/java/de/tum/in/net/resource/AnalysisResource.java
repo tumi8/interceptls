@@ -91,7 +91,7 @@ public class AnalysisResource {
     String sent_server = parser.parse(result.getServerResult().getSentBytes());
 
     if (rec_client.equals(sent_server) && sent_client.equals(rec_server)) {
-      return AnalysisResult.noInterception();
+      return AnalysisResult.noInterception(result.getHostAndPort().toString());
     }
 
     System.out.println(rec_server);
@@ -128,7 +128,8 @@ public class AnalysisResource {
 
     TlsMessageDiff certificate = certificate_rec.createDiff(messages_sent);
 
-    return AnalysisResult.intercepted(clientHello, serverHello, certificate);
+    return AnalysisResult.intercepted(result.getHostAndPort().toString(), clientHello, serverHello,
+        certificate);
 
   }
 }
