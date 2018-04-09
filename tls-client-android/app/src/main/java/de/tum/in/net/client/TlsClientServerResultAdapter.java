@@ -24,7 +24,13 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
         public TextView target;
         public ImageView interception_icon;
         public ImageView expandable_icon;
-        public TextView details;
+        public View details;
+        public TextView clientResultView;
+        public TextView generalResult;
+        public TextView versionView;
+        public TextView cipherView;
+        public TextView versionViewServer;
+        public TextView cipherViewServer;
 
         public MyViewHolder(final View view) {
             super(view);
@@ -32,6 +38,12 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
             target = view.findViewById(R.id.target);
             expandable_icon = view.findViewById(R.id.expandable_icon);
             details = view.findViewById(R.id.details);
+            generalResult = view.findViewById(R.id.result_general);
+            clientResultView = view.findViewById(R.id.resultClientHello);
+            versionView = view.findViewById(R.id.tls_version_client);
+            cipherView = view.findViewById(R.id.tls_cipher_client);
+            versionViewServer = view.findViewById(R.id.tls_version_server);
+            cipherViewServer = view.findViewById(R.id.tls_cipher_server);
 
         }
     }
@@ -55,21 +67,61 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
         holder.target.setText(result.getHostAndPort().toString());
 
         final boolean isExpanded = position == mExpandedPosition;
-        if (result.isIntercepted()) {
-            holder.interception_icon.setImageResource(R.drawable.ic_interception);
-            //make it expandable
-            holder.expandable_icon.setImageResource(isExpanded ? R.drawable.collapsable : R.drawable.expandable);
-            holder.details.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-            holder.itemView.setActivated(isExpanded);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    mExpandedPosition = isExpanded ? -1 : position;
-                    notifyItemChanged(position);
-                }
-            });
+        holder.details.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+        if (result.isSuccess()) {
+            if (result.isIntercepted()) {
+                holder.interception_icon.setImageResource(R.drawable.ic_interception);
+                //make it expandable
+                holder.expandable_icon.setImageResource(isExpanded ? R.drawable.collapsable : R.drawable.expandable);
+                holder.itemView.setActivated(isExpanded);
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        mExpandedPosition = isExpanded ? -1 : position;
+                        notifyItemChanged(position);
+                    }
+                });
+
+
+                //            final AnalysisResult analysisResult = AnalysisResult.noInterception("TODO");
+                //
+                //            holder.generalResult.setText(analysisResult.getTlsState() + "\n");
+                //            holder.generalResult.setTextColor(Color.parseColor("#FF0000"));
+                //            final TlsMessageDiff diffClientHello = analysisResult.getClientHelloDiff();
+                //
+                //            Diff version = diffClientHello.getVersionDiff();
+                //            holder.versionView.setText(version.toString());
+                //
+                //            Diff cipher = diffClientHello.getCiphersDiff();
+                //            holder.cipherView.setText(cipher.toString());
+                //
+                //            for (final Map.Entry<String, Diff> diff : diffClientHello.getExtensionsDiff().entrySet()) {
+                //                holder.clientResultView.append(diff.getKey() + ": " + diff.getValue() + "\n");
+                //            }
+                //
+                //            final TlsMessageDiff diffServerHello = analysisResult.getServerHelloDiff();
+                //
+                //            version = diffServerHello.getVersionDiff();
+                //            holder.versionViewServer.setText(version.toString());
+                //
+                //            cipher = diffServerHello.getCiphersDiff();
+                //            holder.cipherViewServer.setText(cipher.toString());
+
+                //final TextView serverResultView = (TextView) findViewById(R.id.resultServerHello);
+                //for (final Map.Entry<String, Diff> diff : diffServerHello.getExtensionsDiff().entrySet()) {
+                //    serverResultView.append(diff.getKey() + ": " + diff.getValue() + "\n");
+                //}
+
+                //final TlsMessageDiff certDiff = analysisResult.getCertificateDiff();
+                //final TextView certResultView = (TextView) findViewById(R.id.resultCertificate);
+                //certResultView.setText(certDiff.getCertChainDiff().toString());
+
+
+            } else {
+                holder.interception_icon.setImageResource(R.drawable.ic_no_interception);
+            }
         } else {
-            holder.interception_icon.setImageResource(R.drawable.ic_no_interception);
+            holder.interception_icon.setImageResource(R.drawable.no_connection);
         }
 
     }
