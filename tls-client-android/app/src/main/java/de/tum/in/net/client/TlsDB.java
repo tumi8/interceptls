@@ -68,27 +68,27 @@ public class TlsDB extends SQLiteOpenHelper {
 
     public Set<String> getTestTimestamps() {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN);
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN)) {
+                final Set<String> timestamps = new HashSet<>();
 
-            final Set<String> timestamps = new HashSet<>();
+                while (cursor.moveToNext()) {
+                    final String id = cursor.getString(cursor.getColumnIndex(TIMESTAMP_COLUMN));
+                    timestamps.add(id);
+                }
 
-            while (cursor.moveToNext()) {
-                final String id = cursor.getString(cursor.getColumnIndex(TIMESTAMP_COLUMN));
-                timestamps.add(id);
+                return timestamps;
             }
-
-            return timestamps;
         }
     }
 
 
     public TlsTestResult read(final String timestamp) {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, TIMESTAMP_COLUMN + "=?", new String[]{String.valueOf(timestamp)}, null, null, TIMESTAMP_COLUMN);
-
-            if (cursor.moveToNext()) {
-                final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
-                return new Gson().fromJson(data, TlsTestResult.class);
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, TIMESTAMP_COLUMN + "=?", new String[]{String.valueOf(timestamp)}, null, null, TIMESTAMP_COLUMN)) {
+                if (cursor.moveToNext()) {
+                    final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
+                    return new Gson().fromJson(data, TlsTestResult.class);
+                }
             }
         }
 
@@ -112,37 +112,37 @@ public class TlsDB extends SQLiteOpenHelper {
 
     public List<AndroidTlsResult> getTestResults() {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, UPLOADED_COLUMN, DATA_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN, "50");
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, UPLOADED_COLUMN, DATA_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN, "50")) {
+                final List<AndroidTlsResult> results = new ArrayList<>();
 
-            final List<AndroidTlsResult> results = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    final String timestamp = cursor.getString(cursor.getColumnIndex(TIMESTAMP_COLUMN));
+                    final boolean uploaded = cursor.getInt(cursor.getColumnIndex(UPLOADED_COLUMN)) > 0;
+                    final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
+                    final TlsTestResult r = new Gson().fromJson(data, TlsTestResult.class);
 
-            while (cursor.moveToNext()) {
-                final String timestamp = cursor.getString(cursor.getColumnIndex(TIMESTAMP_COLUMN));
-                final boolean uploaded = cursor.getInt(cursor.getColumnIndex(UPLOADED_COLUMN)) > 0;
-                final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
-                final TlsTestResult r = new Gson().fromJson(data, TlsTestResult.class);
+                    final AndroidTlsResult result = new AndroidTlsResult(timestamp, uploaded, r);
+                    results.add(result);
+                }
 
-                final AndroidTlsResult result = new AndroidTlsResult(timestamp, uploaded, r);
-                results.add(result);
+                return results;
             }
-
-            return results;
         }
     }
 
     public List<TlsTestResult> getNotUploadedResults() {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, UPLOADED_COLUMN + "=0", null, null, null, null);
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, UPLOADED_COLUMN + "=0", null, null, null, null)) {
+                final List<TlsTestResult> results = new ArrayList<>();
 
-            final List<TlsTestResult> results = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
+                    final TlsTestResult r = new Gson().fromJson(data, TlsTestResult.class);
+                    results.add(r);
+                }
 
-            while (cursor.moveToNext()) {
-                final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
-                final TlsTestResult r = new Gson().fromJson(data, TlsTestResult.class);
-                results.add(r);
+                return results;
             }
-
-            return results;
         }
     }
 
@@ -165,14 +165,14 @@ public class TlsDB extends SQLiteOpenHelper {
     public boolean enoughTimeSinceLastScan() {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
             //read last test time from db
-            final Cursor c = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN + " DESC", "1");
-
-            String time = null;
-            if (c.moveToNext()) {
-                time = c.getString(c.getColumnIndex(TIMESTAMP_COLUMN));
+            try (final Cursor c = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN + " DESC", "1")) {
+                String time = null;
+                if (c.moveToNext()) {
+                    time = c.getString(c.getColumnIndex(TIMESTAMP_COLUMN));
+                }
+                //we test not more than once in 20 minutes
+                return time == null || LocalDateTime.now().minusMinutes(20).isAfter(LocalDateTime.parse(time));
             }
-            //we test not more than once in 20 minutes
-            return time == null || LocalDateTime.now().minusMinutes(20).isAfter(LocalDateTime.parse(time));
         }
     }
 }
