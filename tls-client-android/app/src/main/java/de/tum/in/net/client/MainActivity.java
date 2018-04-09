@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
     private List<AndroidTlsResult> testList = new ArrayList<>();
-    private ResultsAdapter rAdapter = new ResultsAdapter(testList);
+    private AndroidTlsResultAdapter rAdapter = new AndroidTlsResultAdapter(testList);
     private RecyclerView recyclerView;
 
     @Override
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         final List<AndroidTlsResult> timestamps = new TlsDB(this).getTestResults();
         testList = new ArrayList<>(timestamps);
-        rAdapter = new ResultsAdapter(testList);
+        rAdapter = new AndroidTlsResultAdapter(testList);
         recyclerView.setAdapter(rAdapter);
         Collections.sort(testList, new Comparator<AndroidTlsResult>() {
             @Override

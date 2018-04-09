@@ -9,13 +9,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.tum.in.net.model.TlsTestResult;
-
 /**
  * Created by johannes on 30.06.17.
  */
 
-public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.MyViewHolder> {
+public class AndroidTlsResultAdapter extends RecyclerView.Adapter<AndroidTlsResultAdapter.MyViewHolder> {
 
     private final List<AndroidTlsResult> results;
 
@@ -33,7 +31,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.MyViewHo
         }
     }
 
-    public ResultsAdapter(final List<AndroidTlsResult> results) {
+    public AndroidTlsResultAdapter(final List<AndroidTlsResult> results) {
         this.results = results;
     }
 
@@ -48,17 +46,17 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.MyViewHo
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final AndroidTlsResult result = results.get(position);
-        if(result.getResult().anyInterception()){
+        if (result.getResult().anyInterception()) {
             holder.interception_icon.setImageResource(R.drawable.ic_interception);
-        }else{
+        } else {
             holder.interception_icon.setImageResource(R.drawable.ic_no_interception);
         }
 
 
         holder.timestamp.setText(result.getTimestamp());
-        if(result.isUploaded()){
+        if (result.isUploaded()) {
             holder.upload_icon.setImageResource(R.drawable.ic_upload_done);
-        } else{
+        } else {
             holder.upload_icon.setImageResource(R.drawable.ic_upload);
         }
 

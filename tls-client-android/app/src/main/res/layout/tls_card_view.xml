@@ -1,52 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:id="@+id/card_view"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/margin_default"
+    card_view:cardElevation="3dp"
+    card_view:cardCornerRadius="8dp"
+    card_view:contentPadding="@dimen/padding_default">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_view"
-        android:layout_width="fill_parent"
-        android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/margin_default"
-        card_view:cardElevation="3dp"
-        card_view:cardCornerRadius="8dp"
-        card_view:contentPadding="@dimen/padding_default">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/margin_default">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_margin="@dimen/margin_default">
+        <ImageView
+            android:id="@+id/interception_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" />
 
-            <ImageView
-                android:id="@+id/interception_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-               />
+        <TextView
+            android:id="@+id/timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/interception_icon"
+            android:layout_marginStart="@dimen/margin_default"
+            android:textStyle="bold"
+            android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/timestamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/interception_icon"
-                android:layout_marginLeft="@dimen/margin_default"
-                android:textStyle="bold"
-                android:textSize="16sp"/>
+        <ImageView
+            android:id="@+id/upload_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true" />
 
-            <ImageView
-                android:id="@+id/upload_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true" />
+    </RelativeLayout>
 
-        </RelativeLayout>
+</android.support.v7.widget.CardView>
 
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>

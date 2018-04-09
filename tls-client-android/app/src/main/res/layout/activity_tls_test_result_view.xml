@@ -3,85 +3,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/targets_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="@dimen/padding_default"
-        android:clipToPadding="false">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp">
-
-            <TextView
-                android:id="@+id/targets"
-                android:layout_margin="@dimen/margin_default"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_default"
-                android:text="Targets" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp">
-
-            <TextView
-                android:id="@+id/connections"
-                android:layout_margin="@dimen/margin_default"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_default"
-                android:text="Connections" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp">
-
-            <TextView
-                android:id="@+id/interceptions"
-                android:layout_margin="@dimen/margin_default"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_default"
-                android:text="Interceptions" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp">
-
-            <TextView
-                android:id="@+id/content"
-                android:layout_margin="@dimen/margin_default"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-
-    </LinearLayout>
+        android:paddingTop="@dimen/padding_default"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
 
 </ScrollView>

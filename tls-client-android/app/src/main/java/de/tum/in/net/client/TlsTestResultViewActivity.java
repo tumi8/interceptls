@@ -1,22 +1,27 @@
 package de.tum.in.net.client;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
-import android.widget.TextView;
-
-import com.google.gson.Gson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.tum.in.net.model.TlsClientServerResult;
 import de.tum.in.net.model.TlsTestResult;
 
 public class TlsTestResultViewActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(TlsTestResultViewActivity.class);
-
+    private final List<TlsClientServerResult> results = new ArrayList<>();
+    private final TlsClientServerResultAdapter rAdapter = new TlsClientServerResultAdapter(results);
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -25,26 +30,23 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tls_test_result_view);
 
         final String timestamp = getIntent().getStringExtra("timestamp");
-        final TlsTestResult testResult = new TlsDB(this).read(timestamp);
+        final TlsTestResult testResult = new TlsDB(this).getTlsTestResult(timestamp);
 
-        if(testResult!=null){
-            final TextView targets = findViewById(R.id.targets);
-            targets.setText(String.valueOf(testResult.getClientServerResults().size()));
+        if (testResult != null) {
+            results.addAll(testResult.getClientServerResults());
+            final Context ctx = this;
+            recyclerView = findViewById(R.id.targets_recycler_view);
 
-            final TextView connections = findViewById(R.id.connections);
-            connections.setText(String.valueOf(testResult.successfulConnections()));
-
-            final TextView interceptions = findViewById(R.id.interceptions);
-            interceptions.setText(String.valueOf(testResult.interceptions()));
-
-            final TextView content = findViewById(R.id.content);
-            content.setText(new Gson().toJson(testResult));
+            final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setAdapter(rAdapter);
         }
+
 
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:

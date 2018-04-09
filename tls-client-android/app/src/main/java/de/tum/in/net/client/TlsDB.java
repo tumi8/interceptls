@@ -82,7 +82,7 @@ public class TlsDB extends SQLiteOpenHelper {
     }
 
 
-    public TlsTestResult read(final String timestamp) {
+    public TlsTestResult getTlsTestResult(final String timestamp) {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
             try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, TIMESTAMP_COLUMN + "=?", new String[]{String.valueOf(timestamp)}, null, null, TIMESTAMP_COLUMN)) {
                 if (cursor.moveToNext()) {
