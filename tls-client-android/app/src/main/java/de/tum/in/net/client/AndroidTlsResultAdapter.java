@@ -53,7 +53,10 @@ public class AndroidTlsResultAdapter extends RecyclerView.Adapter<AndroidTlsResu
         }
 
 
-        holder.timestamp.setText(result.getTimestamp());
+        String iso8601 = result.getTimestamp();
+        iso8601 = iso8601.replace("T", " ");
+        iso8601 = iso8601.substring(0, iso8601.length() - 4);
+        holder.timestamp.setText(iso8601);
         if (result.isUploaded()) {
             holder.upload_icon.setImageResource(R.drawable.ic_upload_done);
         } else {
