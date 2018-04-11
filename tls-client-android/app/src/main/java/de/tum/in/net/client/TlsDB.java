@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.model.TlsTestResult;
 
 
@@ -31,8 +32,8 @@ public class TlsDB extends SQLiteOpenHelper {
 
     private static final String RESULTS_TABLE = "results";
     private static final String TIMESTAMP_COLUMN = "timestamp";
-    private static final String UPLOADED_COLUMN = "uploaded";
     private static final String DATA_COLUMN = "data";
+    private static final String ANALYSIS_COLUMN = "analysis";
 
 
     public TlsDB(final Context context) {
@@ -43,8 +44,8 @@ public class TlsDB extends SQLiteOpenHelper {
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + RESULTS_TABLE + " (" +
                 TIMESTAMP_COLUMN + " TIMESTAMP PRIMARY KEY," +
-                UPLOADED_COLUMN + " BOOLEAN NOT NULL," +
-                DATA_COLUMN + " TEXT NOT NULL)");
+                DATA_COLUMN + " TEXT NOT NULL," +
+                ANALYSIS_COLUMN + " TEXT)");
 
     }
 
@@ -58,7 +59,6 @@ public class TlsDB extends SQLiteOpenHelper {
         try (SQLiteDatabase db = this.getWritableDatabase()) {
             final ContentValues values = new ContentValues();
             values.put(TIMESTAMP_COLUMN, result.getTimestamp());
-            values.put(UPLOADED_COLUMN, false);
             values.put(DATA_COLUMN, new Gson().toJson(result));
 
             db.insert(RESULTS_TABLE, null, values);
@@ -82,23 +82,21 @@ public class TlsDB extends SQLiteOpenHelper {
     }
 
 
-    public TlsTestResult getTlsTestResult(final String timestamp) {
+    public AndroidTlsResult getAndroidTlsResult(final String timestamp) {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, TIMESTAMP_COLUMN + "=?", new String[]{String.valueOf(timestamp)}, null, null, TIMESTAMP_COLUMN)) {
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, DATA_COLUMN, ANALYSIS_COLUMN}, TIMESTAMP_COLUMN + "=?", new String[]{String.valueOf(timestamp)}, null, null, TIMESTAMP_COLUMN)) {
                 if (cursor.moveToNext()) {
-                    final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
-                    return new Gson().fromJson(data, TlsTestResult.class);
+                    return getAndroidTlsResult(cursor);
                 }
             }
         }
-
         return null;
     }
 
-    public void uploadedResult(final String timestamp) {
+    public void uploadedResult(final String timestamp, final AnalysisResult analysisResult) {
         try (SQLiteDatabase db = this.getWritableDatabase()) {
             final ContentValues values = new ContentValues();
-            values.put(UPLOADED_COLUMN, true);
+            values.put(ANALYSIS_COLUMN, new Gson().toJson(analysisResult));
 
             db.update(RESULTS_TABLE, values, TIMESTAMP_COLUMN + "=?", new String[]{timestamp});
         }
@@ -112,16 +110,11 @@ public class TlsDB extends SQLiteOpenHelper {
 
     public List<AndroidTlsResult> getTestResults() {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, UPLOADED_COLUMN, DATA_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN, "50")) {
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, DATA_COLUMN, ANALYSIS_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN, "50")) {
                 final List<AndroidTlsResult> results = new ArrayList<>();
 
                 while (cursor.moveToNext()) {
-                    final String timestamp = cursor.getString(cursor.getColumnIndex(TIMESTAMP_COLUMN));
-                    final boolean uploaded = cursor.getInt(cursor.getColumnIndex(UPLOADED_COLUMN)) > 0;
-                    final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
-                    final TlsTestResult r = new Gson().fromJson(data, TlsTestResult.class);
-
-                    final AndroidTlsResult result = new AndroidTlsResult(timestamp, uploaded, r);
+                    final AndroidTlsResult result = getAndroidTlsResult(cursor);
                     results.add(result);
                 }
 
@@ -130,9 +123,20 @@ public class TlsDB extends SQLiteOpenHelper {
         }
     }
 
+    private AndroidTlsResult getAndroidTlsResult(final Cursor cursor) {
+        final String timestamp = cursor.getString(cursor.getColumnIndex(TIMESTAMP_COLUMN));
+        final String data = cursor.getString(cursor.getColumnIndex(DATA_COLUMN));
+        final TlsTestResult testResult = new Gson().fromJson(data, TlsTestResult.class);
+
+        final String analysis = cursor.getString(cursor.getColumnIndex(ANALYSIS_COLUMN));
+        final AnalysisResult analysisResult = analysis == null ? null : new Gson().fromJson(analysis, AnalysisResult.class);
+
+        return new AndroidTlsResult(timestamp, testResult, analysisResult);
+    }
+
     public List<TlsTestResult> getNotUploadedResults() {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, UPLOADED_COLUMN + "=0", null, null, null, null)) {
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{DATA_COLUMN}, ANALYSIS_COLUMN + " IS NULL", null, null, null, null)) {
                 final List<TlsTestResult> results = new ArrayList<>();
 
                 while (cursor.moveToNext()) {
@@ -155,7 +159,7 @@ public class TlsDB extends SQLiteOpenHelper {
     public void deleteOldTests() {
         try (SQLiteDatabase db = this.getWritableDatabase()) {
             db.execSQL("DELETE FROM " + RESULTS_TABLE + " WHERE " + TIMESTAMP_COLUMN + "<= date('now','-14 day')");
-            db.execSQL("DELETE FROM " + RESULTS_TABLE + " WHERE " + TIMESTAMP_COLUMN + "<= date('now','-7 day') AND " + UPLOADED_COLUMN + "=1");
+            db.execSQL("DELETE FROM " + RESULTS_TABLE + " WHERE " + TIMESTAMP_COLUMN + "<= date('now','-7 day') AND " + ANALYSIS_COLUMN + " IS NOT NULL");
             db.execSQL("VACUUM");
         }
 
@@ -172,6 +176,19 @@ public class TlsDB extends SQLiteOpenHelper {
                 }
                 //we test not more than once in 20 minutes
                 return time == null || LocalDateTime.now().minusMinutes(20).isAfter(LocalDateTime.parse(time));
+            }
+        }
+    }
+
+    public boolean isUploaded(final String timestamp) {
+        try (SQLiteDatabase db = this.getReadableDatabase()) {
+            //read last test time from db
+            try (final Cursor c = db.query(RESULTS_TABLE, new String[]{ANALYSIS_COLUMN}, TIMESTAMP_COLUMN + "=?", new String[]{timestamp}, null, null, null)) {
+                boolean uploaded = false;
+                if (c.moveToNext()) {
+                    uploaded = c.getString(c.getColumnIndex(ANALYSIS_COLUMN)) != null;
+                }
+                return uploaded;
             }
         }
     }

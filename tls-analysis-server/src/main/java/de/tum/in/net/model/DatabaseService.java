@@ -3,11 +3,11 @@ package de.tum.in.net.model;
 import java.io.Closeable;
 import java.sql.SQLException;
 
-import de.tum.in.net.session.SessionID;
+import de.tum.in.net.analysis.NetworkStats;
 
 public interface DatabaseService extends Closeable {
 
-  SessionID addTestResult(TlsTestResult result) throws SQLException;
+  void addTestResult(TlsTestResult result) throws SQLException;
 
-  TlsTestResult getResult(SessionID id);
+  NetworkStats getNetworkStats(NetworkId networkId) throws SQLException;
 }

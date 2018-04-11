@@ -1,65 +1,24 @@
 package de.tum.in.net.analysis;
 
+import java.util.List;
 import java.util.Objects;
 
 public class AnalysisResult {
 
-  private String target;
-  private TlsState tlsState;
-  private TlsMessageDiff clientHello;
-  private TlsMessageDiff serverHello;
-  private TlsMessageDiff certificate;
+  private final NetworkStats stats;
+  private final List<ProbedHostAnalysis> probedHosts;
 
-  private AnalysisResult(String target, TlsState tlsState) {
-    this.target = Objects.requireNonNull(target);
-    this.tlsState = Objects.requireNonNull(tlsState);
+  public AnalysisResult(NetworkStats stats, List<ProbedHostAnalysis> probedHosts) {
+    this.stats = Objects.requireNonNull(stats);
+    this.probedHosts = Objects.requireNonNull(probedHosts);
   }
 
-  private AnalysisResult(String target, TlsMessageDiff clientHello, TlsMessageDiff serverHello,
-      TlsMessageDiff certificate) {
-    this.target = Objects.requireNonNull(target);
-    this.tlsState = TlsState.INTERCEPTION;
-    this.clientHello = Objects.requireNonNull(clientHello);
-    this.serverHello = Objects.requireNonNull(serverHello);
-    this.certificate = Objects.requireNonNull(certificate);
+  public List<ProbedHostAnalysis> getProbedHosts() {
+    return probedHosts;
   }
 
-  public TlsMessageDiff getClientHelloDiff() {
-    return clientHello;
-  }
-
-  public TlsMessageDiff getServerHelloDiff() {
-    return serverHello;
-  }
-
-  public TlsMessageDiff getCertificateDiff() {
-    return certificate;
-  }
-
-  public String getTarget() {
-    return target;
-  }
-
-
-  public static AnalysisResult unknown(String target) {
-    return new AnalysisResult(target, TlsState.UNKNOWN);
-  }
-
-  public static AnalysisResult noInterception(String target) {
-    return new AnalysisResult(target, TlsState.NO_INTERCEPTION);
-  }
-
-  public static AnalysisResult intercepted(String target, TlsMessageDiff clientHello,
-      TlsMessageDiff serverHello, TlsMessageDiff certificate) {
-    return new AnalysisResult(target, clientHello, serverHello, certificate);
-  }
-
-  public boolean isIntercepted() {
-    return TlsState.INTERCEPTION.equals(tlsState);
-  }
-
-  public TlsState getTlsState() {
-    return tlsState;
+  public NetworkStats getStats() {
+    return stats;
   }
 
 

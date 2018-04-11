@@ -1,5 +1,7 @@
 package de.tum.in.net.resource;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -13,9 +15,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 
+import de.tum.in.net.analysis.AnalysisResult;
+import de.tum.in.net.analysis.NetworkStats;
+import de.tum.in.net.analysis.ProbedHostAnalysis;
 import de.tum.in.net.model.DatabaseService;
+import de.tum.in.net.model.HandshakeAnalyser;
 import de.tum.in.net.model.TlsTestResult;
-import de.tum.in.net.session.SessionID;
 
 /**
  * ResultResource.
@@ -27,6 +32,9 @@ public class ResultResource {
   @Inject
   private DatabaseService db;
 
+  @Inject
+  private HandshakeAnalyser analyser;
+
   /**
    * Upload the result of a complete TLS test.
    */
@@ -37,9 +45,17 @@ public class ResultResource {
     log.info("Received new test result");
 
     try {
-      SessionID id = db.addTestResult(result);
+      db.addTestResult(result);
       log.debug("Successfully uploaded.");
-      return new Gson().toJson(id);
+
+      NetworkStats stats = db.getNetworkStats(result.getNetworkId());
+
+      List<ProbedHostAnalysis> probedHostAnalysis = analyser.analyse(result);
+      log.debug("Successfully analysed.");
+
+      AnalysisResult analysisResult = new AnalysisResult(stats, probedHostAnalysis);
+      return new Gson().toJson(analysisResult);
+
     } catch (Exception e) {
       log.error("Exception while uploading result.", e);
       throw new WebApplicationException(Status.BAD_REQUEST);

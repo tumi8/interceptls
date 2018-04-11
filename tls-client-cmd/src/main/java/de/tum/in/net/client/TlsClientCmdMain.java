@@ -11,11 +11,11 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.client.network.JavaNetworkIdentifier;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsTestResult;
 import de.tum.in.net.session.LoggingTestSession;
-import de.tum.in.net.session.SessionID;
 
 public class TlsClientCmdMain {
 
@@ -44,9 +44,10 @@ public class TlsClientCmdMain {
       log.info("Intercepted connections: {}", testResult.interceptions());
 
       TestSession s = new LoggingTestSession();
-      SessionID id = s.uploadResult(testResult);
-      log.info("Further results can be found on tls.net.in.tum.de/results/{}", id);
+      AnalysisResult r = s.uploadResult(testResult);
+      log.info("Results:");
       log.info("-----------------------------");
+      log.info("späterTM: {}", r);
 
     } catch (InterruptedException e) {
       log.warn("Interrupt detected, terminate now.");

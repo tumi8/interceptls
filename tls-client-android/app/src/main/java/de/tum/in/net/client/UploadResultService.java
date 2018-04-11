@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
+import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsTestResult;
 import de.tum.in.net.session.OnlineTestSession;
@@ -29,12 +30,12 @@ public class UploadResultService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
-        if (!ConfigurationReader.isDataCollectionAllowed(this)){
+        if (!ConfigurationReader.isDataCollectionAllowed(this)) {
             log.info("Won't upload the data because the user has not given his permission.");
             return;
         }
 
-        TlsDB db = new TlsDB(this);
+        final TlsDB db = new TlsDB(this);
 
         final List<TlsTestResult> results = db.getNotUploadedResults();
 
@@ -42,9 +43,10 @@ public class UploadResultService extends IntentService {
 
         final TestSession s = new OnlineTestSession(url);
         try {
-            for(TlsTestResult result : results){
-                s.uploadResult(result);
-                db.uploadedResult(result.getTimestamp());
+            for (final TlsTestResult result : results) {
+                final AnalysisResult analysisResult = s.uploadResult(result);
+
+                db.uploadedResult(result.getTimestamp(), analysisResult);
             }
             log.debug("All results successfully uploaded to analysis server");
         } catch (final IOException e) {

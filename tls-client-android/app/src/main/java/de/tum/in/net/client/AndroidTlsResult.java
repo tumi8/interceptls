@@ -1,17 +1,18 @@
 package de.tum.in.net.client;
 
+import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.model.TlsTestResult;
 
 public class AndroidTlsResult {
 
     private final String timestamp;
-    private final boolean uploaded;
-    private final TlsTestResult result;
+    private final TlsTestResult testResult;
+    private final AnalysisResult analysisResult;
 
-    public AndroidTlsResult(String timestamp, boolean uploaded, TlsTestResult result) {
+    public AndroidTlsResult(final String timestamp, final TlsTestResult testResult, final AnalysisResult analysisResult) {
         this.timestamp = timestamp;
-        this.uploaded = uploaded;
-        this.result = result;
+        this.testResult = testResult;
+        this.analysisResult = analysisResult;
     }
 
     public String getTimestamp() {
@@ -19,10 +20,14 @@ public class AndroidTlsResult {
     }
 
     public boolean isUploaded() {
-        return uploaded;
+        return analysisResult != null;
     }
 
-    public TlsTestResult getResult() {
-        return result;
+    public TlsTestResult getTestResult() {
+        return testResult;
+    }
+
+    public AnalysisResult getAnalysisResult() {
+        return analysisResult;
     }
 }

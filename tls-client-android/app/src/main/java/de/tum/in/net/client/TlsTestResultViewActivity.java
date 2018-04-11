@@ -1,27 +1,22 @@
 package de.tum.in.net.client;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.tum.in.net.model.TlsClientServerResult;
-import de.tum.in.net.model.TlsTestResult;
+import de.tum.in.net.model.NetworkId;
+import de.tum.in.net.model.NetworkType;
 
 public class TlsTestResultViewActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(TlsTestResultViewActivity.class);
-    private final List<TlsClientServerResult> results = new ArrayList<>();
-    private final TlsClientServerResultAdapter rAdapter = new TlsClientServerResultAdapter(results);
-    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -30,19 +25,76 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tls_test_result_view);
 
         final String timestamp = getIntent().getStringExtra("timestamp");
-        final TlsTestResult testResult = new TlsDB(this).getTlsTestResult(timestamp);
+        setTitle(Util.formatTimestamp(timestamp));
+        final TlsDB db = new TlsDB(this);
+        final AndroidTlsResult testResult = db.getAndroidTlsResult(timestamp);
 
         if (testResult != null) {
-            results.addAll(testResult.getClientServerResults());
-            final Context ctx = this;
-            recyclerView = findViewById(R.id.targets_recycler_view);
+            showNetwork(testResult);
+            showNetworkStats(testResult);
+
+            //show probed hosts
+            final RecyclerView recyclerView = findViewById(R.id.targets_recycler_view);
 
             final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(mLayoutManager);
+            final TlsClientServerResultAdapter rAdapter = new TlsClientServerResultAdapter(testResult);
             recyclerView.setAdapter(rAdapter);
         }
 
 
+    }
+
+    private void showNetworkStats(final AndroidTlsResult testResult) {
+        final View networkStatsView = findViewById(R.id.network_stats_view);
+        final View networkStatsViewAlt = findViewById(R.id.network_stats_view_alt);
+        if (testResult.isUploaded()) {
+            networkStatsView.setVisibility(View.VISIBLE);
+            networkStatsViewAlt.setVisibility(View.GONE);
+
+            final TextView testCountView = findViewById(R.id.test_count);
+            testCountView.setText(String.valueOf(testResult.getAnalysisResult().getStats().getCountTotal()));
+
+            final TextView interceptionRateView = findViewById(R.id.interception_rate);
+            interceptionRateView.setText(String.valueOf(testResult.getAnalysisResult().getStats().getInterceptionRateTotal()));
+        } else {
+            networkStatsView.setVisibility(View.GONE);
+            networkStatsViewAlt.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showNetwork(final AndroidTlsResult testResult) {
+        final NetworkId network = testResult.getTestResult().getNetworkId();
+        final TextView networkTextView = findViewById(R.id.network_type);
+        networkTextView.setText(network.getType().toString());
+
+        final TextView publicIpTextView = findViewById(R.id.network_public_ip);
+        publicIpTextView.setText(network.getPublicIp());
+
+        final TextView dnsIpTextView = findViewById(R.id.dns_ip);
+        dnsIpTextView.setText(network.getDnsIp());
+
+        final TextView dnsMacTextView = findViewById(R.id.dns_mac);
+        dnsMacTextView.setText(network.getDnsMac());
+
+        final TextView gwIpTextView = findViewById(R.id.gateway_ip);
+        gwIpTextView.setText(network.getDefaultGatewayIp());
+
+        final TextView gwMacTextView = findViewById(R.id.gateway_mac);
+        gwMacTextView.setText(network.getDefaultGatewayMac());
+
+        final View wifiView = findViewById(R.id.wifi_view);
+        if (NetworkType.WIFI.equals(network.getType())) {
+            wifiView.setVisibility(View.VISIBLE);
+
+            final TextView wifiSsidTextView = findViewById(R.id.wifi_ssid);
+            wifiSsidTextView.setText(network.getSsid());
+
+            final TextView wifiBssidTextView = findViewById(R.id.wifi_bssid);
+            wifiBssidTextView.setText(network.getBssid());
+        } else {
+            wifiView.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -46,17 +46,15 @@ public class AndroidTlsResultAdapter extends RecyclerView.Adapter<AndroidTlsResu
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final AndroidTlsResult result = results.get(position);
-        if (result.getResult().anyInterception()) {
+        if (result.getTestResult().anyInterception()) {
             holder.interception_icon.setImageResource(R.drawable.ic_interception);
         } else {
             holder.interception_icon.setImageResource(R.drawable.ic_no_interception);
         }
 
 
-        String iso8601 = result.getTimestamp();
-        iso8601 = iso8601.replace("T", " ");
-        iso8601 = iso8601.substring(0, iso8601.length() - 4);
-        holder.timestamp.setText(iso8601);
+        final String iso8601 = result.getTimestamp();
+        holder.timestamp.setText(Util.formatTimestamp(iso8601));
         if (result.isUploaded()) {
             holder.upload_icon.setImageResource(R.drawable.ic_upload_done);
         } else {

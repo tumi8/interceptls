@@ -179,7 +179,9 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
                         data["sni"] = json!(sni_vec);
 					}
 					TlsExtension::MaxFragmentLength(_) => panic!("MaxFragmentLength"),
-					TlsExtension::StatusRequest(_) => panic!("StatusRequest"),
+					TlsExtension::StatusRequest(optional) => {
+                        data["statusRequest"] = json!(optional);
+                    },
 					TlsExtension::EllipticCurves(curves) => {
 						data["ellipticCurves"] = json!(curves);
 					}
@@ -204,8 +206,12 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
                         data["signedCertificateTimestamp"] = json!(stamp);
                     }
 					TlsExtension::Padding(_) => panic!("Padding"),
-					TlsExtension::EncryptThenMac => panic!("EncryptThenMac"),
-					TlsExtension::ExtendedMasterSecret => panic!("ExtendedMasterSecret"),
+					TlsExtension::EncryptThenMac => {
+                        data["encryptThenMac"] = json!(true);
+                    }
+					TlsExtension::ExtendedMasterSecret => {
+                        data["extendedMasterSecret"] = json!(true);
+                    }
 					TlsExtension::OidFilters(_) => panic!("OidFilters"),
 					TlsExtension::NextProtocolNegotiation => panic!("NextProtocolNegotiation"),
 					TlsExtension::RenegotiationInfo(info) => {

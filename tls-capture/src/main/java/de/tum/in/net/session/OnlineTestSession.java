@@ -1,7 +1,6 @@
 package de.tum.in.net.session;
 
 import java.io.IOException;
-import java.util.List;
 
 import de.tum.in.net.analysis.AnalysisAPI;
 import de.tum.in.net.analysis.AnalysisResult;
@@ -21,13 +20,8 @@ public class OnlineTestSession implements TestSession {
   }
 
   @Override
-  public SessionID uploadResult(TlsTestResult result) throws IOException {
+  public AnalysisResult uploadResult(TlsTestResult result) throws IOException {
     return analysisAPI.uploadResult(result).execute().body();
-  }
-
-  @Override
-  public List<AnalysisResult> getAnalysisResult(SessionID id) throws IOException {
-    return analysisAPI.getAnalysis(id).execute().body();
   }
 
 }

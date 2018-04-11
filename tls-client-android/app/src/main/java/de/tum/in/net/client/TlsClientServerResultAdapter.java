@@ -7,8 +7,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import de.tum.in.net.analysis.AnalysisResult;
+import de.tum.in.net.analysis.Diff;
+import de.tum.in.net.analysis.ProbedHostAnalysis;
+import de.tum.in.net.analysis.TlsMessageDiff;
 import de.tum.in.net.model.TlsClientServerResult;
 
 /**
@@ -18,19 +23,20 @@ import de.tum.in.net.model.TlsClientServerResult;
 public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClientServerResultAdapter.MyViewHolder> {
 
     private int mExpandedPosition = -1;
-    private final List<TlsClientServerResult> results;
+    private final AndroidTlsResult result;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView target;
         public ImageView interception_icon;
         public ImageView expandable_icon;
         public View details;
-        public TextView clientResultView;
-        public TextView generalResult;
+        public TextView clientHelloView;
         public TextView versionView;
         public TextView cipherView;
         public TextView versionViewServer;
         public TextView cipherViewServer;
+        public TextView serverHelloView;
+        public TextView certificateView;
 
         public MyViewHolder(final View view) {
             super(view);
@@ -38,18 +44,19 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
             target = view.findViewById(R.id.target);
             expandable_icon = view.findViewById(R.id.expandable_icon);
             details = view.findViewById(R.id.details);
-            generalResult = view.findViewById(R.id.result_general);
-            clientResultView = view.findViewById(R.id.resultClientHello);
+            clientHelloView = view.findViewById(R.id.resultClientHello);
             versionView = view.findViewById(R.id.tls_version_client);
             cipherView = view.findViewById(R.id.tls_cipher_client);
             versionViewServer = view.findViewById(R.id.tls_version_server);
             cipherViewServer = view.findViewById(R.id.tls_cipher_server);
+            serverHelloView = view.findViewById(R.id.resultServerHello);
+            certificateView = view.findViewById(R.id.resultCertificate);
 
         }
     }
 
-    public TlsClientServerResultAdapter(final List<TlsClientServerResult> results) {
-        this.results = results;
+    public TlsClientServerResultAdapter(final AndroidTlsResult result) {
+        this.result = Objects.requireNonNull(result);
     }
 
     @Override
@@ -62,14 +69,14 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        final TlsClientServerResult result = results.get(position);
+        final TlsClientServerResult r = result.getTestResult().getClientServerResults().get(position);
 
-        holder.target.setText(result.getHostAndPort().toString());
+        holder.target.setText(r.getHostAndPort().toString());
 
         final boolean isExpanded = position == mExpandedPosition;
         holder.details.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-        if (result.isSuccess()) {
-            if (result.isIntercepted()) {
+        if (r.isSuccess()) {
+            if (r.isIntercepted()) {
                 holder.interception_icon.setImageResource(R.drawable.ic_interception);
                 //make it expandable
                 holder.expandable_icon.setImageResource(isExpanded ? R.drawable.collapsable : R.drawable.expandable);
@@ -83,38 +90,43 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
                 });
 
 
-                //            final AnalysisResult analysisResult = AnalysisResult.noInterception("TODO");
-                //
-                //            holder.generalResult.setText(analysisResult.getTlsState() + "\n");
-                //            holder.generalResult.setTextColor(Color.parseColor("#FF0000"));
-                //            final TlsMessageDiff diffClientHello = analysisResult.getClientHelloDiff();
-                //
-                //            Diff version = diffClientHello.getVersionDiff();
-                //            holder.versionView.setText(version.toString());
-                //
-                //            Diff cipher = diffClientHello.getCiphersDiff();
-                //            holder.cipherView.setText(cipher.toString());
-                //
-                //            for (final Map.Entry<String, Diff> diff : diffClientHello.getExtensionsDiff().entrySet()) {
-                //                holder.clientResultView.append(diff.getKey() + ": " + diff.getValue() + "\n");
-                //            }
-                //
-                //            final TlsMessageDiff diffServerHello = analysisResult.getServerHelloDiff();
-                //
-                //            version = diffServerHello.getVersionDiff();
-                //            holder.versionViewServer.setText(version.toString());
-                //
-                //            cipher = diffServerHello.getCiphersDiff();
-                //            holder.cipherViewServer.setText(cipher.toString());
+                final AnalysisResult analysisResult = result.getAnalysisResult();
+                if (analysisResult != null) {
+                    ProbedHostAnalysis matchingAnalysis = null;
+                    for (final ProbedHostAnalysis a : analysisResult.getProbedHosts()) {
+                        if (r.getHostAndPort().toString().equals(a.getTarget())) {
+                            matchingAnalysis = a;
+                        }
+                    }
+                    if (matchingAnalysis != null) {
+                        final TlsMessageDiff diffClientHello = matchingAnalysis.getClientHelloDiff();
+                        Diff version = diffClientHello.getVersionDiff();
+                        holder.versionView.setText(version.toString());
 
-                //final TextView serverResultView = (TextView) findViewById(R.id.resultServerHello);
-                //for (final Map.Entry<String, Diff> diff : diffServerHello.getExtensionsDiff().entrySet()) {
-                //    serverResultView.append(diff.getKey() + ": " + diff.getValue() + "\n");
-                //}
+                        Diff cipher = diffClientHello.getCiphersDiff();
+                        holder.cipherView.setText(cipher.toString());
 
-                //final TlsMessageDiff certDiff = analysisResult.getCertificateDiff();
-                //final TextView certResultView = (TextView) findViewById(R.id.resultCertificate);
-                //certResultView.setText(certDiff.getCertChainDiff().toString());
+                        for (final Map.Entry<String, Diff> diff : diffClientHello.getExtensionsDiff().entrySet()) {
+                            holder.clientHelloView.append(diff.getKey() + ": " + diff.getValue() + "\n");
+                        }
+
+                        final TlsMessageDiff diffServerHello = matchingAnalysis.getServerHelloDiff();
+
+                        version = diffServerHello.getVersionDiff();
+                        holder.versionViewServer.setText(version.toString());
+
+                        cipher = diffServerHello.getCiphersDiff();
+                        holder.cipherViewServer.setText(cipher.toString());
+
+
+                        for (final Map.Entry<String, Diff> diff : diffServerHello.getExtensionsDiff().entrySet()) {
+                            holder.serverHelloView.append(diff.getKey() + ": " + diff.getValue() + "\n");
+                        }
+
+                        final TlsMessageDiff certDiff = matchingAnalysis.getCertificateDiff();
+                        holder.certificateView.setText(certDiff.getCertChainDiff().toString());
+                    }
+                }
 
 
             } else {
@@ -129,6 +141,6 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
 
     @Override
     public int getItemCount() {
-        return results.size();
+        return result.getTestResult().getClientServerResults().size();
     }
 }
