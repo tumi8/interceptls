@@ -33,8 +33,11 @@ public class TlsService extends IntentService {
 
         TlsTestResult result = null;
 
+        //ignore how much time since last scan passed
+        final boolean force = intent.getBooleanExtra("force", false);
+
         final TlsDB db = new TlsDB(this);
-        if (db.enoughTimeSinceLastScan()) {
+        if (force || db.enoughTimeSinceLastScan()) {
 
             try {
                 final List<HostAndPort> targets = ConfigurationReader.getTargets(this);

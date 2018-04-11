@@ -24,6 +24,7 @@ public class ProgressActivity extends AppCompatActivity {
         final ProgressActivity progressActivity = this;
 
         final Intent i = new Intent(this, TlsService.class);
+        i.putExtra("force", true);
         i.putExtra("resultReceiver", new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(final int resultCode, final Bundle resultData) {
