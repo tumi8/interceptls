@@ -27,7 +27,7 @@ public class PostgreSQLDatabaseService implements DatabaseService {
       "INSERT INTO RESULTS (session_id, test_id, client_ip, server_ip, client_sent, client_rec, server_sent, server_rec, target, target_port)"
           + " VALUES (?, ?, ?::INET, ?::INET, ?, ?, ?, ?, ?, ?)";
   private final String INTERCEPTION_RATE =
-      "SELECT interception, COUNT(interception)*100.0 / count(*) over() as rate FROM SESSION WHERE network_type=?::network AND public_ip=?::INET GROUP BY interception";
+      "SELECT interception, COUNT(*) * 100.0 / sum(count(*)) over() as rate FROM SESSION WHERE network_type=?::network AND public_ip=?::INET GROUP BY interception";
   private final String TOTAL_COUNT =
       "SELECT COUNT(*) FROM SESSION WHERE network_type=?::network AND public_ip=?::INET";
   private BasicDataSource bds = new BasicDataSource();

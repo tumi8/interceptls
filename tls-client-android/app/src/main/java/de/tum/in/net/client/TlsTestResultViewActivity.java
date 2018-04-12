@@ -56,7 +56,7 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
             testCountView.setText(String.valueOf(testResult.getAnalysisResult().getStats().getCountTotal()));
 
             final TextView interceptionRateView = findViewById(R.id.interception_rate);
-            interceptionRateView.setText(String.valueOf(testResult.getAnalysisResult().getStats().getInterceptionRateTotal()));
+            interceptionRateView.setText(String.valueOf(testResult.getAnalysisResult().getStats().getInterceptionRateTotal()) + " %");
         } else {
             networkStatsView.setVisibility(View.GONE);
             networkStatsViewAlt.setVisibility(View.VISIBLE);
