@@ -164,23 +164,18 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 	let mut data = json!({});
 	match ext {
-		IResult::Done(rem,record) => {
+		IResult::Done(_rem,record) => {
 
 			for ext in record {
 				match ext {
 					TlsExtension::SNI(sni) => {
-                        let mut sni_vec = Vec::new();
-                        for s in sni {
-                            sni_vec.push(json!({
-                                "type": s.0,
-                                "name": s.1
-                            }));
-                        }
-                        data["sni"] = json!(sni_vec);
+                        data["sni"] = json!(sni);
 					}
-					TlsExtension::MaxFragmentLength(_) => panic!("MaxFragmentLength"),
-					TlsExtension::StatusRequest(optional) => {
-                        data["statusRequest"] = json!(optional);
+					TlsExtension::MaxFragmentLength(mfl) => {
+                        data["maxFragmentLength"] = json!(mfl);
+                    }
+					TlsExtension::StatusRequest(sr) => {
+                        data["statusRequest"] = json!(sr);
                     },
 					TlsExtension::EllipticCurves(curves) => {
 						data["ellipticCurves"] = json!(curves);
@@ -191,33 +186,64 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 					TlsExtension::SignatureAlgorithms(algs) => {
 						data["signatureAlgorithms"] = json!(algs);
 					}
-					TlsExtension::SessionTicket(_) => panic!("SessionTicket"),
-					TlsExtension::KeyShare(_) => panic!("KeyShare"),
-					TlsExtension::PreSharedKey(_) => panic!("PreSharedKey"),
-					TlsExtension::EarlyData(_) => panic!("EarlyData"),
-					TlsExtension::SupportedVersions(_) => panic!("SupportedVersions"),
-					TlsExtension::Cookie(_) => panic!("Cookie"),
-					TlsExtension::PskExchangeModes(_) => panic!("PskExchangeModes"),
+					TlsExtension::SessionTicket(st) => {
+                        data["sessionTicket"] = json!(st);
+                    }
+					TlsExtension::KeyShare(ks) => {
+                        data["keyShare"] = json!(ks);
+                    }
+					TlsExtension::PreSharedKey(psk) => {
+                        data["preSharedKey"] = json!(psk);
+                    }
+					TlsExtension::EarlyData(ed) => {
+                        data["earlyData"] = json!(ed);
+                    }
+					TlsExtension::SupportedVersions(sv) => {
+                        data["supportedVersions"] = json!(sv);
+                    }
+					TlsExtension::Cookie(c) => {
+                        data["cookie"] = json!(c);
+                    }
+					TlsExtension::PskExchangeModes(pskem) => {
+                        data["pskExchangeModes"] = json!(pskem);
+                    }
 					TlsExtension::Heartbeat(hb) => {
                         data["heartbeat"] = json!(hb);
                     }
-					TlsExtension::ALPN(_) => panic!("ALPN"),
+					TlsExtension::ALPN(alpn) => {
+                        data["alpn"] = json!(alpn);
+                    }
 					TlsExtension::SignedCertificateTimestamp(stamp) => {
                         data["signedCertificateTimestamp"] = json!(stamp);
                     }
-					TlsExtension::Padding(_) => panic!("Padding"),
+					TlsExtension::Padding(p) => {
+                        data["padding"] = json!(p);
+                    }
 					TlsExtension::EncryptThenMac => {
                         data["encryptThenMac"] = json!(true);
                     }
 					TlsExtension::ExtendedMasterSecret => {
                         data["extendedMasterSecret"] = json!(true);
                     }
-					TlsExtension::OidFilters(_) => panic!("OidFilters"),
-					TlsExtension::NextProtocolNegotiation => panic!("NextProtocolNegotiation"),
+					TlsExtension::OidFilters(f) => {
+                        let mut oid_vec = Vec::new();
+                        for s in f {
+                            oid_vec.push(json!({
+                                "cert_ext_oid": s.cert_ext_oid,
+                                "cert_ext_val": s.cert_ext_val
+                            }));
+                        }
+                        data["oidFilters"] = json!(oid_vec);
+                    }
+					TlsExtension::NextProtocolNegotiation => {
+                        data["nextProtocolNegotiation"] = json!(true);
+                    }
 					TlsExtension::RenegotiationInfo(info) => {
 						data["denegotiationInfo"] = json!(info);
 					}
-					TlsExtension::Unknown(_, _) => panic!("Unknown"),
+					TlsExtension::Unknown(ext_type, ext_data) => {
+                        data["unknown"] = json!([ext_type, ext_data]);
+                    }
 				}
 
 			}
@@ -243,8 +269,8 @@ fn test_golem_client() {
 	let bytes = read_file("exampleHandshakes/golem/client.raw");
 	let json = parse_base64(&encode(&bytes));
 
-	println!("{}",json[0]["ciphers"]);
 	assert_eq!(json!([49195,49187,49161,49199,49191,49171,162,64,50,158,103,51,156,60,47,255]),json[0]["ciphers"]);
+    assert_eq!(json!([23, 24]), json[0]["ext"]["ellipticCurves"]);
 }
 
 #[test]
@@ -252,7 +278,23 @@ fn test_golem_server() {
 	let bytes = read_file("exampleHandshakes/golem/server.raw");
 	let json = parse_base64(&encode(&bytes));
 
-	println!("{}",json[0]["cipher"]);
+	assert_eq!(json!(49199),json[0]["cipher"]);
+}
+
+#[test]
+fn test_ssllabs_client() {
+	let bytes = read_file("exampleHandshakes/ssllabs/client.raw");
+	let json = parse_base64(&encode(&bytes));
+
+	assert_eq!(json!([49195,49187,49161,49199,49191,49171,162,64,50,158,103,51,156,60,47,255]),json[0]["ciphers"]);
+    assert_eq!(json!([23, 24]), json[0]["ext"]["ellipticCurves"]);
+}
+
+#[test]
+fn test_ssllabs_server() {
+	let bytes = read_file("exampleHandshakes/ssllabs/server.raw");
+	let json = parse_base64(&encode(&bytes));
+
 	assert_eq!(json!(49199),json[0]["cipher"]);
 }
 
