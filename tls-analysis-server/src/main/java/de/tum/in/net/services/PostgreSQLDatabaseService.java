@@ -20,16 +20,22 @@ import de.tum.in.net.model.TlsTestResult;
 public class PostgreSQLDatabaseService implements DatabaseService {
 
   private static final Logger log = LoggerFactory.getLogger(PostgreSQLDatabaseService.class);
-  private final String NEW_SESSION =
+  private static final String NEW_SESSION =
       "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, dns_ip, dns_mac, bssid, ssid) "
           + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::INET, ?::macaddr, ?::macaddr, ?)";
-  private final String INSERT_RESULT =
+  private static final String INSERT_RESULT =
       "INSERT INTO RESULTS (session_id, test_id, client_ip, server_ip, client_sent, client_rec, server_sent, server_rec, target, target_port)"
           + " VALUES (?, ?, ?::INET, ?::INET, ?, ?, ?, ?, ?, ?)";
-  private final String INTERCEPTION_RATE =
-      "SELECT interception, round(count(*) * 100.0 / sum(count(*)) over(), 1) as rate FROM SESSION WHERE network_type=?::network AND public_ip=?::INET GROUP BY interception";
-  private final String TOTAL_COUNT =
-      "SELECT COUNT(*) FROM SESSION WHERE network_type=?::network AND public_ip=?::INET";
+
+  private static final String NETWORK_SELECTION =
+      " network_type=?::network AND public_ip=?::INET AND default_gw_ip=?::INET "
+          + "AND default_gw_mac=?::macaddr AND dns_ip=?::INET AND dns_mac=?::macaddr "
+          + "AND bssid=?::macaddr AND ssid=? ";
+  private static final String TOTAL_COUNT =
+      "SELECT COUNT(*) " + "FROM SESSION WHERE " + NETWORK_SELECTION;
+  private static final String INTERCEPTION_RATE =
+      "SELECT interception, round(count(*) * 100.0 / sum(count(*)) over(), 1) as rate "
+          + "FROM SESSION WHERE " + NETWORK_SELECTION + " GROUP BY interception";
   private BasicDataSource bds = new BasicDataSource();
 
 
@@ -146,6 +152,12 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   private void setNetworkParams(PreparedStatement s, NetworkId network) throws SQLException {
     s.setString(1, network.getType().toString());
     s.setString(2, network.getPublicIp());
+    s.setString(3, network.getDefaultGatewayIp());
+    s.setString(4, network.getDefaultGatewayMac());
+    s.setString(5, network.getDnsIp());
+    s.setString(6, network.getDnsMac());
+    s.setString(7, network.getBssid());
+    s.setString(8, network.getSsid());
   }
 
 }
