@@ -68,7 +68,11 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
                 final WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
                 final WifiInfo info = wifiManager.getConnectionInfo();
                 if (info != null) {
-                    id.setSsid(info.getSSID());
+                    String ssid = info.getSSID();
+                    if (ssid != null && ssid.startsWith("\"") && ssid.endsWith("\"")) {
+                        ssid = ssid.substring(1, ssid.length() - 1);
+                    }
+                    id.setSsid(ssid);
                     id.setBssid(info.getBSSID());
                 }
                 break;
