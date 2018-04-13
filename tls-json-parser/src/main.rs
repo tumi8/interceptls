@@ -64,11 +64,20 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 						});
 						messages.push(change_cipher_json);
 					}
-					TlsMessage::Alert(_) => panic!("Alert(_)"),
+					TlsMessage::Alert(_) => {
+                        let json = json!({"type": "Alert"});
+                        messages.push(json);
+                    }
 					TlsMessage::Handshake(handshake) => {
 						match handshake {
-							TlsMessageHandshake::HelloRequest => panic!("HelloRequest"),
-							TlsMessageHandshake::EndOfEarlyData => panic!("EndOfEarlyData"),
+							TlsMessageHandshake::HelloRequest => {
+								let json = json!({"type": "HelloRequest"});
+								messages.push(json);
+							}
+							TlsMessageHandshake::EndOfEarlyData => {
+								let json = json!({"type": "EndOfEarlyData"});
+								messages.push(json);
+							}
 							TlsMessageHandshake::ClientHello(client_hello) => {
 								let extensions = match client_hello.ext {
 									Some(x) => match_extensions(parse_tls_extensions(x)),
@@ -99,9 +108,18 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 
 								messages.push(hello_json);
 							}
-							TlsMessageHandshake::ServerHelloV13(_) => panic!("ServerHelloV13(_)"),
-							TlsMessageHandshake::NewSessionTicket(_) => panic!("NewSessionTicket(_)"),
-							TlsMessageHandshake::HelloRetry(_) => panic!("HelloRetry(_)"),
+							TlsMessageHandshake::ServerHelloV13(_) => {
+								let json = json!({"type": "ServerHelloV13"});
+								messages.push(json);
+							}
+							TlsMessageHandshake::NewSessionTicket(_) => {
+								let json = json!({"type": "NewSessionTicket"});
+								messages.push(json);
+							}
+							TlsMessageHandshake::HelloRetry(_) => {
+								let json = json!({"type": "HelloRetry"});
+								messages.push(json);
+							}
 							TlsMessageHandshake::Certificate(cert) => {
 								let cert_json = json!({
 										"type": "Certificate",
@@ -110,35 +128,55 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 								messages.push(cert_json);
 							}
 							TlsMessageHandshake::ServerKeyExchange(_) => {
-								let key_exchange_json = json!({
-										"type": "ServerKeyExchange"
-								});
-								messages.push(key_exchange_json);
+								let json = json!({"type": "ServerKeyExchange"});
+								messages.push(json);
 							}
-							TlsMessageHandshake::CertificateRequest(_) => panic!("CertificateRequest(_)"),
+							TlsMessageHandshake::CertificateRequest(_) =>  {
+								let json = json!({"type": "CertificateRequest"});
+								messages.push(json);
+							}
 							TlsMessageHandshake::ServerDone(_) => {
 								let done_json = json!({
 										"type": "ServerDone"
 								});
 								messages.push(done_json);
 							}
-							TlsMessageHandshake::CertificateVerify(_) => panic!("CertificateVerify(_)"),
-							TlsMessageHandshake::ClientKeyExchange(_) => {
-								let key_exchange_json = json!({
-										"type": "ClientKeyExchange"
-								});
-								messages.push(key_exchange_json);
+							TlsMessageHandshake::CertificateVerify(_) => {
+								let json = json!({"type": "CertificateVerify"});
+								messages.push(json);
 							}
-							TlsMessageHandshake::Finished(_) => panic!("Finished(_)"),
-							TlsMessageHandshake::CertificateStatus(_) => panic!("CertificateStatus(_)"),
-							TlsMessageHandshake::NextProtocol(_) => panic!("NextProtocol(_)"),
-							TlsMessageHandshake::KeyUpdate(_) => panic!("KeyUpdate(_)"),
+							TlsMessageHandshake::ClientKeyExchange(_) => {
+								let json = json!({"type": "ClientKeyExchange"});
+								messages.push(json);
+							}
+							TlsMessageHandshake::Finished(_) => {
+								let json = json!({"type": "Finished"});
+								messages.push(json);
+							}
+							TlsMessageHandshake::CertificateStatus(_) => {
+								let json = json!({"type": "CertificateStatus"});
+								messages.push(json);
+							}
+							TlsMessageHandshake::NextProtocol(_) => {
+								let json = json!({"type": "NextProtocol"});
+								messages.push(json);
+							}
+							TlsMessageHandshake::KeyUpdate(_) => {
+								let json = json!({"type": "KeyUpdate"});
+								messages.push(json);
+							}
 
 						}
 
 					},
-					TlsMessage::ApplicationData(_) => panic!("ApplicationData(_)"),
-					TlsMessage::Heartbeat(_) => panic!("Heartbeat(_)"),
+					TlsMessage::ApplicationData(_) => {
+                        let json = json!({"type": "ApplicationData"});
+                        messages.push(json);
+                    }
+					TlsMessage::Heartbeat(_) => {
+                        let json = json!({"type": "Heartbeat"});
+                        messages.push(json);
+                    }
 				};
 
 				// match remaining bytes
