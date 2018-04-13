@@ -1,12 +1,20 @@
 package de.tum.in.net.client;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Objects;
 
@@ -15,6 +23,7 @@ import de.tum.in.net.analysis.Diff;
 import de.tum.in.net.analysis.ProbedHostAnalysis;
 import de.tum.in.net.analysis.TlsMessageDiff;
 import de.tum.in.net.model.TlsClientServerResult;
+import de.tum.in.net.util.CertificateUtil;
 
 /**
  * Created by johannes on 30.06.17.
@@ -22,6 +31,7 @@ import de.tum.in.net.model.TlsClientServerResult;
 
 public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClientServerResultAdapter.MyViewHolder> {
 
+    private static final Logger log = LoggerFactory.getLogger(TlsClientServerResultAdapter.class);
     private int mExpandedPosition = -1;
     private final AndroidTlsResult result;
 
@@ -124,7 +134,28 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
                         }
 
                         final TlsMessageDiff certDiff = matchingAnalysis.getCertificateDiff();
-                        holder.certificateView.setText(certDiff.getCertChainDiff().toString());
+                        final Diff certChainDiff = certDiff.getCertChainDiff();
+                        holder.certificateView.setText("");
+                        try {
+                            final byte[] expectedCertsByte = Base64.decode(certChainDiff.getExpected(), Base64.DEFAULT);
+                            final X509Certificate[] expectedCerts = CertificateUtil.readCerts(new ByteArrayInputStream(expectedCertsByte));
+
+                            final byte[] actualCertsByte = Base64.decode(certChainDiff.getActual(), Base64.DEFAULT);
+                            final X509Certificate[] actualCerts = CertificateUtil.readCerts(new ByteArrayInputStream(actualCertsByte));
+
+                            holder.certificateView.append("Expected: ");
+                            for (final X509Certificate x509 : expectedCerts) {
+                                holder.certificateView.append("\n" + x509.toString());
+                            }
+
+                            holder.certificateView.append("\n\nActual: ");
+                            for (final X509Certificate x509 : expectedCerts) {
+                                holder.certificateView.append("\n" + x509.toString());
+                            }
+
+                        } catch (CertificateException | IOException e) {
+                            log.error("Could not display certificate info", e);
+                        }
                     }
                 }
 
