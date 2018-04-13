@@ -15,6 +15,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -137,19 +139,24 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
                         final Diff certChainDiff = certDiff.getCertChainDiff();
                         holder.certificateView.setText("");
                         try {
-                            final byte[] expectedCertsByte = Base64.decode(certChainDiff.getExpected(), Base64.DEFAULT);
-                            final X509Certificate[] expectedCerts = CertificateUtil.readCerts(new ByteArrayInputStream(expectedCertsByte));
+                            final String[] expectedCertsBase64 = certChainDiff.getExpected().replace("[", "").replace("]", "").split(",");
+                            final List<X509Certificate> expectedCerts = new ArrayList<>();
+                            for (final String cert : expectedCertsBase64) {
+                                expectedCerts.add(CertificateUtil.readCert(new ByteArrayInputStream(Base64.decode(cert, Base64.DEFAULT))));
+                            }
 
-                            final byte[] actualCertsByte = Base64.decode(certChainDiff.getActual(), Base64.DEFAULT);
-                            final X509Certificate[] actualCerts = CertificateUtil.readCerts(new ByteArrayInputStream(actualCertsByte));
-
+                            final String[] actualCertsBase64 = certChainDiff.getExpected().replace("[", "").replace("]", "").split(",");
+                            final List<X509Certificate> actualCerts = new ArrayList<>();
+                            for (final String cert : actualCertsBase64) {
+                                actualCerts.add(CertificateUtil.readCert(new ByteArrayInputStream(Base64.decode(cert, Base64.DEFAULT))));
+                            }
                             holder.certificateView.append("Expected: ");
                             for (final X509Certificate x509 : expectedCerts) {
                                 holder.certificateView.append("\n" + x509.toString());
                             }
 
                             holder.certificateView.append("\n\nActual: ");
-                            for (final X509Certificate x509 : expectedCerts) {
+                            for (final X509Certificate x509 : actualCerts) {
                                 holder.certificateView.append("\n" + x509.toString());
                             }
 
