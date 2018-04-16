@@ -11,7 +11,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import de.tum.in.net.analysis.ProbedHostAnalysis;
-import de.tum.in.net.analysis.TLSHandshake;
+import de.tum.in.net.analysis.TlsMessage;
 import de.tum.in.net.analysis.TlsMessageDiff;
 import de.tum.in.net.analysis.TlsMessageType;
 import de.tum.in.net.model.HandshakeAnalyser;
@@ -49,13 +49,13 @@ public class TlsHandshakeAnalyser implements HandshakeAnalyser {
       return ProbedHostAnalysis.noInterception(result.getHostAndPort().toString());
     }
 
-    Type listType = new TypeToken<List<TLSHandshake>>() {}.getType();
+    Type listType = new TypeToken<List<TlsMessage>>() {}.getType();
 
     // client hello diff
-    List<TLSHandshake> messages_rec = new Gson().fromJson(rec_server, listType);
-    List<TLSHandshake> messages_sent = new Gson().fromJson(sent_client, listType);
+    List<TlsMessage> messages_rec = new Gson().fromJson(rec_server, listType);
+    List<TlsMessage> messages_sent = new Gson().fromJson(sent_client, listType);
 
-    TLSHandshake clientHello_rec = messages_sent.stream()
+    TlsMessage clientHello_rec = messages_sent.stream()
         .filter(msg -> TlsMessageType.ClientHello.equals(msg.getType())).findFirst()
         .orElseThrow(() -> new IllegalStateException("Could not find client hello."));
 
@@ -66,13 +66,13 @@ public class TlsHandshakeAnalyser implements HandshakeAnalyser {
     messages_rec = new Gson().fromJson(rec_client, listType);
     messages_sent = new Gson().fromJson(sent_server, listType);
 
-    TLSHandshake serverHello_rec = messages_rec.stream()
+    TlsMessage serverHello_rec = messages_rec.stream()
         .filter(msg -> TlsMessageType.ServerHello.equals(msg.getType())).findFirst()
         .orElseThrow(() -> new IllegalStateException("Could not find server hello."));
 
     TlsMessageDiff serverHello = serverHello_rec.createDiff(messages_sent);
 
-    TLSHandshake certificate_rec = messages_rec.stream()
+    TlsMessage certificate_rec = messages_rec.stream()
         .filter(msg -> TlsMessageType.Certificate.equals(msg.getType())).findFirst()
         .orElseThrow(() -> new IllegalStateException("Could not find certificate."));
 

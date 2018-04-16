@@ -60,7 +60,7 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 				match msg {
 					TlsMessage::ChangeCipherSpec => {
 						let change_cipher_json = json!({
-								"type": "ClientKeyExchange"
+								"type": "ChangeCipherSpec"
 						});
 						messages.push(change_cipher_json);
 					}
@@ -88,6 +88,7 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 									"type" : "ClientHello",
 									"version": client_hello.version,
 									"ciphers": client_hello.ciphers,
+                                    "compressions": client_hello.comp,
 									"ext": extensions,
 								});
 
@@ -103,6 +104,7 @@ fn match_result<'a>(res:IResult<&[u8],TlsPlaintext<'a>>) -> Vec<Value> {
 									"type": "ServerHello",
 									"version": server_hello.version,
 									"cipher": server_hello.cipher,
+                                    "compression": server_hello.compression,
 									"ext": extensions
 								});
 

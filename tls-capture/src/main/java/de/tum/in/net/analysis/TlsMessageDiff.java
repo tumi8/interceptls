@@ -7,6 +7,7 @@ public class TlsMessageDiff {
 
   private Diff version;
   private Diff ciphers;
+  private Diff compression;
   private Map<String, Diff> extDiffs;
   private Diff certChain;
 
@@ -14,9 +15,10 @@ public class TlsMessageDiff {
   /*
    * Client Hello / Server Hello Diff
    */
-  public TlsMessageDiff(Diff version, Diff ciphers, Map<String, Diff> extDiffs) {
+  public TlsMessageDiff(Diff version, Diff ciphers, Diff compression, Map<String, Diff> extDiffs) {
     this.version = version;
     this.ciphers = ciphers;
+    this.compression = compression;
     this.extDiffs = extDiffs;
   }
 
@@ -30,6 +32,10 @@ public class TlsMessageDiff {
 
   public Diff getCiphersDiff() {
     return ciphers;
+  }
+
+  public Diff getCompressionDiff() {
+    return compression;
   }
 
   public Diff getCertChainDiff() {
