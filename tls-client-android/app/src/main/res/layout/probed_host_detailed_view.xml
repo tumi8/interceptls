@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".TestViewActivity"
-    tools:showIn="@layout/activity_result_view">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,7 +25,7 @@
             android:text="@string/tls_version" />
 
         <TextView
-            android:id="@+id/tls_version_client"
+            android:id="@+id/client_tls_version"
             android:layout_margin="@dimen/margin_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -47,7 +44,7 @@
             android:text="Ciphers:" />
 
         <TextView
-            android:id="@+id/tls_cipher_client"
+            android:id="@+id/client_ciphers"
             android:layout_margin="@dimen/margin_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -56,7 +53,7 @@
 
 
     <TextView
-        android:id="@+id/resultClientHello"
+        android:id="@+id/client_extensions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp" />
@@ -80,7 +77,7 @@
             android:layout_margin="@dimen/margin_default" />
 
         <TextView
-            android:id="@+id/tls_version_server"
+            android:id="@+id/server_tls_version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_default" />
@@ -99,7 +96,7 @@
             android:layout_margin="@dimen/margin_default" />
 
         <TextView
-            android:id="@+id/tls_cipher_server"
+            android:id="@+id/server_cipher"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_default" />
@@ -108,7 +105,7 @@
 
 
     <TextView
-        android:id="@+id/resultServerHello"
+        android:id="@+id/server_extensions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp" />
@@ -122,7 +119,7 @@
 
 
     <TextView
-        android:id="@+id/resultCertificate"
+        android:id="@+id/tls_certificate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp" />

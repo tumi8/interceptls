@@ -42,12 +42,15 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
         public ImageView interception_icon;
         public ImageView expandable_icon;
         public View details;
-        public TextView clientHelloView;
-        public TextView versionView;
-        public TextView cipherView;
-        public TextView versionViewServer;
-        public TextView cipherViewServer;
-        public TextView serverHelloView;
+
+        public TextView clientVersionView;
+        public TextView clientCiphersView;
+        public TextView clientExtensionView;
+
+        public TextView serverVersionView;
+        public TextView serverCipherView;
+        public TextView serverExtensionsView;
+
         public TextView certificateView;
 
         public MyViewHolder(final View view) {
@@ -56,13 +59,16 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
             target = view.findViewById(R.id.target);
             expandable_icon = view.findViewById(R.id.expandable_icon);
             details = view.findViewById(R.id.details);
-            clientHelloView = view.findViewById(R.id.resultClientHello);
-            versionView = view.findViewById(R.id.tls_version_client);
-            cipherView = view.findViewById(R.id.tls_cipher_client);
-            versionViewServer = view.findViewById(R.id.tls_version_server);
-            cipherViewServer = view.findViewById(R.id.tls_cipher_server);
-            serverHelloView = view.findViewById(R.id.resultServerHello);
-            certificateView = view.findViewById(R.id.resultCertificate);
+
+            clientVersionView = view.findViewById(R.id.client_tls_version);
+            clientCiphersView = view.findViewById(R.id.client_ciphers);
+            clientExtensionView = view.findViewById(R.id.client_extensions);
+
+            serverVersionView = view.findViewById(R.id.server_tls_version);
+            serverCipherView = view.findViewById(R.id.server_cipher);
+            serverExtensionsView = view.findViewById(R.id.server_extensions);
+
+            certificateView = view.findViewById(R.id.tls_certificate);
 
         }
     }
@@ -113,26 +119,26 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
                     if (matchingAnalysis != null) {
                         final TlsMessageDiff diffClientHello = matchingAnalysis.getClientHelloDiff();
                         Diff version = diffClientHello.getVersionDiff();
-                        holder.versionView.setText(version.toString());
+                        holder.clientVersionView.setText(version.toString());
 
                         Diff cipher = diffClientHello.getCiphersDiff();
-                        holder.cipherView.setText(cipher.toString());
+                        holder.clientCiphersView.setText(cipher.toString());
 
                         for (final Map.Entry<String, Diff> diff : diffClientHello.getExtensionsDiff().entrySet()) {
-                            holder.clientHelloView.append(diff.getKey() + ": " + diff.getValue() + "\n");
+                            holder.clientExtensionView.append(diff.getKey() + ": " + diff.getValue() + "\n");
                         }
 
                         final TlsMessageDiff diffServerHello = matchingAnalysis.getServerHelloDiff();
 
                         version = diffServerHello.getVersionDiff();
-                        holder.versionViewServer.setText(version.toString());
+                        holder.serverVersionView.setText(version.toString());
 
                         cipher = diffServerHello.getCiphersDiff();
-                        holder.cipherViewServer.setText(cipher.toString());
+                        holder.serverCipherView.setText(cipher.toString());
 
 
                         for (final Map.Entry<String, Diff> diff : diffServerHello.getExtensionsDiff().entrySet()) {
-                            holder.serverHelloView.append(diff.getKey() + ": " + diff.getValue() + "\n");
+                            holder.serverExtensionsView.append(diff.getKey() + ": " + diff.getValue() + "\n");
                         }
 
                         final TlsMessageDiff certDiff = matchingAnalysis.getCertificateDiff();

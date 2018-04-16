@@ -28,10 +28,6 @@
             android:label="@string/settings"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".TestViewActivity"
-            android:label="@string/title_activity_result_view"
-            android:parentActivityName=".TlsTestResultViewActivity" />
-        <activity
             android:name=".ProgressActivity"
             android:label="@string/title_activity_progress" />
         <activity
