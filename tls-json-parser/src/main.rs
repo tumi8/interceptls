@@ -9,6 +9,7 @@ use std::env;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
+use std::str;
 
 #[macro_use]
 extern crate serde_json;
@@ -310,6 +311,15 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 
 }
 
+#[test]
+fn test_sni() {
+	let bytes = read_file("exampleHandshakes/sni/client.raw");
+	let json = parse_base64(&encode(&bytes));
+
+	assert_eq!(json!([52393,52392,49195,49199,49196,49200,158,159,49187,49191,49161,49192,49171,49188,49162,49172,103,51,107,57,49160,49170,22,156,157,60,61,47,53,10,255]),json[0]["ciphers"]);
+    assert_eq!(json!([23,24,256,257,258]), json[0]["ext"]["ellipticCurves"]);
+    assert_eq!(json!([{"name": [49,57,50,46,49,54,56,46,49,55,56,46,51,48], "type":0}]), json[0]["ext"]["sni"]);
+}
 
 #[test]
 fn test_golem_client() {
