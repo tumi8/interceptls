@@ -2,6 +2,7 @@ package de.tum.in.net.analysis;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -36,7 +37,14 @@ public class TlsHandshakeTest {
     assertArrayEquals(new int[] {49195, 49187, 49161, 49199, 49191, 49171, 162, 64, 50, 158, 103,
         51, 156, 60, 47, 255}, clientHello.getCiphers());
     assertArrayEquals(new int[] {0}, clientHello.getCompressions());
+    assertArrayEquals(new int[] {0, 1, 2}, clientHello.getExtensions().getEcPointFormats());
+    assertArrayEquals(new int[] {23, 24}, clientHello.getExtensions().getEllipticCurves());
 
+    List<List<Integer>> sigAlgs = clientHello.getExtensions().getSignatureAlgorithms();
+    assertEquals(15, sigAlgs.size());
+
+    List<SNI> sni = clientHello.getExtensions().getSni();
+    assertNull(sni);
   }
 
   @Test

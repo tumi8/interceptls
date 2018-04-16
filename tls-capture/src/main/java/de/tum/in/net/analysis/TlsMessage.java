@@ -14,29 +14,29 @@ public class TlsMessage {
   private String[] cert_chain;
   private Extensions ext;
 
-  private void verify(TlsMessageType type) {
+  private void isMessage(TlsMessageType type) {
     if (!this.type.equals(type)) {
       throw new IllegalStateException("Cannot get this parameter for this TLS Message Type");
     }
   }
 
   public int getCompression() {
-    verify(TlsMessageType.ServerHello);
+    isMessage(TlsMessageType.ServerHello);
     return compression;
   }
 
   public int[] getCompressions() {
-    verify(TlsMessageType.ClientHello);
+    isMessage(TlsMessageType.ClientHello);
     return compressions;
   }
 
   public int getCipher() {
-    verify(TlsMessageType.ServerHello);
+    isMessage(TlsMessageType.ServerHello);
     return cipher;
   }
 
   public int[] getCiphers() {
-    verify(TlsMessageType.ClientHello);
+    isMessage(TlsMessageType.ClientHello);
     return ciphers;
   }
 

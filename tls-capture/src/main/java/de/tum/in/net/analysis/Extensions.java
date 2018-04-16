@@ -25,6 +25,10 @@ public class Extensions {
     return signatureAlgorithms;
   }
 
+  public List<SNI> getSni() {
+    return sni;
+  }
+
   public Map<String, Diff> createDiff(Extensions ext) {
     Map<String, Diff> diffs = new HashMap<>();
 

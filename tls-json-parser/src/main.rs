@@ -209,7 +209,14 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
 			for ext in record {
 				match ext {
 					TlsExtension::SNI(sni) => {
-                        data["sni"] = json!(sni);
+                        let mut sni_vec = Vec::new();
+                        for s in sni {
+                            sni_vec.push(json!({
+                                "type": s.0,
+                                "name": s.1
+                            }));
+                        }
+                        data["sni"] = json!(sni_vec);
 					}
 					TlsExtension::MaxFragmentLength(mfl) => {
                         data["maxFragmentLength"] = json!(mfl);

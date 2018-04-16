@@ -45,10 +45,12 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
 
         public TextView clientVersionView;
         public TextView clientCiphersView;
+        public TextView clientCompressionsView;
         public TextView clientExtensionView;
 
         public TextView serverVersionView;
         public TextView serverCipherView;
+        public TextView serverCompressionView;
         public TextView serverExtensionsView;
 
         public TextView certificateView;
@@ -62,10 +64,12 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
 
             clientVersionView = view.findViewById(R.id.client_tls_version);
             clientCiphersView = view.findViewById(R.id.client_ciphers);
+            clientCompressionsView = view.findViewById(R.id.client_compressions);
             clientExtensionView = view.findViewById(R.id.client_extensions);
 
             serverVersionView = view.findViewById(R.id.server_tls_version);
             serverCipherView = view.findViewById(R.id.server_cipher);
+            serverCompressionView = view.findViewById(R.id.server_compression);
             serverExtensionsView = view.findViewById(R.id.server_extensions);
 
             certificateView = view.findViewById(R.id.tls_certificate);
@@ -121,8 +125,11 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
                         Diff version = diffClientHello.getVersionDiff();
                         holder.clientVersionView.setText(version.toString());
 
-                        Diff cipher = diffClientHello.getCiphersDiff();
-                        holder.clientCiphersView.setText(cipher.toString());
+                        final Diff ciphers = diffClientHello.getCiphersDiff();
+                        holder.clientCiphersView.setText(ciphers.toString());
+
+                        final Diff compressions = diffClientHello.getCompressionDiff();
+                        holder.clientCompressionsView.setText(compressions.toString());
 
                         for (final Map.Entry<String, Diff> diff : diffClientHello.getExtensionsDiff().entrySet()) {
                             holder.clientExtensionView.append(diff.getKey() + ": " + diff.getValue() + "\n");
@@ -133,9 +140,11 @@ public class TlsClientServerResultAdapter extends RecyclerView.Adapter<TlsClient
                         version = diffServerHello.getVersionDiff();
                         holder.serverVersionView.setText(version.toString());
 
-                        cipher = diffServerHello.getCiphersDiff();
+                        final Diff cipher = diffServerHello.getCiphersDiff();
                         holder.serverCipherView.setText(cipher.toString());
 
+                        final Diff compression = diffServerHello.getCompressionDiff();
+                        holder.serverCompressionView.setText(compression.toString());
 
                         for (final Map.Entry<String, Diff> diff : diffServerHello.getExtensionsDiff().entrySet()) {
                             holder.serverExtensionsView.append(diff.getKey() + ": " + diff.getValue() + "\n");
