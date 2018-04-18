@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import org.bouncycastle.tls.ProtocolVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
@@ -20,6 +22,7 @@ import de.tum.in.net.model.TlsTestResult;
  */
 public class ClientWorkflowCallable implements Callable<TlsTestResult> {
 
+  private static final Logger log = LoggerFactory.getLogger(ClientWorkflowCallable.class);
   private final List<HostAndPort> targets;
   private final NetworkIdentifier networkIdentifier;
 
@@ -37,17 +40,21 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
       throw new IOException("No connection to internet.");
     }
 
+    log.debug("Connecting to {} hosts", targets.size());
     List<TlsClientServerResult> results = connectToHosts(targets);
 
     // classify network
+    log.debug("Identify network");
     NetworkId network = networkIdentifier.identifyNetwork();
 
     TlsTestResult result = new TlsTestResult(network, results);
     // if there was an interception try to characterize the middlebox
     if (result.anyInterception()) {
+      log.debug("Interception detected. Start characterization of middlebox.");
       // conduct detailed measurements for one host
       TlsClientServerResult r = result.getInterceptedTarget();
       HostAndPort target = r.getHostAndPort();
+
 
       MiddleboxCharacterization middlebox = characterizeMiddlebox(target);
       result.setMiddleboxCharacterization(middlebox);

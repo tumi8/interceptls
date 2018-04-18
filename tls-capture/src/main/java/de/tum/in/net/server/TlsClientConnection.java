@@ -63,7 +63,7 @@ class TlsClientConnection implements Runnable {
             String content = new Gson().toJson(tlsResult);
             String response =
                 "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: "
-                    + content.length() + "\r\n\r\n" + content;// + "\r\n\r\n";
+                    + content.length() + "\r\n\r\n" + content + "\r\n\r\n";
 
             PrintWriter writer = new PrintWriter(tlsSocket.getOutputStream());
             writer.write(response);
