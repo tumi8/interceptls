@@ -60,10 +60,11 @@ class TlsClientConnection implements Runnable {
               && "/".equals(req.getRequestLine().getUri())) {
             log.debug("Received new request: GET /");
 
-            String content = new Gson().toJson(tlsResult);
+            // add new line for easier parsing on client side
+            String content = new Gson().toJson(tlsResult) + "\r\n";
             String response =
                 "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: "
-                    + content.length() + "\r\n\r\n" + content + "\r\n\r\n";
+                    + content.length() + "\r\n\r\n" + content;
 
             PrintWriter writer = new PrintWriter(tlsSocket.getOutputStream());
             writer.write(response);
