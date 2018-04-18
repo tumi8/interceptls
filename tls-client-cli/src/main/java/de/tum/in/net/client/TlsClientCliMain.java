@@ -49,8 +49,8 @@ public class TlsClientCliMain {
       log.info("-----------------------------");
       log.info("späterTM: {}", r);
       if (testResult.anyInterception()) {
-        log.info("tlsVersions: {}",
-            testResult.getMiddleboxCharacterization().getSupportedTlsVersion());
+        log.info("TLS Versions: {}",
+            testResult.getMiddleboxCharacterization().getSupportedTlsVersions());
       }
 
     } catch (InterruptedException e) {

@@ -96,7 +96,9 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
       Scenario s =
           new DefaultHttpsScenario(target, new VersionedTlsClient(target.getHost(), version));
       r = s.call();
-      b.setSupportTlsVersion(version, r.isSuccess());
+      if (r.isSuccess()) {
+        b.setVersionSupport(version);
+      }
     }
 
 
