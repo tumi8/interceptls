@@ -17,7 +17,7 @@ public class TlsTestResult implements Serializable {
   private final String timestamp = LocalDateTime.now().toString();
   private final NetworkId network;
   private final List<TlsClientServerResult> results;
-  private MiddleboxCharacterization detailedResults;
+  private MiddleboxCharacterization middleboxCharacterization;
 
   public TlsTestResult(NetworkId network, List<TlsClientServerResult> results) {
     this.network = Objects.requireNonNull(network);
@@ -78,12 +78,12 @@ public class TlsTestResult implements Serializable {
     throw new IllegalStateException("No intercepted connection found.");
   }
 
-  public void setDetailedResults(MiddleboxCharacterization results) {
-    this.detailedResults = results;
+  public void setMiddleboxCharacterization(MiddleboxCharacterization c) {
+    this.middleboxCharacterization = c;
   }
 
-  public MiddleboxCharacterization getDetailedResults() {
-    return detailedResults;
+  public MiddleboxCharacterization getMiddleboxCharacterization() {
+    return middleboxCharacterization;
   }
 
 }

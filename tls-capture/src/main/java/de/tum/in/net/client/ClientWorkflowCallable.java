@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
+import org.bouncycastle.tls.ProtocolVersion;
+
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.Scenario;
@@ -48,7 +50,7 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
       HostAndPort target = r.getHostAndPort();
 
       MiddleboxCharacterization middlebox = characterizeMiddlebox(target);
-      result.setDetailedResults(middlebox);
+      result.setMiddleboxCharacterization(middlebox);
     }
 
     return result;
@@ -75,16 +77,28 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
 
     MiddleboxCharacterization.Builder b = new MiddleboxCharacterization.Builder();
 
-    // test if middlebox uses SNI to connect to host
+    // test if middlebox uses SNI to resolve to host
     Scenario sni = new DefaultHttpsScenario(target,
         new TlsDetectionClient("definitely.not.existent." + target.getHost()));
     TlsClientServerResult r = sni.call();
     b.setUsesSniToResolveHost(!r.isSuccess());
 
+    // test if middlebox uses HTTP host to resolve host
     Scenario fakeHttpHost =
         new FakeHostHttpsScenario(target, "definitely.not.existent." + target.getHost());
     r = fakeHttpHost.call();
     b.setUsesHttpHostToResolveHost(!r.isSuccess());
+
+    // test different TLS versions
+    ProtocolVersion[] versions = new ProtocolVersion[] {ProtocolVersion.SSLv3,
+        ProtocolVersion.TLSv10, ProtocolVersion.TLSv11, ProtocolVersion.TLSv12};
+    for (ProtocolVersion version : versions) {
+      Scenario s =
+          new DefaultHttpsScenario(target, new VersionedTlsClient(target.getHost(), version));
+      r = s.call();
+      b.setSupportTlsVersion(version, r.isSuccess());
+    }
+
 
     return b.build();
   }
