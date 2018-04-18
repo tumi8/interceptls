@@ -17,15 +17,15 @@ import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsTestResult;
 import de.tum.in.net.session.LoggingTestSession;
 
-public class TlsClientCmdMain {
+public class TlsClientCliMain {
 
-  private static final Logger log = LoggerFactory.getLogger(TlsClientCmdMain.class);
+  private static final Logger log = LoggerFactory.getLogger(TlsClientCliMain.class);
 
   public static void main(String[] args) {
 
     log.info("Start TLS detection.");
 
-    List<HostAndPort> targets = Arrays.asList(new HostAndPort("127.0.0.1", 7623));
+    List<HostAndPort> targets = Arrays.asList(new HostAndPort("192.168.178.30", 443));
     // String analysisHost = "https://127.0.0.1:3000";
 
     ClientWorkflowCallable c = new ClientWorkflowCallable(targets, new JavaNetworkIdentifier());
@@ -48,6 +48,10 @@ public class TlsClientCmdMain {
       log.info("Results:");
       log.info("-----------------------------");
       log.info("späterTM: {}", r);
+      if (testResult.anyInterception()) {
+        log.info("tlsVersions: {}",
+            testResult.getMiddleboxCharacterization().getSupportedTlsVersion());
+      }
 
     } catch (InterruptedException e) {
       log.warn("Interrupt detected, terminate now.");

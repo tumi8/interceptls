@@ -14,7 +14,7 @@
     <module>tls-capture</module>
     <module>tls-capture-server</module>
     <module>tls-analysis-server</module>
-    <module>tls-client-cmd</module>
+    <module>tls-client-cli</module>
   </modules>
 
   <properties>
