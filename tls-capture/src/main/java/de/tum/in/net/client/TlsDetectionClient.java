@@ -1,6 +1,8 @@
 package de.tum.in.net.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.SecureRandom;
 import java.util.Vector;
 
@@ -75,13 +77,24 @@ public class TlsDetectionClient extends DefaultTlsClient {
 
   @Override
   protected Vector<?> getSNIServerNames() {
-    if (sni == null) {
+    if (sni == null || isIP(sni)) {
       return null;
     }
     final ServerName sn = new ServerName(NameType.host_name, sni);
     final Vector<ServerName> vlist = new Vector<>(1);
     vlist.add(sn);
     return vlist;
+  }
+
+  private static final boolean isIP(final String ip) {
+    boolean isIP;
+    try {
+      final InetAddress inet = InetAddress.getByName(ip);
+      isIP = inet.getHostAddress().equals(ip);
+    } catch (final UnknownHostException e) {
+      isIP = false;
+    }
+    return isIP;
   }
 
 }
