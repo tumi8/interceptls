@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Objects;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import de.tum.in.net.model.Step;
 import de.tum.in.net.model.TestContext;
@@ -38,8 +39,12 @@ public class FakeHostHttpStep implements Step {
     } while (!line.isEmpty());
     String content = r.readLine();
 
-    TlsResult serverResult = new Gson().fromJson(content, TlsResult.class);
-    ctx.setServerResult(serverResult);
+    try {
+      TlsResult serverResult = new Gson().fromJson(content, TlsResult.class);
+      ctx.setServerResult(serverResult);
+    } catch (JsonSyntaxException e) {
+      throw new IOException("Unexpected response from server", e);
+    }
 
 
   }
