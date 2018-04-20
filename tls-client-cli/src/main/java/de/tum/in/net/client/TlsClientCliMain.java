@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.client.network.JavaNetworkIdentifier;
+import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsTestResult;
 import de.tum.in.net.session.LoggingTestSession;
@@ -25,7 +26,7 @@ public class TlsClientCliMain {
 
     log.info("Start TLS detection.");
 
-    List<HostAndPort> targets = Arrays.asList(new HostAndPort("192.168.178.30", 443));
+    List<HostAndPort> targets = Arrays.asList(new HostAndPort("192.168.178.36", 443));
     // String analysisHost = "https://127.0.0.1:3000";
 
     ClientWorkflowCallable c = new ClientWorkflowCallable(targets, new JavaNetworkIdentifier());
@@ -49,8 +50,10 @@ public class TlsClientCliMain {
       log.info("-----------------------------");
       log.info("späterTM: {}", r);
       if (testResult.anyInterception()) {
-        log.info("TLS Versions: {}",
-            testResult.getMiddleboxCharacterization().getSupportedTlsVersions());
+        MiddleboxCharacterization mc = testResult.getMiddleboxCharacterization();
+        log.info("Uses sni: {}", mc.getCanConnectWrongSni());
+        log.info("Uses http host: {}", mc.getCanConnectWrongHttpHost());
+        log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
       }
 
     } catch (InterruptedException e) {

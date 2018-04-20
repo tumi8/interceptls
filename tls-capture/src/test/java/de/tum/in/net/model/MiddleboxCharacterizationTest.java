@@ -12,15 +12,15 @@ public class MiddleboxCharacterizationTest {
   public void simple() {
     MiddleboxCharacterization.Builder b = new MiddleboxCharacterization.Builder();
 
-    b.setUsesHttpHostToResolveHost(true);
-    b.setUsesSniToResolveHost(false);
+    b.setCanConnectWrongHttpHost(true);
+    b.setCanConnectWrongSni(false);
     b.setVersionSupport(ProtocolVersion.TLSv10);
     b.setVersionSupport(ProtocolVersion.TLSv11);
 
     MiddleboxCharacterization c = b.build();
 
-    assertTrue(c.getUsesHttpHostToResolveHost());
-    assertFalse(c.getUsesSniToResolveHost());
+    assertTrue(c.getCanConnectWrongHttpHost());
+    assertFalse(c.getCanConnectWrongSni());
 
     assertFalse(c.isSslV3());
     assertTrue(c.isTlsV10());

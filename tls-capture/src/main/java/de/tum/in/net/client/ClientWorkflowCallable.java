@@ -88,13 +88,13 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
     Scenario sni = new DefaultHttpsScenario(target,
         new TlsDetectionClient("definitely.not.existent." + target.getHost()));
     TlsClientServerResult r = sni.call();
-    b.setUsesSniToResolveHost(!r.isSuccess());
+    b.setCanConnectWrongSni(!r.isSuccess());
 
     // test if middlebox uses HTTP host to resolve host
     Scenario fakeHttpHost =
         new FakeHostHttpsScenario(target, "definitely.not.existent." + target.getHost());
     r = fakeHttpHost.call();
-    b.setUsesHttpHostToResolveHost(!r.isSuccess());
+    b.setCanConnectWrongHttpHost(!r.isSuccess());
 
     // test different TLS versions
     ProtocolVersion[] versions = new ProtocolVersion[] {ProtocolVersion.SSLv3,

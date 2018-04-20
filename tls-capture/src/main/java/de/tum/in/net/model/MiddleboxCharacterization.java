@@ -13,24 +13,24 @@ public class MiddleboxCharacterization implements Serializable {
    * 
    */
   private transient static final long serialVersionUID = -8888352681650722935L;
-  private final boolean usesSniToResolveHost;
-  private final boolean usesHttpHostToResolveHost;
+  private final boolean canConnectWrongSni;
+  private final boolean canConnectWrongHttpHost;
 
   private final List<ProtocolVersion> supportedTlsVersions;
 
-  private MiddleboxCharacterization(boolean usesSniToResolveHost, boolean usesHttpHostToResolveHost,
+  private MiddleboxCharacterization(boolean canConnectWrongSni, boolean canConnectWrongHttpHost,
       List<ProtocolVersion> supportedTlsVersions) {
-    this.usesSniToResolveHost = usesSniToResolveHost;
-    this.usesHttpHostToResolveHost = usesHttpHostToResolveHost;
+    this.canConnectWrongSni = canConnectWrongSni;
+    this.canConnectWrongHttpHost = canConnectWrongHttpHost;
     this.supportedTlsVersions = supportedTlsVersions;
   }
 
-  public boolean getUsesSniToResolveHost() {
-    return usesSniToResolveHost;
+  public boolean getCanConnectWrongSni() {
+    return canConnectWrongSni;
   }
 
-  public boolean getUsesHttpHostToResolveHost() {
-    return usesHttpHostToResolveHost;
+  public boolean getCanConnectWrongHttpHost() {
+    return canConnectWrongHttpHost;
   }
 
   public List<ProtocolVersion> getSupportedTlsVersions() {
@@ -56,17 +56,17 @@ public class MiddleboxCharacterization implements Serializable {
 
   public static class Builder {
 
-    private boolean usesSniToResolveHost;
-    private boolean usesHttpHostToResolveHost;
+    private boolean canConnectWrongSni;
+    private boolean canConnectWrongHttpHost;
     private final List<ProtocolVersion> supportedTlsVersions = new ArrayList<>();
 
-    public Builder setUsesSniToResolveHost(boolean usesSniToResolveHost) {
-      this.usesSniToResolveHost = usesSniToResolveHost;
+    public Builder setCanConnectWrongSni(boolean canConnectWrongSni) {
+      this.canConnectWrongSni = canConnectWrongSni;
       return this;
     }
 
-    public Builder setUsesHttpHostToResolveHost(boolean usesHttpHostToResolveHost) {
-      this.usesHttpHostToResolveHost = usesHttpHostToResolveHost;
+    public Builder setCanConnectWrongHttpHost(boolean canConnectWrongHttpHost) {
+      this.canConnectWrongHttpHost = canConnectWrongHttpHost;
       return this;
     }
 
@@ -75,7 +75,7 @@ public class MiddleboxCharacterization implements Serializable {
     }
 
     public MiddleboxCharacterization build() {
-      return new MiddleboxCharacterization(usesSniToResolveHost, usesHttpHostToResolveHost,
+      return new MiddleboxCharacterization(canConnectWrongSni, canConnectWrongHttpHost,
           supportedTlsVersions);
     }
 
