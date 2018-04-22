@@ -1,5 +1,6 @@
 package de.tum.in.net.client;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,8 +12,10 @@ import android.widget.TextView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
+import de.tum.in.net.model.TlsTestResult;
 
 public class TlsTestResultViewActivity extends AppCompatActivity {
 
@@ -40,9 +43,35 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(mLayoutManager);
             final TlsClientServerResultAdapter rAdapter = new TlsClientServerResultAdapter(testResult);
             recyclerView.setAdapter(rAdapter);
+
+            showMiddleboxCharacterization(testResult.getTestResult());
         }
 
 
+    }
+
+    private void showMiddleboxCharacterization(final TlsTestResult testResult) {
+        final View characterizationView = findViewById(R.id.middlebox_characterization_view);
+        if (testResult.anyInterception()) {
+            characterizationView.setVisibility(View.VISIBLE);
+            final MiddleboxCharacterization characterization = testResult.getMiddleboxCharacterization();
+
+            //tls versions
+            final TextView tlsVersions = findViewById(R.id.tls_versions);
+            tlsVersions.setText(characterization.getSupportedTlsVersions().toString());
+
+            //wrong http host
+            final TextView connectHttp = findViewById(R.id.can_connect_wrong_http_host);
+            connectHttp.setText(String.valueOf(characterization.getCanConnectWrongHttpHost()));
+
+            //wrong sni
+            final TextView connectSni = findViewById(R.id.can_connect_wrong_sni);
+            connectSni.setText(String.valueOf(characterization.getCanConnectWrongSni()));
+
+
+        } else {
+            characterizationView.setVisibility(View.GONE);
+        }
     }
 
     private void showNetworkStats(final AndroidTlsResult testResult) {
@@ -56,7 +85,13 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
             testCountView.setText(String.valueOf(testResult.getAnalysisResult().getStats().getCountTotal()));
 
             final TextView interceptionRateView = findViewById(R.id.interception_rate);
-            interceptionRateView.setText(String.valueOf(testResult.getAnalysisResult().getStats().getInterceptionRateTotal()) + " %");
+            final float interceptionRateTotal = testResult.getAnalysisResult().getStats().getInterceptionRateTotal();
+            interceptionRateView.setText(String.valueOf(interceptionRateTotal) + " %");
+
+            if (interceptionRateTotal > 0) {
+                interceptionRateView.setTextColor(Color.RED);
+            }
+
         } else {
             networkStatsView.setVisibility(View.GONE);
             networkStatsViewAlt.setVisibility(View.VISIBLE);
