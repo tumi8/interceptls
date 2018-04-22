@@ -83,6 +83,14 @@ public class TlsTestResult implements Serializable {
   }
 
   public MiddleboxCharacterization getMiddleboxCharacterization() {
+    if (!anyInterception()) {
+      throw new IllegalStateException(
+          "The middlebox is characterised iff an interception was detected.");
+    }
+    if (middleboxCharacterization == null) {
+      throw new IllegalStateException(
+          "Internal error. Despite interception no characterization is available.");
+    }
     return middleboxCharacterization;
   }
 

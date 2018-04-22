@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.model.DatabaseService;
+import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.TlsClientServerResult;
 import de.tum.in.net.model.TlsTestResult;
@@ -23,6 +24,9 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   private static final String NEW_SESSION =
       "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, dns_ip, dns_mac, bssid, ssid) "
           + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::INET, ?::macaddr, ?::macaddr, ?)";
+  private static final String NEW_CHARACTERIZATION =
+      "INSERT INTO CHARACTERIZATION (session_id, can_connect_wrong_http_host, can_connect_wrong_sni, ssl_v3, tls_v10, tls_v11, tls_v12) "
+          + "VALUES (?, ?, ?, ?, ?, ?, ?)";
   private static final String INSERT_RESULT =
       "INSERT INTO RESULTS (session_id, test_id, client_ip, server_ip, client_sent, client_rec, server_sent, server_rec, target, target_port)"
           + " VALUES (?, ?, ?::INET, ?::INET, ?, ?, ?, ?, ?, ?)";
@@ -56,6 +60,10 @@ public class PostgreSQLDatabaseService implements DatabaseService {
       try {
         // insert new session and get id
         long sessionId = newSession(c, result);
+        if (result.anyInterception()) {
+          MiddleboxCharacterization characterization = result.getMiddleboxCharacterization();
+          insertCharacterization(c, sessionId, characterization);
+        }
 
         int testCounter = 0;
         for (TlsClientServerResult r : result.getClientServerResults()) {
@@ -86,6 +94,20 @@ public class PostgreSQLDatabaseService implements DatabaseService {
       }
     }
   }
+
+  private void insertCharacterization(Connection c, long sessionId,
+      MiddleboxCharacterization characterization) throws SQLException {
+    PreparedStatement s = c.prepareStatement(NEW_CHARACTERIZATION);
+    s.setLong(1, sessionId);
+    s.setBoolean(2, characterization.getCanConnectWrongHttpHost());
+    s.setBoolean(3, characterization.getCanConnectWrongSni());
+    s.setBoolean(4, characterization.isSslV3());
+    s.setBoolean(5, characterization.isTlsV10());
+    s.setBoolean(6, characterization.isTlsV11());
+    s.setBoolean(7, characterization.isTlsV12());
+    s.executeUpdate();
+  }
+
 
   private long newSession(Connection c, TlsTestResult result) throws SQLException {
     PreparedStatement s = c.prepareStatement(NEW_SESSION, Statement.RETURN_GENERATED_KEYS);
