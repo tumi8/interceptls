@@ -2,7 +2,9 @@ package de.tum.in.net.analysis;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -12,7 +14,28 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class TlsHandshakeTest {
+public class TlsMessageTest {
+
+  @Test
+  public void differentVersions() {
+    String json =
+        "{\"ciphers\":[49195],\"compressions\":[0],\"type\":\"ClientHello\",\"version\":768}";
+    TlsMessage clientHello = new Gson().fromJson(json, TlsMessage.class);
+    assertEquals("SSLv3", clientHello.getVersion());
+
+    json = "{\"ciphers\":[49195],\"compressions\":[0],\"type\":\"ClientHello\",\"version\":769}";
+    clientHello = new Gson().fromJson(json, TlsMessage.class);
+    assertEquals("TLSv1.0", clientHello.getVersion());
+
+    json = "{\"ciphers\":[49195],\"compressions\":[0],\"type\":\"ClientHello\",\"version\":770}";
+    clientHello = new Gson().fromJson(json, TlsMessage.class);
+    assertEquals("TLSv1.1", clientHello.getVersion());
+
+    json = "{\"ciphers\":[49195],\"compressions\":[0],\"type\":\"ClientHello\",\"version\":771}";
+    clientHello = new Gson().fromJson(json, TlsMessage.class);
+    assertEquals("TLSv1.2", clientHello.getVersion());
+
+  }
 
 
   @Test
@@ -70,6 +93,47 @@ public class TlsHandshakeTest {
     assertEquals("TLSv1.2", serverHello.getVersion());
     assertEquals(49199, serverHello.getCipher());
     assertEquals(0, serverHello.getCompression());
+
+  }
+
+  @Test
+  public void clientHelloDiff() {
+    // output from tls-json-parser
+    String clientMessage =
+        "[{\"ciphers\":[64,50,158],\"compressions\":[0],\"ext\":{\"ecPointFormats\":[0,1,2],\"ellipticCurves\":[23,24],\"signatureAlgorithms\":[[2,1],[3,1]]},\"type\":\"ClientHello\",\"version\":771}]";
+    String clientMessage2 =
+        "[{\"ciphers\":[64,158],\"compressions\":[0],\"ext\":{\"ecPointFormats\":[0,1,2],\"ellipticCurves\":[23,24,25],\"signatureAlgorithms\":[[2,1]]},\"type\":\"ClientHello\",\"version\":770}]";
+
+
+    Type listType = new TypeToken<List<TlsMessage>>() {}.getType();
+    // client hello diff
+    List<TlsMessage> messages_rec = new Gson().fromJson(clientMessage, listType);
+    List<TlsMessage> messages_rec2 = new Gson().fromJson(clientMessage2, listType);
+
+    assertEquals(1, messages_rec.size());
+    assertEquals(TlsMessageType.ClientHello, messages_rec.get(0).getType());
+
+    assertEquals(1, messages_rec2.size());
+    assertEquals(TlsMessageType.ClientHello, messages_rec2.get(0).getType());
+
+    TlsMessage clientHello = messages_rec.get(0);
+
+    TlsMessageDiff msgDiff = clientHello.createDiff(messages_rec2);
+
+    Diff version = msgDiff.getVersionDiff();
+    assertTrue(version.differs());
+    assertEquals("TLSv1.2", version.getExpected());
+    assertEquals("TLSv1.1", version.getActual());
+    assertEquals("expected: TLSv1.2, but was: TLSv1.1", version.toString());
+
+    Diff ciphers = msgDiff.getCiphersDiff();
+    assertEquals("[64, 50, 158]", ciphers.getExpected());
+    assertEquals("[64, 158]", ciphers.getActual());
+
+    Diff compression = msgDiff.getCompressionDiff();
+    assertFalse(compression.differs());
+    assertEquals("NoDiff([0])", compression.toString());
+    assertEquals(compression.getExpected(), compression.getActual());
 
   }
 
