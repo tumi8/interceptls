@@ -18,8 +18,9 @@ public class APIClient {
     interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
     final OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor)
-        .hostnameVerifier(AnalysisTlsContext.getHostnameVerifier())
-        .sslSocketFactory(AnalysisTlsContext.createContext().getSocketFactory()).build();
+        .hostnameVerifier(AnalysisTlsContext.getHostnameVerifier()).sslSocketFactory(
+            AnalysisTlsContext.createSocketFactory(), AnalysisTlsContext.getTrustManager())
+        .build();
 
     return new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create())
         .client(client).build();
