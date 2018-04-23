@@ -2,7 +2,7 @@
 
 #create ca
 openssl ecparam -name secp521r1 -genkey -noout -out ca-key.pem
-openssl req -new -x509 -key ca-key.pem -out ca-cert.pem -days 730 -subj "/C=DE/ST=BY/L=MUC/O=TUM/CN=RootCA"
+openssl req -new -config ca.conf -extensions v3_ca -x509 -key ca-key.pem -out ca-cert.pem -days 730 -subj "/C=DE/ST=BY/L=MUC/O=TUM/CN=RootCA"
 
 #create rsa server cert
 openssl genrsa -out server-key-rsa.pem 2048
