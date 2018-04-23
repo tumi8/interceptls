@@ -1,5 +1,6 @@
 package de.tum.in.net.model;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,5 +27,6 @@ public class MiddleboxCharacterizationTest {
     assertTrue(c.isTlsV10());
     assertTrue(c.isTlsV11());
     assertFalse(c.isTlsV12());
+    assertEquals("[TLS 1.0, TLS 1.1]", c.getSupportedTlsVersions().toString());
   }
 }
