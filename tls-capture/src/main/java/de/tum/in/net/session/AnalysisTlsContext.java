@@ -18,6 +18,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.tum.in.net.util.CertificateUtil;
 
 /**
@@ -29,6 +32,7 @@ import de.tum.in.net.util.CertificateUtil;
  */
 public class AnalysisTlsContext {
 
+  private static final Logger log = LoggerFactory.getLogger(AnalysisTlsContext.class);
   private static final SecureRandom SECURE_RANDOM = new SecureRandom();
   private static boolean initialized = false;
   private static X509TrustManager trustManager;
@@ -53,6 +57,7 @@ public class AnalysisTlsContext {
       try (InputStream in =
           AnalysisTlsContext.class.getClassLoader().getResourceAsStream("trusted-certs.pem")) {
         X509Certificate[] certs = CertificateUtil.readCerts(in);
+        log.debug("Loaded {} trusted certificates.", certs.length);
         int i = 1;
         for (X509Certificate cert : certs) {
           KeyStore.TrustedCertificateEntry e = new KeyStore.TrustedCertificateEntry(cert);
@@ -65,6 +70,7 @@ public class AnalysisTlsContext {
         tmf.init(keyStore);
 
         TrustManager[] trustManagers = tmf.getTrustManagers();
+        log.debug("tm size: {}", trustManagers.length);
         if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
           throw new IllegalStateException("Unexpected default trust managers");
         }
