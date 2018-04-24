@@ -16,8 +16,9 @@ public class FileTlsServerConfigTest {
 
   @Test
   public void handleEC() throws Exception {
-    final TlsServerConfig config = new FileTlsServerConfig(
-        new File("certs/server-cert-ec.pem.chain"), new File("certs/server-key-ec.pem"));
+    final TlsServerConfig config =
+        new FileTlsServerConfig(new File("certs/analysis-server-cert-ec.pem.chain"),
+            new File("certs/analysis-server-key-ec.pem"));
     assertTrue(Arrays.contains(config.getCipherSuites(),
         CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384));
 
@@ -25,8 +26,9 @@ public class FileTlsServerConfigTest {
 
   @Test
   public void handleRSA() throws Exception {
-    final TlsServerConfig config = new FileTlsServerConfig(
-        new File("certs/server-cert-rsa.pem.chain"), new File("certs/server-key-rsa.pem"));
+    final TlsServerConfig config =
+        new FileTlsServerConfig(new File("certs/analysis-server-cert-rsa.pem.chain"),
+            new File("certs/analysis-server-key-rsa.pem"));
     assertTrue(Arrays.contains(config.getCipherSuites(),
         CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384));
   }

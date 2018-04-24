@@ -27,10 +27,12 @@ public class AnalysisTlsContextTest {
   public void canValidateCertificate() throws Exception {
     X509TrustManager tm = AnalysisTlsContext.getTrustManager();
 
-    X509Certificate certRsa = CertificateUtil.readCert(new File("certs/server-cert-rsa.pem"));
+    X509Certificate certRsa =
+        CertificateUtil.readCert(new File("certs/analysis-server-cert-rsa.pem"));
     tm.checkServerTrusted(new X509Certificate[] {certRsa}, "RSA");
 
-    X509Certificate certEc = CertificateUtil.readCert(new File("certs/server-cert-ec.pem"));
+    X509Certificate certEc =
+        CertificateUtil.readCert(new File("certs/analysis-server-cert-ec.pem"));
     tm.checkServerTrusted(new X509Certificate[] {certEc}, "RSA");
   }
 
