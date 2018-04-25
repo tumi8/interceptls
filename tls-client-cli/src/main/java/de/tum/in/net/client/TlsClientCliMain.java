@@ -21,15 +21,28 @@ import de.tum.in.net.session.LoggingTestSession;
 public class TlsClientCliMain {
 
   private static final Logger log = LoggerFactory.getLogger(TlsClientCliMain.class);
+  private static final HostAndPort DEFAULT_TARGET = new HostAndPort("192.168.178.36", 443);
+  private static final String ANALYSIS_HOST = "https://127.0.0.1:3000";
 
   public static void main(String[] args) {
 
-    log.info("Start TLS detection.");
+    log.info("Start TLS interception detection.");
 
-    List<HostAndPort> targets = Arrays.asList(new HostAndPort("127.0.0.1", 443));
-    // String analysisHost = "https://127.0.0.1:3000";
+    boolean publishResults = false;
+    NetworkIdentifier networkIdentifier;
+    String os = System.getProperty("os.name").toLowerCase();
+    if ("linux".equals(os)) {
+      networkIdentifier = new UbuntuNetworkIdentifier();
+      publishResults = true;
+    } else {
+      log.info(
+          "Your OS is currently not supported. Therefore the network will not be identfied and the results won't be published.");
+      networkIdentifier = new JavaNetworkIdentifier();
+    }
 
-    ClientWorkflowCallable c = new ClientWorkflowCallable(targets, new UbuntuNetworkIdentifier());
+    List<HostAndPort> targets = Arrays.asList(DEFAULT_TARGET);
+
+    ClientWorkflowCallable c = new ClientWorkflowCallable(targets, networkIdentifier);
 
     ExecutorService exec = Executors.newSingleThreadExecutor();
     Future<TlsTestResult> result = exec.submit(c);
@@ -48,17 +61,19 @@ public class TlsClientCliMain {
         log.info("MIDDLEBOX CHARACTERIZATION");
         log.info("-----------------------------");
         MiddleboxCharacterization mc = testResult.getMiddleboxCharacterization();
-        log.info("Uses sni: {}", mc.getCanConnectWrongSni());
-        log.info("Uses http host: {}", mc.getCanConnectWrongHttpHost());
         log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
+        log.info("Can connect wrong http host: {}", mc.getCanConnectWrongHttpHost());
+        log.info("Can connect wrong sni: {}", mc.getCanConnectWrongSni());
       }
 
-      TestSession s = new LoggingTestSession();
-      AnalysisResult r = s.uploadResult(testResult);
-      log.info("");
-      log.info("Results:");
-      log.info("-----------------------------");
-      log.info("späterTM: {}", r);
+      if (publishResults) {
+        TestSession s = new LoggingTestSession(); // new OnlineTestSession(ANALYSIS_HOST);
+        AnalysisResult r = s.uploadResult(testResult);
+        log.info("");
+        log.info("Results:");
+        log.info("-----------------------------");
+        log.info("späterTM: {}", r);
+      }
 
     } catch (InterruptedException e) {
       log.warn("Interrupt detected, terminate now.");

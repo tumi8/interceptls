@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
 
+/*
+ * Tested on Ubuntu 17.10.
+ */
 public class UbuntuNetworkIdentifier implements NetworkIdentifier {
 
   private static final Logger log = LoggerFactory.getLogger(UbuntuNetworkIdentifier.class);
@@ -50,8 +53,8 @@ public class UbuntuNetworkIdentifier implements NetworkIdentifier {
   private void setDefaultGateway(NetworkId id) {
     try {
       final List<String> ip = execProcess("ip route get 1.1.1.1 | cut -d \\  -f 3");
-      final String gwIp = ip.get(0);
-      if (gwIp != null && !gwIp.isEmpty()) {
+      if (!ip.isEmpty()) {
+        final String gwIp = ip.get(0);
         id.setDefaultGatewayIp(gwIp);
         // extract the mac address of the given gateway
         final List<String> neighborList =
@@ -70,9 +73,9 @@ public class UbuntuNetworkIdentifier implements NetworkIdentifier {
   private void setDns(NetworkId id) {
     try {
       List<String> dnsOutput = execProcess("nmcli dev show | grep DNS | awk '/DNS/ {print $2}'");
-      String dnsIp = dnsOutput.get(0);
-      if (dnsIp != null & !dnsIp.isEmpty()) {
-        id.setDnsIp(dnsOutput.get(0));
+      if (!dnsOutput.isEmpty()) {
+        String dnsIp = dnsOutput.get(0);
+        id.setDnsIp(dnsIp);
         // extract the mac address of the given dns server
         final List<String> neighborList =
             execProcess("ip neighbor | grep " + dnsIp + " | cut -d \\  -f 5");
