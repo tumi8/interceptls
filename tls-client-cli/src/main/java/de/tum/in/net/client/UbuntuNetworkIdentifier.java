@@ -30,7 +30,7 @@ public class UbuntuNetworkIdentifier implements NetworkIdentifier {
     setPublicIp(id);
     setDns(id);
     setDefaultGateway(id);
-    System.err.println(id);
+
     return id;
   }
 
