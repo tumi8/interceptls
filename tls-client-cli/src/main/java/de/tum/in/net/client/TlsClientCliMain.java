@@ -26,10 +26,10 @@ public class TlsClientCliMain {
 
     log.info("Start TLS detection.");
 
-    List<HostAndPort> targets = Arrays.asList(new HostAndPort("192.168.178.36", 443));
+    List<HostAndPort> targets = Arrays.asList(new HostAndPort("127.0.0.1", 443));
     // String analysisHost = "https://127.0.0.1:3000";
 
-    ClientWorkflowCallable c = new ClientWorkflowCallable(targets, new JavaNetworkIdentifier());
+    ClientWorkflowCallable c = new ClientWorkflowCallable(targets, new UbuntuNetworkIdentifier());
 
     ExecutorService exec = Executors.newSingleThreadExecutor();
     Future<TlsTestResult> result = exec.submit(c);
@@ -37,24 +37,28 @@ public class TlsClientCliMain {
     log.debug("Wait for result...");
     try {
       TlsTestResult testResult = result.get();
-      log.info("-----------------------------");
+      log.info("");
       log.info("TEST RESULT");
       log.info("-----------------------------");
       log.info("Targets: {}", testResult.getClientServerResults().size());
       log.info("Successful connections: {}", testResult.successfulConnections());
       log.info("Intercepted connections: {}", testResult.interceptions());
+      if (testResult.anyInterception()) {
+          log.info("");
+          log.info("MIDDLEBOX CHARACTERIZATION");
+          log.info("-----------------------------");
+    	  MiddleboxCharacterization mc = testResult.getMiddleboxCharacterization();
+    	  log.info("Uses sni: {}", mc.getCanConnectWrongSni());
+    	  log.info("Uses http host: {}", mc.getCanConnectWrongHttpHost());
+    	  log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
+      }
 
       TestSession s = new LoggingTestSession();
       AnalysisResult r = s.uploadResult(testResult);
+      log.info("");
       log.info("Results:");
       log.info("-----------------------------");
       log.info("späterTM: {}", r);
-      if (testResult.anyInterception()) {
-        MiddleboxCharacterization mc = testResult.getMiddleboxCharacterization();
-        log.info("Uses sni: {}", mc.getCanConnectWrongSni());
-        log.info("Uses http host: {}", mc.getCanConnectWrongHttpHost());
-        log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
-      }
 
     } catch (InterruptedException e) {
       log.warn("Interrupt detected, terminate now.");
