@@ -24,23 +24,22 @@ public class TlsClientCliMain {
 
     log.info("Start TLS interception detection.");
 
-    boolean publishResults = false;
+    boolean publishResults = true;
     NetworkIdentifier networkIdentifier;
-    String os = System.getProperty("os.name").toLowerCase();
-    if ("linux".equals(os)) {
+    String os = System.getProperty("os.name");
+    if ("Linux".equals(os)) {
       networkIdentifier = new UbuntuNetworkIdentifier();
-      publishResults = true;
     } else {
-      log.info(
-          "Your OS is currently not supported. Therefore the network will not be identfied and the results won't be published.");
+      log.info(os
+          + " is currently not supported. Therefore the network will not be identfied and the results won't be published.");
       networkIdentifier = new JavaNetworkIdentifier();
+      publishResults = false;
     }
 
     List<HostAndPort> targets = Arrays.asList(DEFAULT_TARGET);
     ClientWorkflowCallable c = new ClientWorkflowCallable(targets, networkIdentifier);
 
     TlsTestResult testResult = null;
-    log.debug("Wait for result...");
     try {
       testResult = c.call();
     } catch (Exception e) {
