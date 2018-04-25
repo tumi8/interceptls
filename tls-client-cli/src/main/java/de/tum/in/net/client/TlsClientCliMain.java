@@ -44,13 +44,13 @@ public class TlsClientCliMain {
       log.info("Successful connections: {}", testResult.successfulConnections());
       log.info("Intercepted connections: {}", testResult.interceptions());
       if (testResult.anyInterception()) {
-          log.info("");
-          log.info("MIDDLEBOX CHARACTERIZATION");
-          log.info("-----------------------------");
-    	  MiddleboxCharacterization mc = testResult.getMiddleboxCharacterization();
-    	  log.info("Uses sni: {}", mc.getCanConnectWrongSni());
-    	  log.info("Uses http host: {}", mc.getCanConnectWrongHttpHost());
-    	  log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
+        log.info("");
+        log.info("MIDDLEBOX CHARACTERIZATION");
+        log.info("-----------------------------");
+        MiddleboxCharacterization mc = testResult.getMiddleboxCharacterization();
+        log.info("Uses sni: {}", mc.getCanConnectWrongSni());
+        log.info("Uses http host: {}", mc.getCanConnectWrongHttpHost());
+        log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
       }
 
       TestSession s = new LoggingTestSession();
