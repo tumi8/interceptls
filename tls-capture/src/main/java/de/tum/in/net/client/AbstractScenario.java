@@ -27,7 +27,7 @@ public abstract class AbstractScenario implements Scenario {
 
   @Override
   public TlsClientServerResult call() {
-    log.debug("Trying to connect to {}:{}", target.getHost(), target.getPort());
+    log.debug("Connect to {}:{}", target.getHost(), target.getPort());
 
     try (Socket s = new Socket(target.getHost(), target.getPort())) {
       TestContext ctx = new TestContext(s);

@@ -3,10 +3,6 @@ package de.tum.in.net.client;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +12,7 @@ import de.tum.in.net.client.network.JavaNetworkIdentifier;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsTestResult;
-import de.tum.in.net.session.LoggingTestSession;
+import de.tum.in.net.session.OnlineTestSession;
 
 public class TlsClientCliMain {
 
@@ -41,50 +37,71 @@ public class TlsClientCliMain {
     }
 
     List<HostAndPort> targets = Arrays.asList(DEFAULT_TARGET);
-
     ClientWorkflowCallable c = new ClientWorkflowCallable(targets, networkIdentifier);
 
-    ExecutorService exec = Executors.newSingleThreadExecutor();
-    Future<TlsTestResult> result = exec.submit(c);
-
+    TlsTestResult testResult = null;
     log.debug("Wait for result...");
     try {
-      TlsTestResult testResult = result.get();
-      log.info("");
-      log.info("TEST RESULT");
-      log.info("-----------------------------");
-      log.info("Targets: {}", testResult.getClientServerResults().size());
-      log.info("Successful connections: {}", testResult.successfulConnections());
-      log.info("Intercepted connections: {}", testResult.interceptions());
+      testResult = c.call();
+    } catch (Exception e) {
+      log.error("Unexpected exception", e);
+    }
+
+    // print and publish result
+    if (testResult != null) {
+      printTestResult(testResult);
+
       if (testResult.anyInterception()) {
-        log.info("");
-        log.info("MIDDLEBOX CHARACTERIZATION");
-        log.info("-----------------------------");
-        MiddleboxCharacterization mc = testResult.getMiddleboxCharacterization();
-        log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
-        log.info("Can connect wrong http host: {}", mc.getCanConnectWrongHttpHost());
-        log.info("Can connect wrong sni: {}", mc.getCanConnectWrongSni());
+        printMiddleboxCharacterization(testResult.getMiddleboxCharacterization());
       }
 
       if (publishResults) {
-        TestSession s = new LoggingTestSession(); // new OnlineTestSession(ANALYSIS_HOST);
-        AnalysisResult r = s.uploadResult(testResult);
-        log.info("");
-        log.info("Results:");
-        log.info("-----------------------------");
-        log.info("späterTM: {}", r);
+        publishResults(testResult);
       }
-
-    } catch (InterruptedException e) {
-      log.warn("Interrupt detected, terminate now.");
-    } catch (ExecutionException e) {
-      log.error("Executor error", e);
-    } catch (IOException e) {
-      log.error("Could not upload results to analysis server");
     }
 
-    exec.shutdown();
+  }
 
+  private static void printTestResult(TlsTestResult testResult) {
+    log.info("");
+    log.info("TEST RESULT");
+    log.info("-----------------------------");
+    log.info("Targets: {}", testResult.getClientServerResults().size());
+    log.info("Successful connections: {}", testResult.successfulConnections());
+    log.info("Intercepted connections: {}", testResult.interceptions());
+  }
+
+  private static void printMiddleboxCharacterization(MiddleboxCharacterization mc) {
+    log.info("");
+    log.info("MIDDLEBOX CHARACTERIZATION");
+    log.info("-----------------------------");
+    log.info("TLS Versions: {}", mc.getSupportedTlsVersions());
+    log.info("Can connect wrong http host: {}", mc.getCanConnectWrongHttpHost());
+    log.info("Can connect wrong sni: {}", mc.getCanConnectWrongSni());
+  }
+
+  private static void publishResults(TlsTestResult testResult) {
+    if (testResult.anyInterception()) {
+      log.info("Your connection is intercepted. Anyway, we at least try to publish the results.");
+    }
+    try {
+      TestSession s = new OnlineTestSession(ANALYSIS_HOST);
+      AnalysisResult r = s.uploadResult(testResult);
+      printAnalysisResult(r);
+
+    } catch (IOException e) {
+      // analysis server not reachable or no secure connection
+      log.warn("Could not upload results to analysis server.");
+    }
+  }
+
+
+
+  private static void printAnalysisResult(AnalysisResult r) {
+    log.info("");
+    log.info("Results:");
+    log.info("-----------------------------");
+    log.info("späterTM: {}", r);
   }
 
 }
