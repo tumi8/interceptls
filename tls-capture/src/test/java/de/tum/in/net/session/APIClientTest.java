@@ -1,11 +1,9 @@
 package de.tum.in.net.session;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import java.io.EOFException;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,6 +23,7 @@ import de.tum.in.net.server.FileTlsServerConfig;
 import de.tum.in.net.server.SimpleServerSocket;
 import de.tum.in.net.util.ServerUtil;
 import retrofit2.Call;
+import retrofit2.Response;
 
 public class APIClientTest {
 
@@ -49,13 +48,12 @@ public class APIClientTest {
       AnalysisAPI api =
           APIClient.createClient("https://localhost:" + port).create(AnalysisAPI.class);
       Call<NetworkStats> c = api.getNetworkStats(n);
-      try {
-        c.execute();
-        fail();
-      } catch (IOException e) {
-        // expected due to incompatible api
-        assertTrue(e.getCause() instanceof EOFException);
-      }
+
+      // cannot succeed due to wrong api
+      Response<NetworkStats> r = c.execute();
+      assertFalse(r.isSuccessful());
+      assertEquals(404, r.code());
+
     }
   }
 

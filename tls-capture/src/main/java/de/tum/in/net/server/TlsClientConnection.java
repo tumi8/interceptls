@@ -72,7 +72,7 @@ class TlsClientConnection implements Runnable {
             writer.flush();
 
           } else {
-            String response = "HTTP/1.1 404 Not Found";
+            String response = TlsConstants.REQUEST_HTTP_VERSION + " 404 Not Found\r\n\r\n";
             tlsSocket.getOutputStream().write(response.getBytes());
           }
         } catch (HttpException e) {
