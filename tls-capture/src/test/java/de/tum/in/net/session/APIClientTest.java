@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -74,6 +75,13 @@ public class APIClientTest {
       Call<NetworkStats> c = api.getNetworkStats(n);
       c.execute();
     }
+  }
+
+  @Test
+  public void coverage() throws Exception {
+    Constructor<APIClient> c = APIClient.class.getDeclaredConstructor();
+    c.setAccessible(true);
+    c.newInstance();
   }
 
 }

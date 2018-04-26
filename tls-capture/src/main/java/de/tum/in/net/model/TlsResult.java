@@ -87,7 +87,7 @@ public class TlsResult implements Serializable {
 
   @Override
   public String toString() {
-    return "ScenarioResult [" + ip + "]";
+    return "TlsResult[" + ip + "]";
   }
 
 }

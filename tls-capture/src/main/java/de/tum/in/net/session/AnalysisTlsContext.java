@@ -45,11 +45,11 @@ public class AnalysisTlsContext {
     }
   };
 
-  private synchronized static void init() {
-    if (initialized) {
-      return;
-    }
+  private AnalysisTlsContext() {
+    // utility
+  }
 
+  private synchronized static void init() {
     try {
       KeyStore keyStore = KeyStore.getInstance("PKCS12");
       keyStore.load(null);

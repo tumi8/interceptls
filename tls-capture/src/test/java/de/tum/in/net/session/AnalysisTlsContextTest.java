@@ -1,9 +1,11 @@
 package de.tum.in.net.session;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
@@ -34,6 +36,9 @@ public class AnalysisTlsContextTest {
     X509Certificate certEc =
         CertificateUtil.readCert(new File("certs/analysis-server-cert-ec.pem"));
     tm.checkServerTrusted(new X509Certificate[] {certEc}, "RSA");
+
+    X509TrustManager tm2 = AnalysisTlsContext.getTrustManager();
+    assertEquals(tm, tm2);
   }
 
   @Test
@@ -41,6 +46,13 @@ public class AnalysisTlsContextTest {
     HostnameVerifier hv = AnalysisTlsContext.getHostnameVerifier();
     assertTrue(hv.verify("net.in.tum.de", null));
     assertTrue(hv.verify(null, null));
+  }
+
+  @Test
+  public void coverage() throws Exception {
+    Constructor<AnalysisTlsContext> c = AnalysisTlsContext.class.getDeclaredConstructor();
+    c.setAccessible(true);
+    c.newInstance();
   }
 
 }

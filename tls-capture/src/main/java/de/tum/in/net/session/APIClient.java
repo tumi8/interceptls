@@ -11,6 +11,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
 
+  private APIClient() {
+    // utility
+  }
 
   static Retrofit createClient(final String url) {
 
