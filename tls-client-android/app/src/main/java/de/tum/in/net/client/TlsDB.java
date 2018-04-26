@@ -174,8 +174,8 @@ public class TlsDB extends SQLiteOpenHelper {
                 if (c.moveToNext()) {
                     time = c.getString(c.getColumnIndex(TIMESTAMP_COLUMN));
                 }
-                //we test not more than once in 20 minutes
-                return time == null || LocalDateTime.now().minusMinutes(20).isAfter(LocalDateTime.parse(time));
+                //we test not more than once in 30 minutes
+                return time == null || LocalDateTime.now().minusMinutes(30).isAfter(LocalDateTime.parse(time));
             }
         }
     }
