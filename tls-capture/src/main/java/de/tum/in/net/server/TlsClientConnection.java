@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+import de.tum.in.net.model.TlsConstants;
 import de.tum.in.net.model.TlsResult;
 import de.tum.in.net.model.TlsSocket;
 import de.tum.in.net.util.Tap;
@@ -39,9 +40,9 @@ class TlsClientConnection implements Runnable {
 
   @Override
   public void run() {
-    Tap tap = null;
+
     try (Socket s = socket) {
-      tap = new Tap(socket.getInputStream(), socket.getOutputStream());
+      Tap tap = new Tap(socket.getInputStream(), socket.getOutputStream());
 
       try (final TlsSocket tlsSocket = tlsServerFactory.bind(tap.getIn(), tap.getOut())) {
 
@@ -56,9 +57,9 @@ class TlsClientConnection implements Runnable {
         try {
           HttpRequest req = reqParser.parse();
 
-          if ("GET".equals(req.getRequestLine().getMethod())
-              && "/".equals(req.getRequestLine().getUri())) {
-            log.debug("Received new request: GET /");
+          if (TlsConstants.REQUEST_METHOD.equals(req.getRequestLine().getMethod())
+              && TlsConstants.REQUEST_URI.equals(req.getRequestLine().getUri())) {
+            log.debug("Received valid TLS request");
 
             // add new line for easier parsing on client side
             String content = new Gson().toJson(tlsResult) + "\r\n";
@@ -81,7 +82,7 @@ class TlsClientConnection implements Runnable {
       }
 
     } catch (final IOException e) {
-      log.error("IOError during test.", e);
+      log.error("Exception while handling client connection.", e);
     }
 
   }

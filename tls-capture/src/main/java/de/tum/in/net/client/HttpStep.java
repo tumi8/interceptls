@@ -10,6 +10,7 @@ import com.google.gson.JsonSyntaxException;
 
 import de.tum.in.net.model.Step;
 import de.tum.in.net.model.TestContext;
+import de.tum.in.net.model.TlsConstants;
 import de.tum.in.net.model.TlsResult;
 
 public class HttpStep implements Step {
@@ -17,7 +18,7 @@ public class HttpStep implements Step {
   @Override
   public void process(HostAndPort target, TestContext ctx) throws IOException {
 
-    String request = "GET / HTTP/1.1\r\nHost: " + target.getHost() + "\r\n\r\n";
+    String request = TlsConstants.REQUEST_LINE + "Host: " + target.getHost() + "\r\n\r\n";
     ctx.getOutputStream().write(request.getBytes());
 
 
