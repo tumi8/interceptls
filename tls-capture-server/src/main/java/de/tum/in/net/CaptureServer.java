@@ -28,6 +28,9 @@ public class CaptureServer {
   private static final File KEY_FILE = new File("conf", "key.pem");
   private static final File CONF_FILE = new File("conf", "server.properties");
 
+  private static final String PORT_PROPERTY = "port";
+  private static final String REDIRECT_URL_PROPERTY = "redirect_url";
+
   private final ExecutorService exec = Executors.newCachedThreadPool();
   private Thread serverThread;
   private SimpleServerSocket server;
@@ -51,13 +54,28 @@ public class CaptureServer {
     Properties props = new Properties();
     try (InputStream in = new FileInputStream(confFile)) {
       props.load(in);
-      String portString = getNonEmptyProperty(props, "port");
+      String portString = getNonEmptyProperty(props, PORT_PROPERTY);
       port = Integer.parseInt(portString);
+      String redirectUrl = getOptionalProperty(props, REDIRECT_URL_PROPERTY);
+
+      final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
+      prov = new BcTlsServerFactory(config);
+      handler = new DefaultClientHandlerFactory(prov, redirectUrl);
     }
 
-    final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
-    prov = new BcTlsServerFactory(config);
-    handler = new DefaultClientHandlerFactory(prov);
+  }
+
+  /**
+   * @param props
+   * @param key
+   * @return null if the key does not exist or the value is empty.
+   */
+  private static String getOptionalProperty(Properties props, String key) {
+    String value = props.getProperty(key);
+    if (value != null) {
+      value = value.trim();
+    }
+    return value == null || value.isEmpty() ? null : value;
   }
 
   private static String getNonEmptyProperty(Properties props, String key) {

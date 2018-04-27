@@ -31,11 +31,21 @@ class TlsClientConnection implements Runnable {
 
   private final Socket socket;
   private final TlsServerFactory tlsServerFactory;
+  private final String redirectUrl;
 
-  public TlsClientConnection(final Socket socket, final TlsServerFactory tlsServerFactory) {
+  /**
+   * 
+   * @param socket
+   * @param tlsServerFactory
+   * @param redirectUrl - the url to which we redirect, may be null, then a 404 Not Found is sent
+   *        instead.
+   */
+  public TlsClientConnection(final Socket socket, final TlsServerFactory tlsServerFactory,
+      String redirectUrl) {
     this.socket = Objects.requireNonNull(socket, "socket must not be null.");
     this.tlsServerFactory =
         Objects.requireNonNull(tlsServerFactory, "tlsServerFactory must not be null.");
+    this.redirectUrl = redirectUrl;
   }
 
   @Override
@@ -72,7 +82,13 @@ class TlsClientConnection implements Runnable {
             writer.flush();
 
           } else {
-            String response = TlsConstants.REQUEST_HTTP_VERSION + " 404 Not Found\r\n\r\n";
+            String response;
+            if (redirectUrl == null) {
+              response = TlsConstants.HTTP_VERSION + " 404 Not Found\r\n\r\n";
+            } else {
+              response = TlsConstants.HTTP_VERSION + " 301 Moved Permanently\r\n" + "Location: "
+                  + redirectUrl + "\r\n\r\n";
+            }
             tlsSocket.getOutputStream().write(response.getBytes());
           }
         } catch (HttpException e) {
