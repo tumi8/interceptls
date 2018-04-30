@@ -1,0 +1,30 @@
+<footer class="container py-5">
+  <div class="row">
+    <div class="col-12 col-md">
+      {{rootComponent.title}}
+      <small class="d-block mb-3 text-muted">&copy; 2018</small>
+    </div>
+    <div class="col-6 col-md">
+      <h5>University</h5>
+      <ul class="list-unstyled text-small">
+        <li><a class="text-muted" href="https://net.in.tum.de">Chair of Network Architectures and Services<br>TUM Department of Informatics<br>Technical University of Munich</a></li>
+      </ul>
+    </div>
+    <div class="col-6 col-md">
+      <h5>Supervisor</h5>
+      <ul class="list-unstyled text-small">
+          <li *ngFor="let supervisor of supervisors">
+            <a class="text-muted" href="{{supervisor.link}}">{{supervisor.name}}</a>
+          </li>
+      </ul>
+    </div>
+    <div class="col-6 col-md">
+      <h5>Other</h5>
+      <ul class="list-unstyled text-small">
+        <li *ngFor="let link of links">
+          <a class="text-muted" href="{{link.link}}">{{link.name}}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>
