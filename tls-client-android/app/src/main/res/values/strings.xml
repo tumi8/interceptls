@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TLS Client</string>
+    <string name="app_name">intercepTLS</string>
     <string name="settings">Settings</string>
     <string name="about">About</string>
     <string name="hosts_default">hosts_default</string>
