@@ -12,6 +12,7 @@ import java.util.List;
 
 import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.model.TestSession;
+import de.tum.in.net.model.TlsConstants;
 import de.tum.in.net.model.TlsTestResult;
 import de.tum.in.net.session.OnlineTestSession;
 
@@ -39,9 +40,7 @@ public class UploadResultService extends IntentService {
 
         final List<TlsTestResult> results = db.getNotUploadedResults();
 
-        final String url = ConfigurationReader.getAnalysisHostUrl(this);
-
-        final TestSession s = new OnlineTestSession(url);
+        final TestSession s = new OnlineTestSession(TlsConstants.TLS_ANALYSIS_URL);
         try {
             for (final TlsTestResult result : results) {
                 final AnalysisResult analysisResult = s.uploadResult(result);

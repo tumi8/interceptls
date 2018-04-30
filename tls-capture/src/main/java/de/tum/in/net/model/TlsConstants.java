@@ -12,6 +12,9 @@ public final class TlsConstants {
   public static final String REQUEST_LINE =
       REQUEST_METHOD + " " + REQUEST_URI + " " + HTTP_VERSION + "\r\n";
 
+  public static final String TLS_SERVER_HOST = "interceptls.net.in.tum.de";
+  public static final String TLS_ANALYSIS_URL = "https://interceptls.net.in.tum.de:3000";
+
   private TlsConstants() {
     //
   }

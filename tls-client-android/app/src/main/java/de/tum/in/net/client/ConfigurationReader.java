@@ -63,11 +63,6 @@ public class ConfigurationReader {
         return prefs.getBoolean(context.getString(R.string.data_collection), false);
     }
 
-    public static String getAnalysisHostUrl(final Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(context.getString(R.string.analysis_server_url), null);
-    }
-
     public static int readServiceTime(final Context ctx) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         final String serviceTime = prefs.getString(ctx.getString(R.string.background_service), null);

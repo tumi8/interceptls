@@ -5,8 +5,7 @@
         android:title="@string/data_collection"
         android:summaryOn="Your TLS results are sent to the analysis server. Thank you for supporting science."
         android:summaryOff="Your TLS results are not sent to the analysis server."
-        android:defaultValue="true"
-        />
+        android:defaultValue="true" />
     <ListPreference
         android:key="@string/background_service"
         android:title="@string/background_service"
@@ -25,8 +24,4 @@
         android:key="@string/hosts_additional"
         android:summary="@string/hosts_additional_description"
         android:title="@string/hosts_additional_title" />
-    <EditTextPreference
-        android:key="@string/analysis_server_url"
-        android:title="@string/analysis_server_url"
-        android:defaultValue="@string/analysis_server_url_default" />
 </PreferenceScreen>

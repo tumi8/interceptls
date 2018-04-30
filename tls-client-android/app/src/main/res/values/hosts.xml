@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="hosts_default">
-        <item>192.168.178.68:7623</item>
+        <item>interceptls.net.in.tum.de</item>
     </string-array>
 </resources>

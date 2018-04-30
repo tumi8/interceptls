@@ -6,7 +6,6 @@
     <string name="hosts_additional">hosts_additional</string>
     <string name="result">Results</string>
     <string name="target">Target Host</string>
-    <string name="analysis_server_url_default">https://192.168.178.68:3000</string>
     <string name="hosts_default_title">Default hosts</string>
     <string name="hosts_default_description">Which hosts do we probe?</string>
     <string name="hosts_additional_title">Additional hosts</string>
@@ -18,7 +17,6 @@
     <string name="tls_version">TLS-Version:</string>
     <string name="tls_service_name">TLS Background Service</string>
     <string name="upload_result_service_name">Result Upload Service</string>
-    <string name="analysis_server_url">Analysis Server URL</string>
     <string name="OK">OK</string>
     <string name="cancel">Cancel</string>
     <string name="background_service">Background Service</string>

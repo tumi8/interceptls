@@ -11,14 +11,13 @@ import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.client.network.JavaNetworkIdentifier;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.TestSession;
+import de.tum.in.net.model.TlsConstants;
 import de.tum.in.net.model.TlsTestResult;
 import de.tum.in.net.session.OnlineTestSession;
 
 public class TlsClientCliMain {
 
   private static final Logger log = LoggerFactory.getLogger(TlsClientCliMain.class);
-  private static final HostAndPort DEFAULT_TARGET = new HostAndPort("192.168.178.36", 443);
-  private static final String ANALYSIS_HOST = "https://127.0.0.1:3000";
 
   public static void main(String[] args) {
 
@@ -36,7 +35,7 @@ public class TlsClientCliMain {
       publishResults = false;
     }
 
-    List<HostAndPort> targets = Arrays.asList(DEFAULT_TARGET);
+    List<HostAndPort> targets = Arrays.asList(HostAndPort.parse(TlsConstants.TLS_SERVER_HOST));
     ClientWorkflowCallable c = new ClientWorkflowCallable(targets, networkIdentifier);
 
     TlsTestResult testResult = null;
@@ -84,7 +83,7 @@ public class TlsClientCliMain {
       log.info("Your connection is intercepted. Anyway, we at least try to publish the results.");
     }
     try {
-      TestSession s = new OnlineTestSession(ANALYSIS_HOST);
+      TestSession s = new OnlineTestSession(TlsConstants.TLS_ANALYSIS_URL);
       AnalysisResult r = s.uploadResult(testResult);
       printAnalysisResult(r);
 
