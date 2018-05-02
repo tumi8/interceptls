@@ -35,7 +35,8 @@ public class TlsClientCliMain {
       publishResults = false;
     }
 
-    List<HostAndPort> targets = Arrays.asList(HostAndPort.parse(TlsConstants.TLS_SERVER_HOST));
+    List<HostAndPort> targets =
+        Arrays.asList(HostAndPort.parse(TlsConstants.TLS_CAPTURE_SERVER_HOST));
     ClientWorkflowCallable c = new ClientWorkflowCallable(targets, networkIdentifier);
 
     TlsTestResult testResult = null;
