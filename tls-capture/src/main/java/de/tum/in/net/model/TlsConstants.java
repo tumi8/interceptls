@@ -14,6 +14,8 @@ public final class TlsConstants {
 
   public static final String TLS_ANALYSIS_URL = "https://interceptls.net.in.tum.de:8412";
   public static final String TLS_INFORMATION_SERVER_URL = "https://interceptls.net.in.tum.de";
+  public static final String TLS_INFORMATION_SERVER_URL_WITH_PORT =
+      "https://interceptls.net.in.tum.de:8413";
   public static final String TLS_CAPTURE_SERVER_HOST = "interceptls.net.in.tum.de";
 
   private TlsConstants() {

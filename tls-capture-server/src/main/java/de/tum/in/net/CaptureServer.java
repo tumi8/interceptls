@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tum.in.net.model.TlsConstants;
 import de.tum.in.net.server.BcTlsServerFactory;
 import de.tum.in.net.server.ClientHandlerFactory;
 import de.tum.in.net.server.DefaultClientHandlerFactory;
@@ -29,6 +30,7 @@ public class CaptureServer {
   private static final File CONF_FILE = new File("conf", "server.properties");
 
   private static final String PORT_PROPERTY = "port";
+  private static final String REDIRECT_PROPERTY = "redirect";
   private static final String REDIRECT_URL_PROPERTY = "redirect_url";
 
   private final ExecutorService exec = Executors.newCachedThreadPool();
@@ -56,7 +58,15 @@ public class CaptureServer {
       props.load(in);
       String portString = getNonEmptyProperty(props, PORT_PROPERTY);
       port = Integer.parseInt(portString);
-      String redirectUrl = getOptionalProperty(props, REDIRECT_URL_PROPERTY);
+
+      boolean redirect = Boolean.parseBoolean(getNonEmptyProperty(props, REDIRECT_PROPERTY));
+      String redirectUrl = null;
+      if (redirect) {
+        redirectUrl = getOptionalProperty(props, REDIRECT_URL_PROPERTY);
+        if (redirectUrl == null) {
+          redirectUrl = TlsConstants.TLS_INFORMATION_SERVER_URL_WITH_PORT;
+        }
+      }
 
       final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
       prov = new BcTlsServerFactory(config);
