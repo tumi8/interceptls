@@ -29,6 +29,8 @@ public class CaptureServer {
   private static final File KEY_FILE = new File("conf", "key.pem");
   private static final File CONF_FILE = new File("conf", "server.properties");
 
+  private static final String CERT_PROPERTY = "cert";
+  private static final String KEY_PROPERTY = "key";
   private static final String PORT_PROPERTY = "port";
   private static final String REDIRECT_PROPERTY = "redirect";
   private static final String REDIRECT_URL_PROPERTY = "redirect_url";
@@ -67,8 +69,13 @@ public class CaptureServer {
           redirectUrl = TlsConstants.TLS_INFORMATION_SERVER_URL_WITH_PORT;
         }
       }
+      String certPath = getOptionalProperty(props, CERT_PROPERTY);
+      File certFile = certPath == null ? CERT_FILE : new File(certPath);
 
-      final TlsServerConfig config = new FileTlsServerConfig(CERT_FILE, KEY_FILE);
+      String keyPath = getOptionalProperty(props, KEY_PROPERTY);
+      File keyFile = keyPath == null ? KEY_FILE : new File(keyPath);
+
+      final TlsServerConfig config = new FileTlsServerConfig(certFile, keyFile);
       prov = new BcTlsServerFactory(config);
       handler = new DefaultClientHandlerFactory(prov, redirectUrl);
     }
