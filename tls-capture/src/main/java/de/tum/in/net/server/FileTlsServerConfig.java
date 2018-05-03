@@ -8,6 +8,7 @@ import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.ECKeyParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
@@ -64,8 +65,15 @@ public class FileTlsServerConfig implements TlsServerConfig {
 
     final short signatureAlg;
     try (final PEMParser pp = new PEMParser(new FileReader(keyFile))) {
-      final PEMKeyPair pemKeyPair = (PEMKeyPair) pp.readObject();
-      this.privateKey = PrivateKeyFactory.createKey(pemKeyPair.getPrivateKeyInfo());
+      Object o = pp.readObject();
+      if (o instanceof PEMKeyPair) {
+        final PEMKeyPair pemKeyPair = (PEMKeyPair) o;
+        this.privateKey = PrivateKeyFactory.createKey(pemKeyPair.getPrivateKeyInfo());
+      } else if (o instanceof PrivateKeyInfo) {
+        this.privateKey = PrivateKeyFactory.createKey((PrivateKeyInfo) o);
+      } else {
+        throw new IllegalStateException("unknown private key format");
+      }
 
       if (this.privateKey instanceof RSAKeyParameters) {
         log.info("Initialise server with RSA cipher suites");
