@@ -11,10 +11,16 @@
       </ul>
     </div>
     <div class="col-6 col-md">
+      <h5>Advisor</h5>
+      <ul class="list-unstyled text-small">
+          <li *ngFor="let advisor of advisors">
+            <a class="text-muted" href="{{advisor.link}}">{{advisor.name}}</a>
+          </li>
+      </ul>
       <h5>Supervisor</h5>
       <ul class="list-unstyled text-small">
-          <li *ngFor="let supervisor of supervisors">
-            <a class="text-muted" href="{{supervisor.link}}">{{supervisor.name}}</a>
+          <li >
+            <a class="text-muted" href="https://www.net.in.tum.de/members/carle/">Prof. Dr.-Ing. Georg Carle</a>
           </li>
       </ul>
     </div>
