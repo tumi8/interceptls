@@ -3,6 +3,7 @@ package de.tum.in.net.services;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import de.tum.in.net.analysis.GeneralStatistic;
 import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.model.DatabaseService;
 import de.tum.in.net.model.NetworkId;
@@ -24,6 +25,12 @@ public class MemoryOnlyDatabaseService implements DatabaseService {
   public NetworkStats getNetworkStats(NetworkId networkId) throws SQLException {
     // stub
     return new NetworkStats();
+  }
+
+  @Override
+  public GeneralStatistic getGeneralStatistic() throws SQLException {
+    // stub
+    return new GeneralStatistic(10, 2);
   }
 
 }

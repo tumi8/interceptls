@@ -11,6 +11,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tum.in.net.analysis.GeneralStatistic;
 import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.model.DatabaseService;
 import de.tum.in.net.model.MiddleboxCharacterization;
@@ -40,6 +41,11 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   private static final String INTERCEPTION_RATE =
       "SELECT interception, round(count(*) * 100.0 / sum(count(*)) over(), 1) as rate "
           + "FROM SESSION WHERE " + NETWORK_SELECTION + " GROUP BY interception";
+
+  private static final String TOTAL_TEST_COUNT = "SELECT COUNT(*) FROM SESSION";
+  private static final String TOTAL_INTERCEPTION_COUNT =
+      "SELECT COUNT(*) FROM SESSION WHERE intercepted=true";
+
   private BasicDataSource bds = new BasicDataSource();
 
 
@@ -180,6 +186,26 @@ public class PostgreSQLDatabaseService implements DatabaseService {
     s.setString(6, network.getDnsMac());
     s.setString(7, network.getBssid());
     s.setString(8, network.getSsid());
+  }
+
+
+  @Override
+  public GeneralStatistic getGeneralStatistic() throws SQLException {
+    try (Connection c = bds.getConnection()) {
+
+      PreparedStatement s = c.prepareStatement(TOTAL_TEST_COUNT);
+      ResultSet rs = s.executeQuery();
+      rs.next();
+      int totalTestCount = rs.getInt("count");
+
+      s = c.prepareStatement(TOTAL_INTERCEPTION_COUNT);
+      rs = s.executeQuery();
+      rs.next();
+      int totalInterceptionCount = rs.getInt("count");
+
+      return new GeneralStatistic(totalTestCount, totalInterceptionCount);
+
+    }
   }
 
 }
