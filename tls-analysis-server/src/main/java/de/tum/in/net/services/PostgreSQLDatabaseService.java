@@ -44,7 +44,7 @@ public class PostgreSQLDatabaseService implements DatabaseService {
 
   private static final String TOTAL_TEST_COUNT = "SELECT COUNT(*) FROM SESSION";
   private static final String TOTAL_INTERCEPTION_COUNT =
-      "SELECT COUNT(*) FROM SESSION WHERE intercepted=true";
+      "SELECT COUNT(*) FROM SESSION WHERE interception=true";
 
   private BasicDataSource bds = new BasicDataSource();
 
