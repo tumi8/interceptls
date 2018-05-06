@@ -174,9 +174,8 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   private PreparedStatement withNetworkSelection(Connection c, String query, NetworkId network)
       throws SQLException {
     // required params for all networks
-    String finalQuery =
-        query + " network_type=?::network AND public_ip=?::INET AND default_gw_ip=?::INET "
-            + " AND dns_ip=?::INET";
+    String finalQuery = query
+        + " network_type=?::network AND public_ip=?::INET AND default_gw_ip=?::INET AND dns_ip=?::INET ";
 
     // network specific params
     if (NetworkType.WIFI.equals(network.getType())) {
