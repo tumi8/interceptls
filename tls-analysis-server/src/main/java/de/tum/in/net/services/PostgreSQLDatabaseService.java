@@ -16,6 +16,7 @@ import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.model.DatabaseService;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
+import de.tum.in.net.model.NetworkType;
 import de.tum.in.net.model.TlsClientServerResult;
 import de.tum.in.net.model.TlsTestResult;
 
@@ -32,15 +33,10 @@ public class PostgreSQLDatabaseService implements DatabaseService {
       "INSERT INTO RESULTS (session_id, test_id, client_ip, server_ip, client_sent, client_rec, server_sent, server_rec, target, target_port)"
           + " VALUES (?, ?, ?::INET, ?::INET, ?, ?, ?, ?, ?, ?)";
 
-  private static final String NETWORK_SELECTION =
-      " network_type=?::network AND public_ip=?::INET AND default_gw_ip=?::INET "
-          + "AND default_gw_mac=?::macaddr AND dns_ip=?::INET AND dns_mac=?::macaddr "
-          + "AND bssid=?::macaddr AND ssid=? ";
-  private static final String TOTAL_COUNT =
-      "SELECT COUNT(*) " + "FROM SESSION WHERE " + NETWORK_SELECTION;
+  private static final String TOTAL_COUNT = "SELECT COUNT(*) FROM SESSION WHERE %s";
   private static final String INTERCEPTION_RATE =
       "SELECT interception, round(count(*) * 100.0 / sum(count(*)) over(), 1) as rate "
-          + "FROM SESSION WHERE " + NETWORK_SELECTION + " GROUP BY interception";
+          + "FROM SESSION WHERE %s GROUP BY interception";
 
   private static final String TOTAL_TEST_COUNT = "SELECT COUNT(*) FROM SESSION";
   private static final String TOTAL_INTERCEPTION_COUNT =
@@ -150,16 +146,14 @@ public class PostgreSQLDatabaseService implements DatabaseService {
     try (Connection c = bds.getConnection()) {
       try {
         // get total count
-        PreparedStatement s = c.prepareStatement(TOTAL_COUNT);
-        setNetworkParams(s, network);
+        PreparedStatement s = withNetworkSelection(c, TOTAL_COUNT, network);
         ResultSet r = s.executeQuery();
         r.next();
         int countTotal = r.getInt("count");
         stats.setCountTotal(countTotal);
 
         // get rate
-        s = c.prepareStatement(INTERCEPTION_RATE);
-        setNetworkParams(s, network);
+        s = withNetworkSelection(c, INTERCEPTION_RATE, network);
         ResultSet set = s.executeQuery();
 
         while (set.next()) {
@@ -177,15 +171,40 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   }
 
 
-  private void setNetworkParams(PreparedStatement s, NetworkId network) throws SQLException {
+  private PreparedStatement withNetworkSelection(Connection c, String query, NetworkId network)
+      throws SQLException {
+    // required params for all networks
+    String finalQuery =
+        query + " network_type=?::network AND public_ip=?::INET AND default_gw_ip=?::INET "
+            + " AND dns_ip=?::INET";
+
+    // network specific params
+    if (NetworkType.WIFI.equals(network.getType())) {
+      finalQuery = String.format(finalQuery,
+          "AND default_gw_mac=?::macaddr AND dns_mac=?::macaddr AND bssid=?::macaddr AND ssid=?");
+    } else if (NetworkType.ETHERNET.equals(network.getType())) {
+      finalQuery =
+          String.format(finalQuery, "AND default_gw_mac=?::macaddr AND dns_mac=?::macaddr");
+    }
+
+    // set parameter
+    PreparedStatement s = c.prepareStatement(finalQuery);
     s.setString(1, network.getType().toString());
     s.setString(2, network.getPublicIp());
     s.setString(3, network.getDefaultGatewayIp());
-    s.setString(4, network.getDefaultGatewayMac());
-    s.setString(5, network.getDnsIp());
-    s.setString(6, network.getDnsMac());
-    s.setString(7, network.getBssid());
-    s.setString(8, network.getSsid());
+    s.setString(4, network.getDnsIp());
+
+    if (NetworkType.WIFI.equals(network.getType())) {
+      s.setString(5, network.getDefaultGatewayMac());
+      s.setString(6, network.getDnsMac());
+      s.setString(7, network.getBssid());
+      s.setString(8, network.getSsid());
+    } else if (NetworkType.ETHERNET.equals(network.getType())) {
+      s.setString(5, network.getDefaultGatewayMac());
+      s.setString(6, network.getDnsMac());
+    }
+
+    return s;
   }
 
 
