@@ -1,13 +1,17 @@
 package de.tum.in.net.client;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,9 +35,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
+    private static final int ACCESS_COARSE_LOCATION_PERMISSION = 1;
     private List<AndroidTlsResult> testList = new ArrayList<>();
     private AndroidTlsResultAdapter rAdapter = new AndroidTlsResultAdapter(testList);
     private RecyclerView recyclerView;
+    private Activity ctx;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -43,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         DbCleanJobService.init(this);
 
-        final Context ctx = this;
+        ctx = this;
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, recyclerView, new ClickListener() {
             @Override
@@ -91,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                startActivity(new Intent(ctx, ProgressActivity.class));
+                checkPermissionAndStartTest();
             }
         });
 
@@ -100,10 +106,73 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void checkPermissionAndStartTest() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted, request permission
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ctx,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // Show an explanation to the user *asynchronously*
+                final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setMessage(R.string.check_permission_location)
+                        .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                ActivityCompat.requestPermissions(ctx,
+                                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                        ACCESS_COARSE_LOCATION_PERMISSION);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, final int id) {
+                                // User cancelled the dialog, nothing to do
+                            }
+                        });
+
+                builder.create().show();
+
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(ctx,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        ACCESS_COARSE_LOCATION_PERMISSION);
+            }
+
+            //callback is handled in onRequestPermissionsResult()
+
+        } else {
+            //we have the permission, start test
+            startActivity(new Intent(ctx, ProgressActivity.class));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode,
+                                           final String[] permissions, final int[] grantResults) {
+        switch (requestCode) {
+            case ACCESS_COARSE_LOCATION_PERMISSION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    startActivity(new Intent(ctx, ProgressActivity.class));
+                } else {
+                    // permission denied, we cannot start the test without the permission
+                }
+                break;
+            }
+
+        }
+    }
+
 
     @Override
     public void onResume() {
         super.onResume();
+        ctx = this;
 
         final List<AndroidTlsResult> timestamps = new TlsDB(this).getTestResults();
         testList = new ArrayList<>(timestamps);

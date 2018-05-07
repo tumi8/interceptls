@@ -6,6 +6,12 @@
         android:summaryOn="Your TLS results are sent to the analysis server. Thank you for supporting science."
         android:summaryOff="Your TLS results are not sent to the analysis server."
         android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="@string/location"
+        android:title="@string/location"
+        android:summaryOn="Your location is shared with a precision of ±1.1km."
+        android:summaryOff="Your location is not shared with the analysis server."
+        android:defaultValue="true" />
     <ListPreference
         android:key="@string/background_service"
         android:title="@string/background_service"
