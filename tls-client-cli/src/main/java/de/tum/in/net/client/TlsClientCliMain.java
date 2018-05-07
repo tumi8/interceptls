@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.analysis.AnalysisResult;
+import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.client.network.JavaNetworkIdentifier;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.TestSession;
@@ -98,9 +99,11 @@ public class TlsClientCliMain {
 
   private static void printAnalysisResult(AnalysisResult r) {
     log.info("");
-    log.info("Results:");
+    log.info("Network Stats:");
     log.info("-----------------------------");
-    log.info("späterTM: {}", r);
+    NetworkStats stats = r.getStats();
+    log.info("Test count: {}", stats.getCountTotal());
+    log.info("Interception rate: {}", stats.getInterceptionRateTotal());
   }
 
 }
