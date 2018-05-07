@@ -106,11 +106,8 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
         final TextView publicIpTextView = findViewById(R.id.network_public_ip);
         publicIpTextView.setText(network.getPublicIp());
 
-        final TextView dnsIpTextView = findViewById(R.id.dns_ip);
-        dnsIpTextView.setText(network.getDnsIp());
-
-        final TextView dnsMacTextView = findViewById(R.id.dns_mac);
-        dnsMacTextView.setText(network.getDnsMac());
+        final TextView dnsTextView = findViewById(R.id.dns);
+        dnsTextView.setText(network.getDns().toString());
 
         final TextView gwIpTextView = findViewById(R.id.gateway_ip);
         gwIpTextView.setText(network.getDefaultGatewayIp());

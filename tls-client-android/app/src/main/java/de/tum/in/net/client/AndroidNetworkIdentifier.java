@@ -2,7 +2,9 @@ package de.tum.in.net.client;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.LinkProperties;
 import android.net.NetworkInfo;
+import android.net.RouteInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
@@ -13,11 +15,13 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import de.tum.in.net.model.IpAndMac;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
 
@@ -46,19 +50,21 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
     public NetworkId identifyNetwork() {
         final NetworkId id = new NetworkId();
 
-        setNetworkState(id);
-        setPublicIp(id);
-        setDns(id);
-        setDefaultGateway(id);
+        final ConnectivityManager cm =
+                (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final LinkProperties lp = cm.getLinkProperties(cm.getActiveNetwork());
 
+
+        setNetworkState(id, cm);
+        setPublicIp(id);
+        setDns(id, lp);
+        setDefaultGateway(id, lp);
 
         log.error("Identified network: {}", id);
         return id;
     }
 
-    private void setNetworkState(final NetworkId id) {
-        final ConnectivityManager cm =
-                (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private void setNetworkState(final NetworkId id, final ConnectivityManager cm) {
 
         final NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         switch (activeNetwork.getType()) {
@@ -87,21 +93,26 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
 
     }
 
-    private void setDns(final NetworkId id) {
+    private void setDns(final NetworkId id, final LinkProperties lp) {
+
         try {
-            final List<String> ip = execProcess("getprop net.dns1");
-            final String dnsIp = ip.get(0);
-            if (dnsIp != null && !dnsIp.isEmpty()) {
-                id.setDnsIp(dnsIp);
-                //extract the mac address of the given dns server
-                final List<String> neighborList = execProcess("ip neighbor | grep " + dnsIp + " | cut -d \\  -f 5");
+            final List<InetAddress> dnsIpList = lp.getDnsServers();
+
+            for (final InetAddress dnsIp : dnsIpList) {
+                //we need to reach out to them so that there is an entry in the arp table
+                final String ip = dnsIp.getHostAddress();
+                execProcess("ping -c 1 " + ip);
+                final List<String> neighborList = execProcess("ip neighbor | grep " + ip + " | cut -d \\  -f 5");
                 if (neighborList.size() > 0) {
-                    id.setDnsMac(neighborList.get(0));
+                    id.addDns(new IpAndMac(ip, neighborList.get(0)));
+
+                } else {
+                    id.addDns(new IpAndMac(ip, null));
                 }
             }
 
         } catch (final IOException e) {
-            log.warn("Could not determine the dns ip", e);
+            log.warn("Could not determine the dns information", e);
         }
     }
 
@@ -118,22 +129,30 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
     }
 
 
-    public void setDefaultGateway(final NetworkId id) {
-        try {
-            final List<String> ip = execProcess("ip route get 1.1.1.1 | cut -d \\  -f 3");
-            final String gwIp = ip.get(0);
-            if (gwIp != null && !gwIp.isEmpty()) {
-                id.setDefaultGatewayIp(gwIp);
+    public void setDefaultGateway(final NetworkId id, final LinkProperties lp) {
+        String gwIp = null;
+        for (final RouteInfo r : lp.getRoutes()) {
+            if (r.isDefaultRoute()) {
+                final InetAddress ip = r.getGateway();
+                gwIp = ip.getHostAddress();
+            }
+        }
+
+        if (gwIp != null) {
+            id.setDefaultGatewayIp(gwIp);
+            try {
                 //extract the mac address of the given gateway
                 final List<String> neighborList = execProcess("ip neighbor | grep " + gwIp + " | cut -d \\  -f 5");
                 if (neighborList.size() > 0) {
                     id.setDefaultGatewayMac(neighborList.get(0));
                 }
-            }
 
-        } catch (final IOException e) {
-            log.warn("Could not determine the default gateway ip", e);
+            } catch (final IOException e) {
+                log.warn("Could not determine the default gateway mac", e);
+            }
         }
+
+
     }
 
     public void setPublicIp(final NetworkId id) {

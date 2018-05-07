@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import de.tum.in.net.analysis.GeneralStatistic;
 import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.model.DatabaseService;
+import de.tum.in.net.model.IpAndMac;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
@@ -24,11 +26,12 @@ public class PostgreSQLDatabaseService implements DatabaseService {
 
   private static final Logger log = LoggerFactory.getLogger(PostgreSQLDatabaseService.class);
   private static final String NEW_SESSION =
-      "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, dns_ip, dns_mac, bssid, ssid) "
+      "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, bssid, ssid) "
           + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::INET, ?::macaddr, ?::macaddr, ?)";
   private static final String NEW_CHARACTERIZATION =
       "INSERT INTO CHARACTERIZATION (session_id, can_connect_wrong_http_host, can_connect_wrong_sni, ssl_v3, tls_v10, tls_v11, tls_v12) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+  private static final String NEW_DNS = "INSERT INTO DNS (session_id, ip, mac) VALUES (?, ?, ?)";
   private static final String INSERT_RESULT =
       "INSERT INTO RESULTS (session_id, test_id, client_ip, server_ip, client_sent, client_rec, server_sent, server_rec, target, target_port)"
           + " VALUES (?, ?, ?::INET, ?::INET, ?, ?, ?, ?, ?, ?)";
@@ -62,6 +65,7 @@ public class PostgreSQLDatabaseService implements DatabaseService {
       try {
         // insert new session and get id
         long sessionId = newSession(c, result);
+        insertDns(c, sessionId, result.getNetworkId().getDns());
         if (result.anyInterception()) {
           MiddleboxCharacterization characterization = result.getMiddleboxCharacterization();
           insertCharacterization(c, sessionId, characterization);
@@ -97,6 +101,17 @@ public class PostgreSQLDatabaseService implements DatabaseService {
     }
   }
 
+  private void insertDns(Connection c, long sessionId, List<IpAndMac> dnsList) throws SQLException {
+    for (IpAndMac dns : dnsList) {
+      PreparedStatement s = c.prepareStatement(NEW_DNS);
+      s.setLong(1, sessionId);
+      s.setString(2, dns.getIp());
+      s.setString(3, dns.getMac());
+      s.executeUpdate();
+    }
+  }
+
+
   private void insertCharacterization(Connection c, long sessionId,
       MiddleboxCharacterization characterization) throws SQLException {
     PreparedStatement s = c.prepareStatement(NEW_CHARACTERIZATION);
@@ -119,10 +134,8 @@ public class PostgreSQLDatabaseService implements DatabaseService {
     s.setString(3, network.getPublicIp());
     s.setString(4, network.getDefaultGatewayIp());
     s.setString(5, network.getDefaultGatewayMac());
-    s.setString(6, network.getDnsIp());
-    s.setString(7, network.getDnsMac());
-    s.setString(8, network.getBssid());
-    s.setString(9, network.getSsid());
+    s.setString(6, network.getBssid());
+    s.setString(7, network.getSsid());
     s.executeUpdate();
     ResultSet set = s.getGeneratedKeys();
     set.next();
@@ -174,15 +187,13 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   private PreparedStatement withNetworkSelection(Connection c, String query, NetworkId network)
       throws SQLException {
     // required params for all networks
-    String selection =
-        " network_type=?::network AND public_ip=?::INET AND default_gw_ip=?::INET AND dns_ip=?::INET ";
+    String selection = " network_type=?::network AND public_ip=?::INET AND default_gw_ip=?::INET ";
 
     // network specific params
     if (NetworkType.WIFI.equals(network.getType())) {
-      selection +=
-          "AND default_gw_mac=?::macaddr AND dns_mac=?::macaddr AND bssid=?::macaddr AND ssid=?";
+      selection += "AND default_gw_mac=?::macaddr AND bssid=?::macaddr AND ssid=?";
     } else if (NetworkType.ETHERNET.equals(network.getType())) {
-      selection += "AND default_gw_mac=?::macaddr AND dns_mac=?::macaddr";
+      selection += "AND default_gw_mac=?::macaddr ";
     }
     String finalQuery = String.format(query, selection);
 
@@ -191,16 +202,13 @@ public class PostgreSQLDatabaseService implements DatabaseService {
     s.setString(1, network.getType().toString());
     s.setString(2, network.getPublicIp());
     s.setString(3, network.getDefaultGatewayIp());
-    s.setString(4, network.getDnsIp());
 
     if (NetworkType.WIFI.equals(network.getType())) {
-      s.setString(5, network.getDefaultGatewayMac());
-      s.setString(6, network.getDnsMac());
-      s.setString(7, network.getBssid());
-      s.setString(8, network.getSsid());
+      s.setString(4, network.getDefaultGatewayMac());
+      s.setString(5, network.getBssid());
+      s.setString(6, network.getSsid());
     } else if (NetworkType.ETHERNET.equals(network.getType())) {
-      s.setString(5, network.getDefaultGatewayMac());
-      s.setString(6, network.getDnsMac());
+      s.setString(4, network.getDefaultGatewayMac());
     }
 
     return s;

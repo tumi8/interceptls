@@ -1,6 +1,9 @@
 package de.tum.in.net.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class NetworkId implements Serializable {
 
@@ -11,8 +14,7 @@ public class NetworkId implements Serializable {
 
   private NetworkType type;
   private String publicIp;
-  private String dnsIp;
-  private String dnsMac;
+  private List<IpAndMac> dns = new ArrayList<>();
   private String defaultGatewayIp;
   private String defaultGatewayMac;
 
@@ -36,28 +38,18 @@ public class NetworkId implements Serializable {
     this.bssid = bssid;
   }
 
-  public String getDnsIp() {
-    return dnsIp;
+  public List<IpAndMac> getDns() {
+    return Collections.unmodifiableList(dns);
   }
 
-  public void setDnsIp(String dnsIp) {
-    this.dnsIp = dnsIp;
-  }
-
-
-  public String getDnsMac() {
-    return dnsMac;
-  }
-
-  public void setDnsMac(String dnsMac) {
-    this.dnsMac = dnsMac;
+  public void addDns(IpAndMac dns) {
+    this.dns.add(dns);
   }
 
   @Override
   public String toString() {
     return "NetworkId [ssid=" + ssid + ",bssid=" + bssid + ",defaultGatewayIp=" + defaultGatewayIp
-        + ",defaultGatewayMac=" + defaultGatewayMac + ",dnsIp=" + dnsIp + ",dnsMac=" + dnsMac
-        + ",publicIp=" + publicIp + "]";
+        + ",defaultGatewayMac=" + defaultGatewayMac + ",dns=" + dns + ",publicIp=" + publicIp + "]";
   }
 
   public NetworkType getType() {
