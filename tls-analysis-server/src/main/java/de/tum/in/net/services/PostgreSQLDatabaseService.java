@@ -31,7 +31,8 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   private static final String NEW_CHARACTERIZATION =
       "INSERT INTO CHARACTERIZATION (session_id, can_connect_wrong_http_host, can_connect_wrong_sni, ssl_v3, tls_v10, tls_v11, tls_v12) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-  private static final String NEW_DNS = "INSERT INTO DNS (session_id, ip, mac) VALUES (?, ?, ?)";
+  private static final String NEW_DNS =
+      "INSERT INTO DNS (session_id, ip, mac) VALUES (?, ?::INET, ?::macaddr)";
   private static final String INSERT_RESULT =
       "INSERT INTO RESULTS (session_id, test_id, client_ip, server_ip, client_sent, client_rec, server_sent, server_rec, target, target_port)"
           + " VALUES (?, ?, ?::INET, ?::INET, ?, ?, ?, ?, ?, ?)";
