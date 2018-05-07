@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tum.in.net.model.IpAndMac;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
 
@@ -73,17 +74,18 @@ public class UbuntuNetworkIdentifier implements NetworkIdentifier {
   private void setDns(NetworkId id) {
     try {
       List<String> dnsOutput = execProcess("nmcli dev show | grep DNS | awk '/DNS/ {print $2}'");
-      if (!dnsOutput.isEmpty()) {
-        String dnsIp = dnsOutput.get(0);
-        id.setDnsIp(dnsIp);
-        // extract the mac address of the given dns server
-        final List<String> neighborList =
-            execProcess("ip neighbor | grep " + dnsIp + " | cut -d \\  -f 5");
-        if (neighborList.size() > 0) {
-          id.setDnsMac(neighborList.get(0));
-        }
 
+      for (String dns : dnsOutput) {
+        execProcess("ping -c 1 + " + dns);
+        final List<String> neighborList =
+            execProcess("ip neighbor | grep " + dns + " | cut -d \\  -f 5");
+        if (neighborList.size() > 0) {
+          id.addDns(new IpAndMac(dns, neighborList.get(0)));
+        } else {
+          id.addDns(new IpAndMac(dns, null));
+        }
       }
+
     } catch (IOException e) {
       log.warn("Could not determine dns information", e);
     }
