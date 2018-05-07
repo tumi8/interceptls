@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(final View view, final int position) {
                 final String timestamp = testList.get(position).getTimestamp();
                 final Intent intent = new Intent(ctx, TlsTestResultViewActivity.class);
-                intent.putExtra("timestamp", testList.get(position).getTimestamp());
+                intent.putExtra("timestamp", timestamp);
                 startActivity(intent);
             }
 

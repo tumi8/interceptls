@@ -110,7 +110,7 @@ public class TlsDB extends SQLiteOpenHelper {
 
     public List<AndroidTlsResult> getTestResults() {
         try (SQLiteDatabase db = this.getReadableDatabase()) {
-            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, DATA_COLUMN, ANALYSIS_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN, "50")) {
+            try (final Cursor cursor = db.query(RESULTS_TABLE, new String[]{TIMESTAMP_COLUMN, DATA_COLUMN, ANALYSIS_COLUMN}, null, null, null, null, TIMESTAMP_COLUMN + " DESC", "60")) {
                 final List<AndroidTlsResult> results = new ArrayList<>();
 
                 while (cursor.moveToNext()) {
