@@ -27,7 +27,7 @@ public class PostgreSQLDatabaseService implements DatabaseService {
   private static final Logger log = LoggerFactory.getLogger(PostgreSQLDatabaseService.class);
   private static final String NEW_SESSION =
       "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, bssid, ssid) "
-          + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::INET, ?::macaddr, ?::macaddr, ?)";
+          + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::macaddr, ?)";
   private static final String NEW_CHARACTERIZATION =
       "INSERT INTO CHARACTERIZATION (session_id, can_connect_wrong_http_host, can_connect_wrong_sni, ssl_v3, tls_v10, tls_v11, tls_v12) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?)";
