@@ -25,7 +25,7 @@ public class IpAndMac {
 
   @Override
   public String toString() {
-    return "ip:" + ip + (mac == null ? "" : (",mac:" + mac));
+    return ip + (mac == null ? "" : ("(" + mac + ")"));
   }
 
 }

@@ -8,7 +8,6 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import de.tum.in.net.filter.CORSFilter;
 import de.tum.in.net.filter.LoggingFilter;
 import de.tum.in.net.model.DatabaseService;
 import de.tum.in.net.services.PostgreSQLDatabaseService;
@@ -48,8 +47,8 @@ public class AnalysisServerMain {
     // create a resource config that scans for JAX-RS resources and providers
     // in de.tum.in.net package
     final ResourceConfig rc = new ResourceConfig().register(new MyApplicationBinder(dbService))
-        .packages(true, "de.tum.in.net.resource").register(LoggingFilter.class)
-        .register(CORSFilter.class);
+        .packages(true, "de.tum.in.net.resource").register(LoggingFilter.class);
+    // .register(CORSFilter.class);
 
 
     // create and start a new instance of grizzly http server
