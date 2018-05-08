@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -16,6 +17,7 @@ import de.tum.in.net.analysis.GeneralStatistic;
 import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.model.DatabaseService;
 import de.tum.in.net.model.IpAndMac;
+import de.tum.in.net.model.Location;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
@@ -26,8 +28,8 @@ public class PostgreSQLDatabaseService implements DatabaseService {
 
   private static final Logger log = LoggerFactory.getLogger(PostgreSQLDatabaseService.class);
   private static final String NEW_SESSION =
-      "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, bssid, ssid) "
-          + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::macaddr, ?)";
+      "INSERT INTO SESSION (timestamp, interception, network_type, public_ip, default_gw_ip, default_gw_mac, bssid, ssid, longitude, latitude) "
+          + "VALUES (now(), ?, ?::network, ?::INET, ?::INET, ?::macaddr, ?::macaddr, ?, ?, ?)";
   private static final String NEW_CHARACTERIZATION =
       "INSERT INTO CHARACTERIZATION (session_id, can_connect_wrong_http_host, can_connect_wrong_sni, ssl_v3, tls_v10, tls_v11, tls_v12) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -137,6 +139,15 @@ public class PostgreSQLDatabaseService implements DatabaseService {
     s.setString(5, network.getDefaultGatewayMac());
     s.setString(6, network.getBssid());
     s.setString(7, network.getSsid());
+    Location l = network.getLocation();
+    if (l == null) {
+      s.setNull(8, Types.DOUBLE);
+      s.setNull(9, Types.DOUBLE);
+    } else {
+      s.setDouble(8, l.getLongitude());
+      s.setDouble(9, l.getLatitude());
+    }
+
     s.executeUpdate();
     ResultSet set = s.getGeneratedKeys();
     set.next();
