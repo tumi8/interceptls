@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(testList, new Comparator<AndroidTlsResult>() {
             @Override
             public int compare(final AndroidTlsResult r1, final AndroidTlsResult r2) {
-                return r1.getTimestamp().compareTo(r2.getTimestamp());
+                return r2.getTimestamp().compareTo(r1.getTimestamp());
             }
         });
     }
