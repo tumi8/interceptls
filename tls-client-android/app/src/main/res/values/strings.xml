@@ -24,6 +24,6 @@
     <string name="about_text">This application is part of a Master\'s Thesis created in SS2018. For more information visit </string>
     <string name="interception_title">Interception detected</string>
     <string name="data_collection">Data collection</string>
-    <string name="check_permission_location">Without the permission to access your coarse location we cannot access the WiFi SSID. You can disable the use of your location in the settings.</string>
+    <string name="check_permission_location">Without the permission to access your location we cannot access the WiFi SSID. You can disable the transmission of your location in the settings separately.</string>
     <string name="location">Share location</string>
 </resources>
