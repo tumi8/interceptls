@@ -187,8 +187,12 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationList
                 == PackageManager.PERMISSION_GRANTED) {
             final LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
             if (lm != null) {
-                lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
-                lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, this, null);
+                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
+                }
+                if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, this, null);
+                }
             }
         }
     }
@@ -199,16 +203,21 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationList
             final LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
 
             if (lm != null) {
-                Location loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if (loc == null) {
+                Location loc = null;
+                if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                }
+
+                if (loc == null && lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                     loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                 }
 
-                log.error("loc: {}", loc);
                 if (loc != null) {
                     id.setLocation(new de.tum.in.net.model.Location(loc.getLongitude(), loc.getLatitude()));
                 }
+                lm.removeUpdates(this);
             }
+
         }
     }
 
