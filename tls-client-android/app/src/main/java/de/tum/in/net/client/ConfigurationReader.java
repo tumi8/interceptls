@@ -69,4 +69,8 @@ public class ConfigurationReader {
         return Integer.parseInt(serviceTime);
     }
 
+    public static boolean isLocationAllowed(final Context ctx) {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return prefs.getBoolean(ctx.getString(R.string.location), false);
+    }
 }

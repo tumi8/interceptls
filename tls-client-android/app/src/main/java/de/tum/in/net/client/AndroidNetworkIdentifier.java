@@ -1,12 +1,19 @@
 package de.tum.in.net.client;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.NetworkInfo;
 import android.net.RouteInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -29,7 +36,7 @@ import de.tum.in.net.model.NetworkType;
  * Created by johannes on 22.03.18.
  */
 
-public class AndroidNetworkIdentifier implements NetworkIdentifier {
+public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationListener {
 
     private static final Logger log = LoggerFactory.getLogger(AndroidNetworkIdentifier.class);
     private final Context ctx;
@@ -50,15 +57,21 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
     public NetworkId identifyNetwork() {
         final NetworkId id = new NetworkId();
 
+        if (ConfigurationReader.isLocationAllowed(ctx)) {
+            requestLocationUpdate();
+        }
+
         final ConnectivityManager cm =
                 (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
         final LinkProperties lp = cm.getLinkProperties(cm.getActiveNetwork());
-
 
         setNetworkState(id, cm);
         setPublicIp(id);
         setDns(id, lp);
         setDefaultGateway(id, lp);
+        if (ConfigurationReader.isLocationAllowed(ctx)) {
+            setLocation(id);
+        }
 
         log.error("Identified network: {}", id);
         return id;
@@ -129,7 +142,7 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
     }
 
 
-    public void setDefaultGateway(final NetworkId id, final LinkProperties lp) {
+    private void setDefaultGateway(final NetworkId id, final LinkProperties lp) {
         String gwIp = null;
         for (final RouteInfo r : lp.getRoutes()) {
             if (r.isDefaultRoute()) {
@@ -155,7 +168,7 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
 
     }
 
-    public void setPublicIp(final NetworkId id) {
+    private void setPublicIp(final NetworkId id) {
         try {
             final URL ipify = new URL("https://api.ipify.org");
             final URLConnection conn = ipify.openConnection();
@@ -167,5 +180,55 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier {
             log.warn("could not get public ip", e);
         }
 
+    }
+
+    private void requestLocationUpdate() {
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            final LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+            if (lm != null) {
+                lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
+                lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, this, null);
+            }
+        }
+    }
+
+    private void setLocation(final NetworkId id) {
+        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            final LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+
+            if (lm != null) {
+                Location loc = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (loc == null) {
+                    loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
+
+                log.error("loc: {}", loc);
+                if (loc != null) {
+                    id.setLocation(new de.tum.in.net.model.Location(loc.getLongitude(), loc.getLatitude()));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onLocationChanged(final Location location) {
+        //ignore
+    }
+
+    @Override
+    public void onStatusChanged(final String s, final int i, final Bundle bundle) {
+        //ignore
+    }
+
+    @Override
+    public void onProviderEnabled(final String s) {
+        //ignore
+    }
+
+    @Override
+    public void onProviderDisabled(final String s) {
+        //ignore
     }
 }

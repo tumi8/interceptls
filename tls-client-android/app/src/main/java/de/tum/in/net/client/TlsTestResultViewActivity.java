@@ -127,6 +127,9 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
         } else {
             wifiView.setVisibility(View.GONE);
         }
+
+        final TextView locationTextView = findViewById(R.id.location);
+        locationTextView.setText(String.valueOf(network.getLocation()));
     }
 
     @Override

@@ -35,7 +35,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
-    private static final int ACCESS_COARSE_LOCATION_PERMISSION = 1;
+    private static final int ACCESS_LOCATION_PERMISSION = 1;
     private List<AndroidTlsResult> testList = new ArrayList<>();
     private AndroidTlsResultAdapter rAdapter = new AndroidTlsResultAdapter(testList);
     private RecyclerView recyclerView;
@@ -107,12 +107,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissionAndStartTest() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted, request permission
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(ctx,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // Show an explanation to the user *asynchronously*
                 final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                 builder.setMessage(R.string.check_permission_location)
@@ -120,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(final DialogInterface dialog, final int id) {
                                 ActivityCompat.requestPermissions(ctx,
-                                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                        ACCESS_COARSE_LOCATION_PERMISSION);
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        ACCESS_LOCATION_PERMISSION);
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(ctx,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        ACCESS_LOCATION_PERMISSION);
             }
 
             //callback is handled in onRequestPermissionsResult()
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(final int requestCode,
                                            final String[] permissions, final int[] grantResults) {
         switch (requestCode) {
-            case ACCESS_COARSE_LOCATION_PERMISSION: {
+            case ACCESS_LOCATION_PERMISSION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
