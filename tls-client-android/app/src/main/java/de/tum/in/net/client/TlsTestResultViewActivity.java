@@ -12,6 +12,7 @@ import android.widget.TextView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tum.in.net.model.Location;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
@@ -129,7 +130,8 @@ public class TlsTestResultViewActivity extends AppCompatActivity {
         }
 
         final TextView locationTextView = findViewById(R.id.location);
-        locationTextView.setText(String.valueOf(network.getLocation()));
+        final Location l = network.getLocation();
+        locationTextView.setText(l == null ? "N/A" : l.toString());
     }
 
     @Override
