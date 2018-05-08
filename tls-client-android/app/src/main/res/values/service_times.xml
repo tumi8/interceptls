@@ -4,6 +4,9 @@
         <item>Off</item>
         <item>30 min</item>
         <item>1 hour</item>
+        <item>2 hour</item>
+        <item>4 hour</item>
+        <item>8 hour</item>
         <item>12 hour</item>
         <item>24 hour</item>
     </string-array>
@@ -12,6 +15,9 @@
         <item>0</item>
         <item>30</item>
         <item>60</item>
+        <item>120</item>
+        <item>240</item>
+        <item>480</item>
         <item>720</item>
         <item>1440</item>
     </string-array>
