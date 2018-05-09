@@ -11,6 +11,7 @@ import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.analysis.NetworkStats;
 import de.tum.in.net.client.network.JavaNetworkIdentifier;
 import de.tum.in.net.model.MiddleboxCharacterization;
+import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsConstants;
 import de.tum.in.net.model.TlsTestResult;
@@ -29,6 +30,8 @@ public class TlsClientCliMain {
     String os = System.getProperty("os.name");
     if ("Linux".equals(os)) {
       networkIdentifier = new UbuntuNetworkIdentifier();
+    } else if ("Mac OS X".equals(os)) {
+      networkIdentifier = new MacOSNetworkIdentifier();
     } else {
       log.info(os
           + " is currently not supported. Therefore the network will not be identfied and the results won't be published.");
@@ -56,9 +59,24 @@ public class TlsClientCliMain {
       }
 
       if (publishResults) {
+        printNetworkInformation(testResult.getNetworkId());
         publishResults(testResult);
       }
     }
+
+  }
+
+  private static void printNetworkInformation(NetworkId network) {
+    log.info("");
+    log.info("Network information");
+    log.info("-----------------------------");
+    log.info("Type: {}", network.getType());
+    log.info("Public IP: {}", network.getPublicIp());
+    log.info("DNS: {}", network.getDns());
+    log.info("Gateway IP: {}", network.getDefaultGatewayIp());
+    log.info("Gateway MAC: {}", network.getDefaultGatewayMac());
+    log.info("WIFI SSID: {}", network.getSsid());
+    log.info("WIFI BSSID: {}", network.getBssid());
 
   }
 
