@@ -23,6 +23,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         if (isOnline(ctx)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 //from oreo on startService throws an IllegalStateException, see https://developer.android.com/about/versions/oreo/android-8.0-changes
+                ctx.startForegroundService(new Intent(ctx, TlsService.class));
             } else {
                 ctx.startService(new Intent(ctx, TlsService.class));
             }
