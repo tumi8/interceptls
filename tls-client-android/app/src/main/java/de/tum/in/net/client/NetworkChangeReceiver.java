@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
         sleepSilently(4000);
 
         if (isOnline(ctx)) {
-            ctx.startService(new Intent(ctx, TlsService.class));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                //from oreo on startService throws an IllegalStateException, see https://developer.android.com/about/versions/oreo/android-8.0-changes
+            } else {
+                ctx.startService(new Intent(ctx, TlsService.class));
+            }
         }
 
         log.error("onReceive done");
