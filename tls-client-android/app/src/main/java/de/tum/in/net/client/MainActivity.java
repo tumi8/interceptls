@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
     private static final int ACCESS_LOCATION_PERMISSION = 1;
+    private static final int ACCESS_LOCATION_PERMISSION_AND_START_TEST = 2;
     private List<AndroidTlsResult> testList = new ArrayList<>();
     private AndroidTlsResultAdapter rAdapter = new AndroidTlsResultAdapter(testList);
     private RecyclerView recyclerView;
@@ -97,20 +98,22 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                checkPermissionAndStartTest();
+                checkPermission(true);
             }
         });
 
         final StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        checkPermission(false);
     }
 
-    private void checkPermissionAndStartTest() {
+    private void checkPermission(final boolean startTest) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted, request permission
 
+            final int permissionId = startTest ? ACCESS_LOCATION_PERMISSION_AND_START_TEST : ACCESS_LOCATION_PERMISSION;
             if (ActivityCompat.shouldShowRequestPermissionRationale(ctx,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // Show an explanation to the user *asynchronously*
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(final DialogInterface dialog, final int id) {
                                 ActivityCompat.requestPermissions(ctx,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                        ACCESS_LOCATION_PERMISSION);
+                                        permissionId);
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -137,14 +140,16 @@ public class MainActivity extends AppCompatActivity {
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(ctx,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        ACCESS_LOCATION_PERMISSION);
+                        permissionId);
             }
 
             //callback is handled in onRequestPermissionsResult()
 
         } else {
             //we have the permission, start test
-            startActivity(new Intent(ctx, ProgressActivity.class));
+            if (startTest) {
+                startActivity(new Intent(ctx, ProgressActivity.class));
+            }
         }
     }
 
@@ -152,7 +157,17 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(final int requestCode,
                                            final String[] permissions, final int[] grantResults) {
         switch (requestCode) {
-            case ACCESS_LOCATION_PERMISSION: {
+            case ACCESS_LOCATION_PERMISSION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //do nothing
+                } else {
+                    //ask again
+                    checkPermission(false);
+                }
+                break;
+
+            case ACCESS_LOCATION_PERMISSION_AND_START_TEST:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -163,8 +178,6 @@ public class MainActivity extends AppCompatActivity {
                     // permission denied, we cannot start the test without the permission
                 }
                 break;
-            }
-
         }
     }
 
