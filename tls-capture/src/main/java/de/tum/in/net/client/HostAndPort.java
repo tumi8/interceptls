@@ -58,6 +58,6 @@ public class HostAndPort implements Serializable {
 
   @Override
   public String toString() {
-    return host + ":" + port;
+    return host + (port == 443 ? "" : (":" + port));
   }
 }

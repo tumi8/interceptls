@@ -46,7 +46,7 @@ public class HostAndPortTest {
   @Test
   public void toStringOutput() {
     HostAndPort t1 = HostAndPort.parse("junit.org");
-    assertEquals("junit.org:443", t1.toString());
+    assertEquals("junit.org", t1.toString());
 
     HostAndPort t2 = HostAndPort.parse("junit.org:678");
     assertEquals("junit.org:678", t2.toString());
