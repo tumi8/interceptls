@@ -216,6 +216,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
+            case R.id.license:
+                startActivity(new Intent(this, LicenseActivity.class));
+                return true;
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 return true;
