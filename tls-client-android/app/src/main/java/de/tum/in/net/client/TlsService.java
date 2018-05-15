@@ -48,6 +48,7 @@ public class TlsService extends IntentService {
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
 
             final Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_interception)
                     .setContentTitle("")
                     .setContentText("").build();
 
