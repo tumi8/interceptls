@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import org.apache.http.HttpException;
@@ -86,8 +88,16 @@ class TlsClientConnection implements Runnable {
             if (redirectUrl == null) {
               response = TlsConstants.HTTP_VERSION + " 404 Not Found\r\n\r\n";
             } else {
+              String path = "";
+              try {
+                URI uri = new URI(req.getRequestLine().getUri());
+                path = uri.getPath();
+              } catch (URISyntaxException e) {
+                // ignore
+              }
+
               response = TlsConstants.HTTP_VERSION + " 301 Moved Permanently\r\n" + "Location: "
-                  + redirectUrl + "\r\n\r\n";
+                  + redirectUrl + path + "\r\n\r\n";
             }
             tlsSocket.getOutputStream().write(response.getBytes());
           }
