@@ -7,9 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class StatisticsComponent implements OnInit {
 
+  totalTestCount = 0;
+  totalInterceptionCount = 0;
+
   constructor() { }
 
   ngOnInit() {
+    //
   }
 
 }

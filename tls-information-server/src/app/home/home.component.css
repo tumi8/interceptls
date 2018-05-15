@@ -5,20 +5,22 @@
 
 .product-device {
   position: absolute;
-  right: 10%;
+  right: 3%;
   bottom: -30%;
   width: 300px;
   height: 540px;
   background-color: #333;
   border-radius: 21px;
-  -webkit-transform: rotate(30deg);
-  transform: rotate(30deg);
 }
 
 .product-device-2 {
-  top: -25%;
+  position: absolute;
+  top: +20%;
   right: auto;
   bottom: 0;
+  width: 300px;
+  height: 300px;
   left: 5%;
   background-color: #e5e5e5;
+  border-radius: 21px;
 }
