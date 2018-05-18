@@ -6,8 +6,8 @@ android {
         applicationId "de.tum.in.net.interceptls"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0-SNAPSHOT"
+        versionCode 2
+        versionName 1.0.0
     }
     buildTypes {
         release {
