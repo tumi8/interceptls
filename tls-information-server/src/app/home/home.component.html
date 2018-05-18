@@ -8,6 +8,32 @@
   <img class="product-device box-shadow d-none d-md-block" src="assets/img/app.png"/>
   <img class="product-device-2 box-shadow d-none d-md-block" src="assets/img/notification.png"/>
 </div>
+
+<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+  <h1 class="display-4">Goal</h1>
+  Our goal is to detect networks that intercept your connection and therefore degrade your security.<br>
+  If an interception is detected, we will characterize the middlebox.
+</div>
+
+<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+  <h1 class="display-4">How it works</h1>
+  <p>
+    Research has shown that TLS connections are intercepted.
+    However,  focuses only on one side of the connection (server or client).
+    Such single viewpoint approaches identify intercepted connections
+    only to a certain degree. For example, server-side approaches rely on heuristics
+    (e.g. mismatch between HTTP User Agent and TLS handshake fingerprint)
+    and client-side approaches are generally browser-based and transmit their results
+    via a possibly insecure connection.
+  </p>
+  <p>
+    In this project, we eliminate those deficiencies by controlling both client and server.
+    Our server captures the transmitted TLS handhsake and sends it back to the client. With that
+    data the client can immediately detect an interception. The interception is then analysed
+    in detail by our central analysis server.
+  </p>
+
+</div>
 <!--
 <div class="d-md-flex flex-md-equal w-100 my-md-3 pl-md-3">
   <div class="bg-dark mr-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden">
