@@ -4,6 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <inceptionYear>2018</inceptionYear>
   <groupId>de.tum.in.net</groupId>
   <artifactId>tls-interception-detection</artifactId>
   <packaging>pom</packaging>
@@ -82,6 +83,28 @@
                 </rules>
                 <fail>true</fail>
               </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>3.0</version>
+          <configuration>
+            <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
+            <properties>
+              <owner>Johannes Schleger</owner>
+              <email>johannes.schleger@tum.de</email>
+            </properties>
+            <includes>
+              <include>**/*.java</include>
+           </includes>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
             </execution>
           </executions>
         </plugin>
