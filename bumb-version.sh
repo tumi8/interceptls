@@ -20,8 +20,9 @@ mvn versions:set -DnewVersion=$VERSION
 
 #set version number
 # -i option is not cross plattform :(
-sed "s/versionName .*/versionName \"$VERSION\"/" tls-client-android/app/build.gradle > tls-client-android/app/build.gradle.new
-mv tls-client-android/app/build.gradle.new tls-client-android/app/build.gradle
+DIR=tls-client-android/app
+sed "s/versionName .*/versionName \"$VERSION\"/" $DIR/build.gradle > $DIR/build.gradle.new
+sed "s/implementation 'de.tum.in.net:tls-capture:.*/implementation 'de.tum.in.net:tls-capture:$VERSION'/" $DIR/build.gradle.new > $DIR/build.gradle
 
 #increment android version code
 perl -i -pe 's/(versionCode )(\d+)$/$1.($2+1)/e' tls-client-android/app/build.gradle
