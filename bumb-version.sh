@@ -23,6 +23,7 @@ mvn versions:set -DnewVersion=$VERSION
 DIR=tls-client-android/app
 sed "s/versionName .*/versionName \"$VERSION\"/" $DIR/build.gradle > $DIR/build.gradle.new
 sed "s/implementation 'de.tum.in.net:tls-capture:.*/implementation 'de.tum.in.net:tls-capture:$VERSION'/" $DIR/build.gradle.new > $DIR/build.gradle
+rm $DIR/build.gradle.new
 
 #increment android version code
 perl -i -pe 's/(versionCode )(\d+)$/$1.($2+1)/e' tls-client-android/app/build.gradle

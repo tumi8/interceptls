@@ -4,17 +4,17 @@
   <parent>
     <groupId>de.tum.in.net</groupId>
     <artifactId>tls-interception-detection</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <relativePath>../</relativePath>
   </parent>
 
   <artifactId>tls-client-cli</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <dependencies>
     <dependency>
       <groupId>de.tum.in.net</groupId>
       <artifactId>tls-capture</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
