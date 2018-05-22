@@ -1,19 +1,35 @@
 # TLS-interception
 
-Crowdsourced measurement of TLS-interception in ISP networks
+Crowdsourced measurement of TLS-interception in access networks
 
 ## Folder structure
 
-* **/demo-tls-client**
-  Android app demoing the client-side capabilities based on the bouncycastle TLS
-  implementation. Used as a starting point for further development.
+* **/tls-capture**
+  The core package.
 
+* **/tls-capture-server**
+  Server which captures the TLS handshake and sends it back to the client.
+
+* **/tls-client-android**
+  Android app for Android 6.0+ (API Level 23+)
+
+* **/tls-client-cli**
+  Client for desktop, supporting Ubuntu (and equivalent) and Mac OS X.
+  
+* **/tls-information-server**
+  The (static) homepage to inform users about our project.
+
+* **/tls-json-parser**
+  Rust-based parser that parses the TLS handshake to JSON.
+
+### Not used anymore
 * **/docs**
-  source files for project documentation (charts, ideas, etc.) as used in the wiki
-
+  Deprecated, use tls-interception-docs repository
+  
 * **/relay-server**
   Python-based relay server
 
 * **/traces**
   example pcap traces of real-world TLS handshakes and TLS-based protocols 
+
 
