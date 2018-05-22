@@ -21,6 +21,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +35,36 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public void onReceive(final Context ctx, final Intent intent) {
         log.error("onReceive");
 
-        // a new connection may need some time to be established
-        sleepSilently(4000);
-
-        if (isOnline(ctx)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                //from oreo on startService throws an IllegalStateException, see https://developer.android.com/about/versions/oreo/android-8.0-changes
-                ctx.startForegroundService(new Intent(ctx, TlsService.class));
-            } else {
-                ctx.startService(new Intent(ctx, TlsService.class));
+        final PendingResult pendingResult = goAsync();
+        final Intent i = new Intent(ctx, TlsService.class);
+        i.putExtra("resultReceiver", new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(final int resultCode, final Bundle resultData) {
+                pendingResult.finish();
             }
-        }
+        });
 
-        log.error("onReceive done");
+        final Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                // a new connection may need some time to be established
+                sleepSilently(4000);
+
+
+                if (isOnline(ctx)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        //from oreo on startService throws an IllegalStateException, see https://developer.android.com/about/versions/oreo/android-8.0-changes
+                        ctx.startForegroundService(i);
+                    } else {
+                        ctx.startService(i);
+                    }
+                } else {
+                    pendingResult.finish();
+                }
+            }
+        };
+        final Thread t = new Thread(r);
+        t.start();
     }
 
     private void sleepSilently(final int millis) {
