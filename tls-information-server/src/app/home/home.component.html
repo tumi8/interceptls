@@ -19,7 +19,7 @@
   <h1 class="display-4">How it works</h1>
   <p>
     Research has shown that TLS connections are intercepted.
-    However,  focuses only on one side of the connection (server or client).
+    However, it focuses only on one side of the connection (server or client).
     Such single viewpoint approaches identify intercepted connections
     only to a certain degree. For example, server-side approaches rely on heuristics
     (e.g. mismatch between HTTP User Agent and TLS handshake fingerprint)
@@ -28,7 +28,7 @@
   </p>
   <p>
     In this project, we eliminate those deficiencies by controlling both client and server.
-    Our server captures the transmitted TLS handhsake and sends it back to the client. With that
+    Our server captures the transmitted TLS handshake and sends it back to the client. With that
     data the client can immediately detect an interception. The interception is then analysed
     in detail by our central analysis server.
   </p>
