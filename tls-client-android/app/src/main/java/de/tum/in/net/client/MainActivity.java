@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
     private static final int ACCESS_LOCATION_PERMISSION = 1;
     private static final int ACCESS_LOCATION_PERMISSION_AND_START_TEST = 2;
+    public static final String LOCATION_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
     private List<AndroidTlsResult> testList = new ArrayList<>();
     private AndroidTlsResultAdapter rAdapter = new AndroidTlsResultAdapter(testList);
     private RecyclerView recyclerView;
@@ -124,13 +125,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermission(final boolean startTest) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, LOCATION_PERMISSION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted, request permission
 
             final int permissionId = startTest ? ACCESS_LOCATION_PERMISSION_AND_START_TEST : ACCESS_LOCATION_PERMISSION;
             if (ActivityCompat.shouldShowRequestPermissionRationale(ctx,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    LOCATION_PERMISSION)) {
                 // Show an explanation to the user *asynchronously*
                 final AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                 builder.setMessage(R.string.check_permission_location)
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(final DialogInterface dialog, final int id) {
                                 ActivityCompat.requestPermissions(ctx,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        new String[]{LOCATION_PERMISSION},
                                         permissionId);
                             }
                         })
@@ -154,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(ctx,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        new String[]{LOCATION_PERMISSION},
                         permissionId);
             }
 

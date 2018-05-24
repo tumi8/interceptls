@@ -15,7 +15,6 @@
  */
 package de.tum.in.net.client;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -198,7 +197,7 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationList
     }
 
     private void requestLocationUpdate() {
-        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(ctx, MainActivity.LOCATION_PERMISSION)
                 == PackageManager.PERMISSION_GRANTED) {
             final LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
             if (lm != null) {
@@ -213,7 +212,7 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationList
     }
 
     private void setLocation(final NetworkId id) {
-        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(ctx, MainActivity.LOCATION_PERMISSION)
                 == PackageManager.PERMISSION_GRANTED) {
             final LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
 

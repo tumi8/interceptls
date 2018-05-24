@@ -15,7 +15,6 @@
  */
 package de.tum.in.net.client;
 
-import android.Manifest;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -75,7 +74,7 @@ public class TlsService extends IntentService {
     protected void onHandleIntent(@Nullable final Intent intent) {
         log.debug("onHandleIntent TlsService");
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, MainActivity.LOCATION_PERMISSION)
                 != PackageManager.PERMISSION_GRANTED) {
             log.error("We do not have the permission to access the coarse location. Cannot execute test.");
             return;
