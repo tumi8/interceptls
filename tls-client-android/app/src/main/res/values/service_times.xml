@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="service_time_default">240</string>
     <string-array name="service_times">
         <item>Off</item>
         <item>30 min</item>

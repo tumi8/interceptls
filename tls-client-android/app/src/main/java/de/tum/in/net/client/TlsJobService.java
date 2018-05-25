@@ -43,7 +43,7 @@ public class TlsJobService extends JobService {
             js.cancel(JobId.tlsJobServiceId);
         } else {
             final long timeInMillis = timeInMinutes * 60 * 1000;
-            log.error("Set TlsJobService service time in min: {}", timeInMinutes);
+            log.info("Set TlsJobService service time in min: {}", timeInMinutes);
 
             final JobInfo job = new JobInfo.Builder(
                     JobId.tlsJobServiceId,

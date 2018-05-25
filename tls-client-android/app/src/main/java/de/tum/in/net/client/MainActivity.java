@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         DbCleanJobService.init(this);
+        TlsJobService.init(this);
 
         ctx = this;
         recyclerView = findViewById(R.id.recycler_view);

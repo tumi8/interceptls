@@ -21,10 +21,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -74,9 +76,17 @@ public class TlsService extends IntentService {
     protected void onHandleIntent(@Nullable final Intent intent) {
         log.debug("onHandleIntent TlsService");
 
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final int versionCode = sharedPreferences.getInt("VERSION_CODE", 1);
+
+        if (versionCode != BuildConfig.VERSION_CODE) {
+            onAppUpdated();
+            sharedPreferences.edit().putInt("VERSION_CODE", BuildConfig.VERSION_CODE).apply();
+        }
+
         if (ContextCompat.checkSelfPermission(this, MainActivity.LOCATION_PERMISSION)
                 != PackageManager.PERMISSION_GRANTED) {
-            log.error("We do not have the permission to access the coarse location. Cannot execute test.");
+            log.error("We do not have the permission to access the location. Cannot execute test.");
             return;
         }
 
@@ -138,6 +148,22 @@ public class TlsService extends IntentService {
             }
         }
 
+    }
+
+    private void onAppUpdated() {
+        applyNewDefaultServiceTime();
+    }
+
+    private void applyNewDefaultServiceTime() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean appliedNewDefaultServiceTime = prefs.getBoolean("appliedNewDefaultServiceTime", false);
+        if (!appliedNewDefaultServiceTime) {
+            final SharedPreferences.Editor edit = prefs.edit();
+            edit.putString(this.getString(R.string.background_service), this.getString(R.string.service_time_default));
+            edit.putBoolean("appliedNewDefaultServiceTime", true);
+            edit.apply();
+            TlsJobService.init(this);
+        }
     }
 
 }

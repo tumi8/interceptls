@@ -17,7 +17,7 @@
         android:title="@string/background_service"
         android:entries="@array/service_times"
         android:entryValues="@array/service_times_values"
-        android:defaultValue="720"
+        android:defaultValue="@string/service_time_default"
         android:summary="Set the time interval in which the TLS tests run automatically in the background." />
     <MultiSelectListPreference
         android:defaultValue="@array/hosts_default"
