@@ -4,13 +4,13 @@
   <parent>
     <groupId>de.tum.in.net</groupId>
     <artifactId>tls-interception-detection</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <relativePath>../</relativePath>
   </parent>
 
   <artifactId>tls-analysis-server</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <name>tls-analysis-server</name>
   
   <properties>
@@ -52,7 +52,7 @@
         <dependency>
            	<groupId>de.tum.in.net</groupId>
       		<artifactId>tls-capture</artifactId>
-      		<version>1.0.2</version>
+      		<version>1.0.3</version>
       	</dependency>
         <dependency>
       		<groupId>com.squareup.retrofit2</groupId>

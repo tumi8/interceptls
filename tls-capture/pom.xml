@@ -4,12 +4,12 @@
   <parent>
     <groupId>de.tum.in.net</groupId>
     <artifactId>tls-interception-detection</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <relativePath>../</relativePath>
   </parent>
 
   <artifactId>tls-capture</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <dependencies>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
