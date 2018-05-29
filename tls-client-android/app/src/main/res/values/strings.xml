@@ -29,4 +29,5 @@
     <string name="license">License</string>
     <string name="libraries_apache_text"><a href="http://www.apache.org/licenses/">- HTTP Core</a>\n<a href="http://www.apache.org/licenses/">- Commons IO</a>\n<a href="http://www.joda.org/joda-time/license.html">- Joda-Time</a>\n<a href="https://square.github.io/retrofit/#license">- Retrofit</a>\n<a href="https://square.github.io/retrofit/#license">- converter-gson</a>\n<a href="https://square.github.io/okhttp/#license">- logging-interceptor</a>\n</string>
     <string name="libraries_mit_text"><a href="https://www.slf4j.org/license.html">- SLF4J</a>\n<a href="https://www.bouncycastle.org/license.html">- Bouncy Castle</a></string>
+    <string name="notification_conduct_test">Your network is tested for interceptions.</string>
 </resources>

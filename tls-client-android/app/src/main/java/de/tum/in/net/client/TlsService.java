@@ -65,8 +65,8 @@ public class TlsService extends IntentService {
 
             final Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_interception)
-                    .setContentTitle("")
-                    .setContentText("").build();
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(getString(R.string.notification_conduct_test)).build();
 
             startForeground(1, notification);
         }
