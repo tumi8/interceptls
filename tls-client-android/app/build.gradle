@@ -9,10 +9,27 @@ android {
         versionCode 5
         versionName "1.0.3"
     }
+    signingConfigs {
+        release {
+            v1SigningEnabled false
+            v2SigningEnabled true
+        }
+    }
+    //sign build with the corresponding key from tls-interception-secret repository if exists
+    def keystorePropertiesFile = rootProject.file("../../tls-interception-secret/tls-client-android/keystore.properties")
+    def keystoreProperties = new Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        android.signingConfigs.release.storeFile = file(keystoreProperties['storeFile'])
+        android.signingConfigs.release.storePassword = keystoreProperties['storePassword']
+        android.signingConfigs.release.keyAlias = keystoreProperties['keyAlias']
+        android.signingConfigs.release.keyPassword = keystoreProperties['keyPassword']
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     productFlavors {
