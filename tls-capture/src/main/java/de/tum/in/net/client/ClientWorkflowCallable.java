@@ -57,10 +57,12 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
 
     log.debug("Connecting to {} hosts", targets.size());
     List<TlsClientServerResult> results = connectToHosts(targets);
+    String publicIp = getPublicIp(results);
 
     // classify network
     log.debug("Identify network");
     NetworkId network = networkIdentifier.identifyNetwork();
+    network.setPublicIp(publicIp);
 
     TlsTestResult result = new TlsTestResult(network, results);
     // if there was an interception try to characterize the middlebox
@@ -77,6 +79,19 @@ public class ClientWorkflowCallable implements Callable<TlsTestResult> {
 
     return result;
 
+  }
+
+  private String getPublicIp(List<TlsClientServerResult> results) {
+    String ip = null;
+    for (TlsClientServerResult result : results) {
+      if (result.isSuccess()) {
+        // the ip might be the ip of the middlebox and not of the client
+        // but there is no real alternative
+        ip = result.getServerResult().getDestination();
+        break;
+      }
+    }
+    return ip;
   }
 
   private static List<TlsClientServerResult> connectToHosts(List<HostAndPort> targets)
