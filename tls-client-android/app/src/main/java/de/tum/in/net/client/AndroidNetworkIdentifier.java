@@ -33,12 +33,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -80,7 +76,6 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationList
         final LinkProperties lp = cm.getLinkProperties(cm.getActiveNetwork());
 
         setNetworkState(id, cm);
-        setPublicIp(id);
         setDns(id, lp);
         setDefaultGateway(id, lp);
         if (ConfigurationReader.isLocationAllowed(ctx)) {
@@ -179,20 +174,6 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationList
             }
         }
 
-
-    }
-
-    private void setPublicIp(final NetworkId id) {
-        try {
-            final URL ipify = new URL("https://api.ipify.org");
-            final URLConnection conn = ipify.openConnection();
-            try (final BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                final String ip = in.readLine();
-                id.setPublicIp(ip);
-            }
-        } catch (final IOException e) {
-            log.warn("could not get public ip", e);
-        }
 
     }
 
