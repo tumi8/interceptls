@@ -53,7 +53,7 @@
         <service
             android:name=".TlsService"
             android:icon="@drawable/ic_upload"
-            android:label="TODO" />
+            android:label="@string/background_service" />
 
         <service
             android:name=".TlsJobService"
