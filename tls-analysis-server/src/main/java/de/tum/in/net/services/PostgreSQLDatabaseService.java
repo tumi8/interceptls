@@ -218,7 +218,7 @@ public class PostgreSQLDatabaseService implements DatabaseService {
 
     // network specific params
     if (NetworkType.WIFI.equals(network.getType())) {
-      selection += "AND default_gw_mac=?::macaddr AND bssid=?::macaddr AND ssid=?";
+      selection += "AND default_gw_mac=?::macaddr AND ssid=?";
     } else if (NetworkType.ETHERNET.equals(network.getType())) {
       selection += "AND default_gw_mac=?::macaddr ";
     }
