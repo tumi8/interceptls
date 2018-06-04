@@ -6,31 +6,35 @@ android {
         applicationId "de.tum.in.net.interceptls"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 5
-        versionName "1.0.3"
+        versionCode 6
+        versionName "1.0.4"
     }
-    signingConfigs {
-        release {
-            v1SigningEnabled false
-            v2SigningEnabled true
-        }
-    }
+
     //sign build with the corresponding key from tls-interception-secret repository if exists
     def keystoreDir = rootProject.file("../../tls-interception-secret/tls-client-android/")
     def keystorePropertiesFile = new File(keystoreDir, "keystore.properties")
     if (keystorePropertiesFile.exists()) {
         def keystoreProperties = new Properties()
         keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-        android.signingConfigs.release.storeFile = new File(keystoreDir, keystoreProperties['storeFile'])
-        android.signingConfigs.release.storePassword = keystoreProperties['storePassword']
-        android.signingConfigs.release.keyAlias = keystoreProperties['keyAlias']
-        android.signingConfigs.release.keyPassword = keystoreProperties['keyPassword']
+        signingConfigs {
+            release {
+                v1SigningEnabled true
+                v2SigningEnabled true
+                storeFile new File(keystoreDir, keystoreProperties['storeFile'])
+                storePassword  keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
     }
+
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+        if (keystorePropertiesFile.exists()) {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+                signingConfig signingConfigs.release
+            }
         }
     }
     productFlavors {
@@ -40,7 +44,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
-    implementation 'de.tum.in.net:tls-capture:1.0.3'
+    implementation 'de.tum.in.net:tls-capture:1.0.4'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'

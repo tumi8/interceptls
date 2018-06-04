@@ -1,4 +1,5 @@
 .DS_Store
+workspace.xml
 
 # Built application files
 *.apk
