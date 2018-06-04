@@ -232,8 +232,7 @@ public class PostgreSQLDatabaseService implements DatabaseService {
 
     if (NetworkType.WIFI.equals(network.getType())) {
       s.setString(4, network.getDefaultGatewayMac());
-      s.setString(5, network.getBssid());
-      s.setString(6, network.getSsid());
+      s.setString(5, network.getSsid());
     } else if (NetworkType.ETHERNET.equals(network.getType())) {
       s.setString(4, network.getDefaultGatewayMac());
     }
