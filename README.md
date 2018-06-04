@@ -22,14 +22,4 @@ Crowdsourced measurement of TLS-interception in access networks
 * **/tls-json-parser**
   Rust-based parser that parses the TLS handshake to JSON.
 
-### Not used anymore
-* **/docs**
-  Deprecated, use tls-interception-docs repository
-  
-* **/relay-server**
-  Python-based relay server
-
-* **/traces**
-  example pcap traces of real-world TLS handshakes and TLS-based protocols 
-
 
