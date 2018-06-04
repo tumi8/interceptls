@@ -59,8 +59,8 @@ public class AndroidNetworkIdentifier implements NetworkIdentifier, LocationList
     public boolean isConnected() {
         final ConnectivityManager cm =
                 (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        return cm.getActiveNetworkInfo().isConnected();
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return (netInfo != null && netInfo.isConnected());
     }
 
     @Override
