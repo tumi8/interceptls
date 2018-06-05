@@ -33,7 +33,7 @@ public class APIClient {
   static Retrofit createClient(final String url) {
 
     final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-    interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
 
     final OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor)
         .hostnameVerifier(AnalysisTlsContext.getHostnameVerifier()).sslSocketFactory(
