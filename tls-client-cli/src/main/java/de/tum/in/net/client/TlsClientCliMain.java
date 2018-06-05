@@ -24,9 +24,14 @@ import org.slf4j.LoggerFactory;
 
 import de.tum.in.net.analysis.AnalysisResult;
 import de.tum.in.net.analysis.NetworkStats;
+import de.tum.in.net.client.db.MeasurementDb;
+import de.tum.in.net.client.db.TextFileMeasurementDb;
 import de.tum.in.net.client.network.JavaNetworkIdentifier;
+import de.tum.in.net.client.network.MacOSNetworkIdentifier;
+import de.tum.in.net.client.network.UbuntuNetworkIdentifier;
 import de.tum.in.net.model.MiddleboxCharacterization;
 import de.tum.in.net.model.NetworkId;
+import de.tum.in.net.model.NetworkType;
 import de.tum.in.net.model.TestSession;
 import de.tum.in.net.model.TlsConstants;
 import de.tum.in.net.model.TlsTestResult;
@@ -36,13 +41,13 @@ public class TlsClientCliMain {
 
   private static final Logger log = LoggerFactory.getLogger(TlsClientCliMain.class);
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
 
     log.info("Start TLS interception detection.");
 
     boolean publishResults = true;
     NetworkIdentifier networkIdentifier;
-    String os = System.getProperty("os.name");
+    final String os = System.getProperty("os.name");
     if ("Linux".equals(os)) {
       networkIdentifier = new UbuntuNetworkIdentifier();
     } else if ("Mac OS X".equals(os)) {
@@ -54,14 +59,14 @@ public class TlsClientCliMain {
       publishResults = false;
     }
 
-    List<HostAndPort> targets =
+    final List<HostAndPort> targets =
         Arrays.asList(HostAndPort.parse(TlsConstants.TLS_CAPTURE_SERVER_HOST));
-    ClientWorkflowCallable c = new ClientWorkflowCallable(targets, networkIdentifier);
+    final ClientWorkflowCallable c = new ClientWorkflowCallable(targets, networkIdentifier);
 
     TlsTestResult testResult = null;
     try {
       testResult = c.call();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       log.error("Unexpected exception", e);
     }
 
@@ -81,7 +86,7 @@ public class TlsClientCliMain {
 
   }
 
-  private static void printNetworkInformation(NetworkId network) {
+  private static void printNetworkInformation(final NetworkId network) {
     log.info("");
     log.info("Network information");
     log.info("-----------------------------");
@@ -90,12 +95,14 @@ public class TlsClientCliMain {
     log.info("DNS: {}", network.getDns());
     log.info("Gateway IP: {}", network.getDefaultGatewayIp());
     log.info("Gateway MAC: {}", network.getDefaultGatewayMac());
-    log.info("WIFI SSID: {}", network.getSsid());
-    log.info("WIFI BSSID: {}", network.getBssid());
+    if (NetworkType.WIFI.equals(network.getType())) {
+      log.info("WIFI SSID: {}", network.getSsid());
+      log.info("WIFI BSSID: {}", network.getBssid());
 
+    }
   }
 
-  private static void printTestResult(TlsTestResult testResult) {
+  private static void printTestResult(final TlsTestResult testResult) {
     log.info("");
     log.info("TEST RESULT");
     log.info("-----------------------------");
@@ -104,7 +111,7 @@ public class TlsClientCliMain {
     log.info("Intercepted connections: {}", testResult.interceptions());
   }
 
-  private static void printMiddleboxCharacterization(MiddleboxCharacterization mc) {
+  private static void printMiddleboxCharacterization(final MiddleboxCharacterization mc) {
     log.info("");
     log.info("MIDDLEBOX CHARACTERIZATION");
     log.info("-----------------------------");
@@ -113,28 +120,50 @@ public class TlsClientCliMain {
     log.info("Can connect wrong sni: {}", mc.getCanConnectWrongSni());
   }
 
-  private static void publishResults(TlsTestResult testResult) {
+  private static void publishResults(final TlsTestResult testResult) {
     if (testResult.anyInterception()) {
       log.info("Your connection is intercepted. Anyway, we at least try to publish the results.");
     }
+
+    final MeasurementDb db = TextFileMeasurementDb.getInstance();
     try {
-      TestSession s = new OnlineTestSession(TlsConstants.TLS_ANALYSIS_URL);
-      AnalysisResult r = s.uploadResult(testResult);
+      final TestSession s = new OnlineTestSession(TlsConstants.TLS_ANALYSIS_URL);
+      final AnalysisResult r = s.uploadResult(testResult);
       printAnalysisResult(r);
 
-    } catch (IOException e) {
+      uploadResultsFromDatabase(db, s);
+
+
+    } catch (final IOException e) {
       // analysis server not reachable or no secure connection
-      log.warn("Could not upload results to analysis server.");
+      log.warn("Could not upload result to analysis server. Instead it is stored in database.");
+      try {
+        db.append(testResult);
+      } catch (final IOException e1) {
+        log.error("Could not store result in database.", e);
+      }
     }
   }
 
+  private static void uploadResultsFromDatabase(final MeasurementDb db, final TestSession s) {
+    try {
+      // in case of success, try to publish the other results
+      final List<TlsTestResult> results = db.readAll();
+      for (final TlsTestResult result : results) {
+        s.uploadResult(result);
+      }
+      db.deleteAll();
 
+    } catch (final IOException e) {
+      log.error("Could not upload temp results.", e);
+    }
+  }
 
-  private static void printAnalysisResult(AnalysisResult r) {
+  private static void printAnalysisResult(final AnalysisResult r) {
     log.info("");
     log.info("Network Stats:");
     log.info("-----------------------------");
-    NetworkStats stats = r.getStats();
+    final NetworkStats stats = r.getStats();
     log.info("Test count: {}", stats.getCountTotal());
     log.info("Interception rate: {}", stats.getInterceptionRateTotal());
   }

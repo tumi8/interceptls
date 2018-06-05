@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.tum.in.net.client;
+package de.tum.in.net.client.network;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tum.in.net.client.NetworkIdentifier;
 import de.tum.in.net.model.IpAndMac;
 import de.tum.in.net.model.NetworkId;
 import de.tum.in.net.model.NetworkType;
@@ -30,9 +31,9 @@ import de.tum.in.net.model.NetworkType;
 /*
  * Tested on Ubuntu 17.10.
  */
-public class MacOSNetworkIdentifier implements NetworkIdentifier {
+public class UbuntuNetworkIdentifier implements NetworkIdentifier {
 
-  private static final Logger log = LoggerFactory.getLogger(MacOSNetworkIdentifier.class);
+  private static final Logger log = LoggerFactory.getLogger(UbuntuNetworkIdentifier.class);
 
   @Override
   public NetworkId identifyNetwork() {
@@ -47,12 +48,13 @@ public class MacOSNetworkIdentifier implements NetworkIdentifier {
 
   private void setDefaultGateway(NetworkId id) {
     try {
-      final List<String> ip = execProcess("route -n get default | grep gateway | awk '{print $2}'");
+      final List<String> ip = execProcess("ip route get 1.1.1.1 | cut -d \\  -f 3");
       if (!ip.isEmpty()) {
         final String gwIp = ip.get(0);
         id.setDefaultGatewayIp(gwIp);
         // extract the mac address of the given gateway
-        final List<String> neighborList = execProcess("arp " + gwIp + " | awk '{print $4}'");
+        final List<String> neighborList =
+            execProcess("ip neighbor | grep " + gwIp + " | cut -d \\  -f 5");
         if (neighborList.size() > 0) {
           id.setDefaultGatewayMac(neighborList.get(0));
         }
@@ -66,21 +68,19 @@ public class MacOSNetworkIdentifier implements NetworkIdentifier {
 
   private void setDns(NetworkId id) {
     try {
-      List<String> dnsOutput =
-          execProcess("scutil --dns | grep nameserver | awk '{print $3}' | sort | uniq");
-      if (!dnsOutput.isEmpty()) {
+      List<String> dnsOutput = execProcess("nmcli dev show | grep DNS | awk '/DNS/ {print $2}'");
 
-        for (String dnsIp : dnsOutput) {
-          execProcess("ping -c 1 " + dnsIp);
-          final List<String> neighborList = execProcess("arp " + dnsIp + " | awk '{print $4}'");
-          if (neighborList.size() > 0) {
-            id.addDns(new IpAndMac(dnsIp, neighborList.get(0)));
-          } else {
-            id.addDns(new IpAndMac(dnsIp, null));
-          }
+      for (String dns : dnsOutput) {
+        execProcess("ping -c 1 + " + dns);
+        final List<String> neighborList =
+            execProcess("ip neighbor | grep " + dns + " | cut -d \\  -f 5");
+        if (neighborList.size() > 0) {
+          id.addDns(new IpAndMac(dns, neighborList.get(0)));
+        } else {
+          id.addDns(new IpAndMac(dns, null));
         }
-
       }
+
     } catch (IOException e) {
       log.warn("Could not determine dns information", e);
     }
@@ -88,22 +88,20 @@ public class MacOSNetworkIdentifier implements NetworkIdentifier {
   }
 
   private void setNetworkState(NetworkId id) {
-    String airportCmd =
-        "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I";
     try {
-      List<String> ssidOutput =
-          execProcess(airportCmd + " | awk '/ SSID/ {print substr($0, index($0, $2))}'");
+      List<String> ssidOutput = execProcess("iwgetid -r");
       if (ssidOutput.isEmpty() || ssidOutput.get(0).isEmpty()) {
         id.setType(NetworkType.ETHERNET);
       } else {
         id.setType(NetworkType.WIFI);
         id.setSsid(ssidOutput.get(0));
-        List<String> bssidOutput =
-            execProcess(airportCmd + " | awk '/ BSSID/ {print substr($0, index($0, $2))}'");
+        List<String> bssidOutput = execProcess("iwgetid -a -r");
         if (bssidOutput.size() > 0) {
           id.setBssid(bssidOutput.get(0));
         }
       }
+
+
 
     } catch (IOException e) {
       log.warn("Could not determine network state", e);
