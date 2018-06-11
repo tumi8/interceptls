@@ -15,14 +15,15 @@
  */
 package de.tum.in.net.server;
 
+import java.io.IOException;
+
 import org.bouncycastle.tls.AlertDescription;
 import org.bouncycastle.tls.AlertLevel;
 import org.bouncycastle.tls.DefaultTlsServer;
+import org.bouncycastle.tls.ProtocolVersion;
 import org.bouncycastle.tls.TlsCredentialedSigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Server which creates a RSA KeyPair and a corresponding X509Certificate which is served to the
@@ -38,6 +39,16 @@ public class DefaultServer extends DefaultTlsServer {
     super(config.getCrypto());
     this.config = config;
     this.supportedCipherSuites = config.getCipherSuites();
+  }
+
+  @Override
+  protected ProtocolVersion getMaximumVersion() {
+    return ProtocolVersion.TLSv12;
+  }
+
+  @Override
+  protected ProtocolVersion getMinimumVersion() {
+    return ProtocolVersion.TLSv10;
   }
 
   @Override
