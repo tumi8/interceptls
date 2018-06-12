@@ -16,8 +16,8 @@ Crowdsourced measurement of TLS-interception in access networks
 * **/tls-client-cli**
   Client for desktop, supporting Ubuntu (and equivalent) and Mac OS X.
   
-* **/tls-information-server**
-  The (static) homepage to inform users about our project.
+* **/tls-information-webpage**
+  The (static) webpage to inform users about our project.
 
 * **/tls-json-parser**
   Rust-based parser that parses the TLS handshake to JSON.
