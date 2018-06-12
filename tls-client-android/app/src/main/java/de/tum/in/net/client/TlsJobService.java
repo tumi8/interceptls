@@ -36,17 +36,24 @@ public class TlsJobService extends JobService {
     private static final Logger log = LoggerFactory.getLogger(TlsJobService.class);
 
     public static void init(final Context ctx) {
+        boolean scheduled = Util.isJobServiceOn(ctx, JobId.TLS_JOB_SERVICE_ID);
+        if(!scheduled){
+            forceInit(ctx);
+        }
+    }
+
+    public static void forceInit(Context ctx){
         final JobScheduler js = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         final int timeInMinutes = ConfigurationReader.readServiceTime(ctx);
 
         if (timeInMinutes == 0) {
-            js.cancel(JobId.tlsJobServiceId);
+            js.cancel(JobId.TLS_JOB_SERVICE_ID);
         } else {
             final long timeInMillis = timeInMinutes * 60 * 1000;
             log.info("Set TlsJobService service time in min: {}", timeInMinutes);
 
             final JobInfo job = new JobInfo.Builder(
-                    JobId.tlsJobServiceId,
+                    JobId.TLS_JOB_SERVICE_ID,
                     new ComponentName(ctx, TlsJobService.class))
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                     .setPeriodic(timeInMillis)

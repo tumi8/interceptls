@@ -33,11 +33,18 @@ public class DbCleanJobService extends JobService {
 
     private static final Logger log = LoggerFactory.getLogger(DbCleanJobService.class);
 
-    public static void init(final Context ctx) {
+    public static void init(final Context ctx){
+        boolean scheduled = Util.isJobServiceOn(ctx, JobId.DB_CLEAN_JOB_SERVICE_ID);
+        if(!scheduled){
+            forceInit(ctx);
+        }
+    }
+
+    public static void forceInit(final Context ctx) {
         final JobScheduler js = (JobScheduler) ctx.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
         final JobInfo job = new JobInfo.Builder(
-                JobId.dbCleanJobServiceId,
+                JobId.DB_CLEAN_JOB_SERVICE_ID,
                 new ComponentName(ctx, TlsJobService.class))
                 .setPeriodic(24 * 60 * 60 * 1000) //every 24 hours
                 .setRequiresCharging(true)

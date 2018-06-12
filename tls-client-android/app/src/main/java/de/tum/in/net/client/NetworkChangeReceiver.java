@@ -33,7 +33,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context ctx, final Intent intent) {
-        log.error("onReceive");
+        log.debug("received network change event: {}", intent.getAction());
 
         final PendingResult pendingResult = goAsync();
         final Intent i = new Intent(ctx, TlsService.class);
@@ -50,14 +50,8 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 // a new connection may need some time to be established
                 sleepSilently(4000);
 
-
                 if (isOnline(ctx)) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        //from oreo on startService throws an IllegalStateException, see https://developer.android.com/about/versions/oreo/android-8.0-changes
-                        ctx.startForegroundService(i);
-                    } else {
-                        ctx.startService(i);
-                    }
+                    TlsService.start(ctx);
                 } else {
                     pendingResult.finish();
                 }

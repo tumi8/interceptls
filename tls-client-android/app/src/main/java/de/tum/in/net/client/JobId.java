@@ -17,8 +17,8 @@ package de.tum.in.net.client;
 
 public class JobId {
 
-    public static final int tlsJobServiceId = 1;
-    public static final int dbCleanJobServiceId = 2;
+    public static final int TLS_JOB_SERVICE_ID = 1;
+    public static final int DB_CLEAN_JOB_SERVICE_ID = 2;
 
 
     private JobId() {

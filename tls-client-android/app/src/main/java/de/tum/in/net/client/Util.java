@@ -15,6 +15,10 @@
  */
 package de.tum.in.net.client;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.Context;
+
 import java.util.Objects;
 
 public class Util {
@@ -26,5 +30,20 @@ public class Util {
     public static String formatTimestamp(final String iso8601) {
         Objects.requireNonNull(iso8601);
         return iso8601.replace("T", " ").substring(0, iso8601.length() - 4);
+    }
+
+    public static boolean isJobServiceOn(Context context, int JOB_ID) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE );
+
+        boolean hasBeenScheduled = false ;
+
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == JOB_ID ) {
+                hasBeenScheduled = true ;
+                break ;
+            }
+        }
+
+        return hasBeenScheduled ;
     }
 }

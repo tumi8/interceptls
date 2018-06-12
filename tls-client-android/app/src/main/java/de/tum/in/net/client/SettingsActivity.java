@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
     public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences, final String key) {
 
         if (getString(R.string.background_service).equals(key)) {
-            TlsJobService.init(this);
+            TlsJobService.forceInit(this);
         }
 
     }

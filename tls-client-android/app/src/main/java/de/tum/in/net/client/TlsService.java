@@ -51,6 +51,16 @@ public class TlsService extends IntentService {
         super("TlsService");
     }
 
+    public static void start(Context ctx){
+        final Intent i = new Intent(ctx, TlsService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            //from oreo on startService throws an IllegalStateException, see https://developer.android.com/about/versions/oreo/android-8.0-changes
+            ctx.startForegroundService(i);
+        } else {
+            ctx.startService(i);
+        }
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -75,14 +85,6 @@ public class TlsService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable final Intent intent) {
         log.debug("onHandleIntent TlsService");
-
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        final int versionCode = sharedPreferences.getInt("VERSION_CODE", 1);
-
-        if (versionCode != BuildConfig.VERSION_CODE) {
-            onAppUpdated();
-            sharedPreferences.edit().putInt("VERSION_CODE", BuildConfig.VERSION_CODE).apply();
-        }
 
         if (ContextCompat.checkSelfPermission(this, MainActivity.LOCATION_PERMISSION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -148,22 +150,6 @@ public class TlsService extends IntentService {
             }
         }
 
-    }
-
-    private void onAppUpdated() {
-        applyNewDefaultServiceTime();
-    }
-
-    private void applyNewDefaultServiceTime() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final boolean appliedNewDefaultServiceTime = prefs.getBoolean("appliedNewDefaultServiceTime", false);
-        if (!appliedNewDefaultServiceTime) {
-            final SharedPreferences.Editor edit = prefs.edit();
-            edit.putString(this.getString(R.string.background_service), this.getString(R.string.service_time_default));
-            edit.putBoolean("appliedNewDefaultServiceTime", true);
-            edit.apply();
-            TlsJobService.init(this);
-        }
     }
 
 }
