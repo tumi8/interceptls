@@ -14,7 +14,7 @@ Crowdsourced measurement of TLS-interception in access networks
   Android app for Android 6.0+ (API Level 23+)
 
 * **/tls-client-cli**
-  Client for desktop, supporting Ubuntu (and equivalent) and Mac OS X.
+  Client for desktop, supporting Ubuntu (and equivalent) and macOS.
   
 * **/tls-information-webpage**
   The (static) webpage to inform users about our project.
