@@ -19,19 +19,19 @@ import java.util.Objects;
 
 public class ProbedHostAnalysis {
 
-  private String target;
-  private TlsState tlsState;
+  private final String target;
+  private final TlsState tlsState;
   private TlsMessageDiff clientHello;
   private TlsMessageDiff serverHello;
   private TlsMessageDiff certificate;
 
-  private ProbedHostAnalysis(String target, TlsState tlsState) {
+  private ProbedHostAnalysis(final String target, final TlsState tlsState) {
     this.target = Objects.requireNonNull(target);
     this.tlsState = Objects.requireNonNull(tlsState);
   }
 
-  private ProbedHostAnalysis(String target, TlsMessageDiff clientHello, TlsMessageDiff serverHello,
-      TlsMessageDiff certificate) {
+  private ProbedHostAnalysis(final String target, final TlsMessageDiff clientHello, final TlsMessageDiff serverHello,
+      final TlsMessageDiff certificate) {
     this.target = Objects.requireNonNull(target);
     this.tlsState = TlsState.INTERCEPTION;
     this.clientHello = Objects.requireNonNull(clientHello);
@@ -55,17 +55,12 @@ public class ProbedHostAnalysis {
     return target;
   }
 
-
-  public static ProbedHostAnalysis unknown(String target) {
-    return new ProbedHostAnalysis(target, TlsState.UNKNOWN);
-  }
-
-  public static ProbedHostAnalysis noInterception(String target) {
+  public static ProbedHostAnalysis noInterception(final String target) {
     return new ProbedHostAnalysis(target, TlsState.NO_INTERCEPTION);
   }
 
-  public static ProbedHostAnalysis intercepted(String target, TlsMessageDiff clientHello,
-      TlsMessageDiff serverHello, TlsMessageDiff certificate) {
+  public static ProbedHostAnalysis intercepted(final String target, final TlsMessageDiff clientHello,
+      final TlsMessageDiff serverHello, final TlsMessageDiff certificate) {
     return new ProbedHostAnalysis(target, clientHello, serverHello, certificate);
   }
 
