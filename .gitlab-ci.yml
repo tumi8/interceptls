@@ -1,0 +1,14 @@
+image: java:8
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - mvn clean package
+  artifacts:
+    paths:
+      - tls-analysis-server/target/tls-analysis-server-*.tar.gz
+      - tls-capture-serer/target/tls-capture-server-*.tar.gz
+      - tls-client-cli/target/tls-client-cli-*-jar-with-dependencies.jar
