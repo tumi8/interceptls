@@ -6,8 +6,8 @@ android {
         applicationId "de.tum.in.net.interceptls"
         minSdkVersion 23
         targetSdkVersion 27
-        versionCode 6
-        versionName "1.0.4"
+        versionCode 7
+        versionName "1.0.5"
     }
 
     //sign build with the corresponding key from tls-interception-secret repository if exists
@@ -44,7 +44,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
-    implementation 'de.tum.in.net:tls-capture:1.0.4'
+    implementation 'de.tum.in.net:tls-capture:1.0.5'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
