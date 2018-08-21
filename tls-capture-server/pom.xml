@@ -4,12 +4,12 @@
   <parent>
     <groupId>de.tum.in.net</groupId>
     <artifactId>tls-interception-detection</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <relativePath>../</relativePath>
   </parent>
 
   <artifactId>tls-capture-server</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   
   <properties>
     <log4jVersion>2.11.0</log4jVersion>
@@ -19,7 +19,7 @@
     <dependency>
       <groupId>de.tum.in.net</groupId>
       <artifactId>tls-capture</artifactId>
-      <version>1.0.5</version>
+      <version>1.0.6</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
