@@ -35,30 +35,12 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
     public void onReceive(final Context ctx, final Intent intent) {
         log.debug("received network change event: {}", intent.getAction());
 
-        final PendingResult pendingResult = goAsync();
-        final Intent i = new Intent(ctx, TlsService.class);
-        i.putExtra("resultReceiver", new ResultReceiver(new Handler()) {
-            @Override
-            protected void onReceiveResult(final int resultCode, final Bundle resultData) {
-                pendingResult.finish();
-            }
-        });
+        // a new connection may need some time to be established
+        sleepSilently(4000);
 
-        final Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                // a new connection may need some time to be established
-                sleepSilently(4000);
-
-                if (isOnline(ctx)) {
-                    TlsService.start(ctx);
-                } else {
-                    pendingResult.finish();
-                }
-            }
-        };
-        final Thread t = new Thread(r);
-        t.start();
+        if (isOnline(ctx)) {
+            TlsService.start(ctx);
+        }
     }
 
     private void sleepSilently(final int millis) {
