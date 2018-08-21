@@ -37,7 +37,7 @@ public class TlsDetectionClient extends DefaultTlsClient {
 
   // for the detection we support old TLS versions and old ciphersuites, otherwise we might not
   // detect legacy middleboxes
-  public TlsDetectionClient(String sni) {
+  public TlsDetectionClient(final String sni) {
     super(crypto);
     this.sni = sni;
     /*
@@ -77,7 +77,7 @@ public class TlsDetectionClient extends DefaultTlsClient {
 
   @Override
   public ProtocolVersion getMinimumVersion() {
-    return ProtocolVersion.TLSv10;
+    return ProtocolVersion.SSLv3;
   }
 
   @Override

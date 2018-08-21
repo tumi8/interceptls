@@ -61,9 +61,9 @@ public class UploadResultService extends IntentService {
 
                 db.uploadedResult(result.getTimestamp(), analysisResult);
             }
-            log.debug("All results successfully uploaded to analysis server");
+            log.info("All results successfully uploaded to analysis server");
         } catch (final IOException e) {
-            log.debug("Could not upload results to analysis server", e);
+            log.warn("Could not upload results to analysis server", e);
         }
 
     }

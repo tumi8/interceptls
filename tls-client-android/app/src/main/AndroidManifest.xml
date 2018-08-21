@@ -64,7 +64,7 @@
         <receiver android:name=".NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <!--<action android:name="android.net.wifi.WIFI_STATE_CHANGED" /> causes ANR-->
             </intent-filter>
         </receiver>
         <receiver

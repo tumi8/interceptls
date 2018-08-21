@@ -166,14 +166,14 @@ public class TlsDB extends SQLiteOpenHelper {
 
     /**
      * Deletes all results that are
-     * - more than 7 days old and successfully uploaded
-     * - more than 14 days old (despite not beeing uploaded).
+     * - more than 14 days old and successfully uploaded
+     * - more than 28 days old (despite not being uploaded).
      * Compresses the DB afterwards.
      */
     public void deleteOldTests() {
         try (SQLiteDatabase db = this.getWritableDatabase()) {
-            db.execSQL("DELETE FROM " + RESULTS_TABLE + " WHERE " + TIMESTAMP_COLUMN + "<= date('now','-14 day')");
-            db.execSQL("DELETE FROM " + RESULTS_TABLE + " WHERE " + TIMESTAMP_COLUMN + "<= date('now','-7 day') AND " + ANALYSIS_COLUMN + " IS NOT NULL");
+            db.execSQL("DELETE FROM " + RESULTS_TABLE + " WHERE " + TIMESTAMP_COLUMN + "<= strftime('%s', datetime('now','-28 day'))");
+            db.execSQL("DELETE FROM " + RESULTS_TABLE + " WHERE " + TIMESTAMP_COLUMN + "<= strftime('%s', datetime('now','-14 day')) AND " + ANALYSIS_COLUMN + " IS NOT NULL");
             db.execSQL("VACUUM");
         }
 
