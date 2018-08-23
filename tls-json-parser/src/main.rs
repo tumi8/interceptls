@@ -287,7 +287,7 @@ fn match_extensions(ext: IResult<&[u8],Vec<TlsExtension>>) -> Value {
                         data["nextProtocolNegotiation"] = json!(true);
                     }
 					TlsExtension::RenegotiationInfo(info) => {
-						data["denegotiationInfo"] = json!(info);
+						data["renegotiationInfo"] = json!(info);
 					}
 					TlsExtension::Unknown(ext_type, ext_data) => {
                         data["unknown"] = json!([ext_type, ext_data]);
